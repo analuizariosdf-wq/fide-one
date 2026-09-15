@@ -5,7 +5,7 @@ export const attentionItems: AttentionItem[] = [
     id: "at1",
     label: "5 tarefas atrasadas",
     severity: "danger",
-    href: "/tarefas",
+    href: "/tasks",
   },
   {
     id: "at2",

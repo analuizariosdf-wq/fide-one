@@ -1,4 +1,4 @@
-import type { TaskItem } from "@/lib/types";
+import type { Task, TaskItem } from "@/lib/types";
 
 export const myTasks: TaskItem[] = [
   {
@@ -52,3 +52,197 @@ export const myTasks: TaskItem[] = [
     assigneeId: "daniel",
   },
 ];
+
+/**
+ * Full task set for the Tarefas module (list, Kanban, detail pages).
+ * Separate from `myTasks` above on purpose — see the `Task` type comment
+ * in lib/types for why the Dashboard widget keeps its own lightweight set.
+ */
+export const tasks: Task[] = [
+  {
+    id: "task-1",
+    title: "Revisar copy do Reel",
+    description:
+      "Revisar o roteiro do Reel institucional sobre a área de Gestão antes do envio para produção.",
+    clientId: "inovar",
+    projectId: "proj-inovar-gestao-set",
+    assigneeId: "daniel",
+    priority: "alta",
+    status: "em_revisao",
+    dueDate: "2026-09-15",
+    relatedContentId: "c1",
+    comments: [
+      {
+        id: "cm1",
+        authorId: "fernanda",
+        message: "Copy enviada para revisão, pode validar o CTA final?",
+        timeLabel: "há 3 horas",
+      },
+      {
+        id: "cm2",
+        authorId: "daniel",
+        message: "Vou revisar até o fim do dia.",
+        timeLabel: "há 1 hora",
+      },
+    ],
+    history: [
+      { id: "h1", actorId: "fernanda", description: "criou a tarefa", timeLabel: "há 2 dias" },
+      { id: "h2", actorId: "fernanda", description: "moveu para Em revisão", timeLabel: "há 3 horas" },
+    ],
+  },
+  {
+    id: "task-2",
+    title: "Criar arte do carrossel",
+    description: "Arte do carrossel de resultados do trimestre para o Pleno Hospital Dia.",
+    clientId: "pleno",
+    projectId: "proj-pleno-conteudo-set",
+    assigneeId: "camila",
+    priority: "normal",
+    status: "em_producao",
+    dueDate: "2026-09-17",
+    relatedContentId: "c2",
+  },
+  {
+    id: "task-3",
+    title: "Enviar briefing",
+    description: "Coletar informações do mês com o cliente para montar o briefing de setembro.",
+    clientId: "conservar",
+    projectId: "proj-conservar-gestao-set",
+    assigneeId: "fernanda",
+    priority: "urgente",
+    status: "a_fazer",
+    dueDate: "2026-09-15",
+  },
+  {
+    id: "task-4",
+    title: "Planejar pauta de conteúdo",
+    clientId: "pleno",
+    projectId: "proj-pleno-conteudo-set",
+    assigneeId: "bruno",
+    priority: "normal",
+    status: "backlog",
+    dueDate: "2026-09-18",
+  },
+  {
+    id: "task-5",
+    title: "Aprovar cronograma 26 anos",
+    clientId: "inovar",
+    projectId: "proj-inovar-26-anos",
+    assigneeId: "daniel",
+    priority: "alta",
+    status: "backlog",
+    dueDate: "2026-09-22",
+  },
+  {
+    id: "task-6",
+    title: "Revisar identidade visual",
+    clientId: "pleno",
+    projectId: "proj-pleno-reposicionamento",
+    assigneeId: "camila",
+    priority: "baixa",
+    status: "concluido",
+    dueDate: "2026-08-20",
+  },
+  {
+    id: "task-7",
+    title: "Roteirizar vídeo institucional",
+    clientId: "felipe-holanda",
+    projectId: "proj-felipe-consultoria-q4",
+    assigneeId: "bruno",
+    priority: "normal",
+    status: "backlog",
+    dueDate: "2026-10-05",
+  },
+  {
+    id: "task-8",
+    title: "Selecionar pauta Outubro Rosa",
+    clientId: "vero",
+    projectId: "proj-vero-outubro-rosa",
+    assigneeId: "camila",
+    priority: "alta",
+    status: "em_producao",
+    dueDate: "2026-09-19",
+  },
+  {
+    id: "task-9",
+    title: "Enviar posts para aprovação",
+    clientId: "vero",
+    projectId: "proj-vero-outubro-rosa",
+    assigneeId: "fernanda",
+    priority: "normal",
+    status: "aguardando_cliente",
+    dueDate: "2026-09-16",
+  },
+  {
+    id: "task-10",
+    title: "Revisar relatório mensal",
+    clientId: "inovar",
+    projectId: "proj-inovar-gestao-set",
+    assigneeId: "mariana",
+    priority: "normal",
+    status: "concluido",
+    dueDate: "2026-09-12",
+  },
+  {
+    id: "task-11",
+    title: "Apresentar proposta de rebranding",
+    clientId: "grupo-almeida",
+    projectId: "proj-almeida-rebranding",
+    assigneeId: "fernanda",
+    priority: "baixa",
+    status: "aguardando_cliente",
+    dueDate: "2026-09-25",
+  },
+  {
+    id: "task-12",
+    title: "Corrigir arte aprovada",
+    clientId: "conservar",
+    projectId: "proj-conservar-gestao-set",
+    assigneeId: "camila",
+    priority: "urgente",
+    status: "em_revisao",
+    dueDate: "2026-09-14",
+  },
+  {
+    id: "task-13",
+    title: "Organizar biblioteca de assets",
+    clientId: null,
+    projectId: null,
+    assigneeId: "bruno",
+    priority: "baixa",
+    status: "backlog",
+    dueDate: "2026-09-30",
+  },
+  {
+    id: "task-14",
+    title: "Preparar apresentação de resultados",
+    clientId: "pleno",
+    projectId: "proj-pleno-conteudo-set",
+    assigneeId: "mariana",
+    priority: "alta",
+    status: "a_fazer",
+    dueDate: "2026-09-15",
+  },
+  {
+    id: "task-15",
+    title: "Publicar carrossel aprovado",
+    clientId: "pleno",
+    projectId: "proj-pleno-conteudo-set",
+    assigneeId: "camila",
+    priority: "normal",
+    status: "a_fazer",
+    dueDate: "2026-09-16",
+  },
+];
+
+export function getTask(id: string): Task | undefined {
+  return tasks.find((task) => task.id === id);
+}
+
+export function getTasksByClient(clientId: string): Task[] {
+  return tasks.filter((task) => task.clientId === clientId);
+}
+
+export function getTasksByProject(projectId: string): Task[] {
+  return tasks.filter((task) => task.projectId === projectId);
+}

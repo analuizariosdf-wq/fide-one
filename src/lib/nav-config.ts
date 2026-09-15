@@ -42,9 +42,9 @@ export const navGroups: NavGroup[] = [
   {
     label: "Operação",
     items: [
-      { label: "Clientes", href: "/clientes", icon: Users },
-      { label: "Projetos", href: "/projetos", icon: FolderKanban },
-      { label: "Tarefas", href: "/tarefas", icon: ListChecks },
+      { label: "Clientes", href: "/clients", icon: Users },
+      { label: "Projetos", href: "/projects", icon: FolderKanban },
+      { label: "Tarefas", href: "/tasks", icon: ListChecks },
       { label: "Conteúdos", href: "/conteudos", icon: Images },
       { label: "Calendário", href: "/calendario", icon: Calendar },
     ],
