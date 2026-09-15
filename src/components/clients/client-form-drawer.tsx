@@ -2,12 +2,16 @@
 
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { ZodError } from "zod";
 
 import type { Client, ClientStatus } from "@/lib/types";
-import { SERVICE_OPTIONS } from "@/lib/mock-data/clients";
-import { team } from "@/lib/mock-data/users";
 import { clientStatusConfig } from "@/lib/status";
-import { createClient, updateClient } from "@/lib/services/clients-service";
+import {
+  createClient,
+  updateClient,
+  type ProfileOption,
+  type ServiceOption,
+} from "@/lib/data/clients";
 import {
   Sheet,
   SheetContent,
@@ -59,7 +63,7 @@ const emptyForm: FormState = {
   instagram: "",
   email: "",
   phone: "",
-  responsibleId: team[0]?.id ?? "",
+  responsibleId: "",
   services: [],
   startDate: "",
   status: "lead",
@@ -94,6 +98,8 @@ interface ClientFormDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   client?: Client | null;
+  profiles: ProfileOption[];
+  services: ServiceOption[];
   onSaved?: (client: Client) => void;
 }
 
@@ -101,22 +107,30 @@ export function ClientFormDrawer({
   open,
   onOpenChange,
   client,
+  profiles,
+  services,
   onSaved,
 }: ClientFormDrawerProps) {
   const [form, setForm] = useState<FormState>(() =>
-    client ? toFormState(client) : emptyForm,
+    client ? toFormState(client) : { ...emptyForm, responsibleId: profiles[0]?.id ?? "" },
   );
+  const [submitting, setSubmitting] = useState(false);
   const isEditing = Boolean(client);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     if (!form.name.trim() || !form.segment.trim()) {
       toast.error("Preencha ao menos nome e segmento do cliente.");
+      return;
+    }
+
+    if (!form.responsibleId) {
+      toast.error("Selecione um responsável.");
       return;
     }
 
@@ -139,14 +153,25 @@ export function ClientFormDrawer({
       notes: form.notes.trim() || undefined,
     };
 
-    const saved =
-      isEditing && client
-        ? updateClient(client.id, payload)
-        : createClient(payload);
+    setSubmitting(true);
+    try {
+      const saved =
+        isEditing && client
+          ? await updateClient(client.id, payload)
+          : await createClient(payload);
 
-    if (saved) onSaved?.(saved);
-    onOpenChange(false);
-    toast.success(isEditing ? "Cliente atualizado com sucesso." : "Cliente criado com sucesso.");
+      onSaved?.(saved);
+      onOpenChange(false);
+      toast.success(isEditing ? "Cliente atualizado com sucesso." : "Cliente criado com sucesso.");
+    } catch (error) {
+      if (error instanceof ZodError) {
+        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
+      } else {
+        toast.error("Não foi possível salvar o cliente. Tente novamente.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -155,7 +180,9 @@ export function ClientFormDrawer({
         <SheetHeader className="border-b border-border pb-4">
           <SheetTitle>{isEditing ? "Editar cliente" : "Novo cliente"}</SheetTitle>
           <SheetDescription>
-            Os dados são mockados nesta etapa — nada é persistido em banco.
+            {isEditing
+              ? "As alterações são salvas diretamente no banco de dados."
+              : "O cliente é salvo diretamente no banco de dados da sua organização."}
           </SheetDescription>
         </SheetHeader>
 
@@ -211,9 +238,9 @@ export function ClientFormDrawer({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {team.map((member) => (
-                        <SelectItem key={member.id} value={member.id}>
-                          {member.name}
+                      {profiles.map((profile) => (
+                        <SelectItem key={profile.id} value={profile.id}>
+                          {profile.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -243,7 +270,7 @@ export function ClientFormDrawer({
               </div>
               <FormField label="Serviços contratados">
                 <TagSelect
-                  options={SERVICE_OPTIONS}
+                  options={services.map((service) => service.name)}
                   value={form.services}
                   onChange={(v) => update("services", v)}
                 />
@@ -305,10 +332,21 @@ export function ClientFormDrawer({
           </div>
 
           <SheetFooter className="mt-6 flex-row justify-end gap-2 px-0 pb-0">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={submitting}
+            >
               Cancelar
             </Button>
-            <Button type="submit">{isEditing ? "Salvar alterações" : "Criar cliente"}</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting
+                ? "Salvando..."
+                : isEditing
+                  ? "Salvar alterações"
+                  : "Criar cliente"}
+            </Button>
           </SheetFooter>
         </form>
       </SheetContent>

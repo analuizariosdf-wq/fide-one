@@ -6,13 +6,15 @@ import { toast } from "sonner";
 import { FileWarning, Pencil, Plus, Trash2 } from "lucide-react";
 
 import type { Content, Project, Task } from "@/lib/types";
-import { useClient, removeClient } from "@/lib/services/clients-service";
+import { useClient, removeClient } from "@/lib/data/clients";
 import { useProjects, removeProject } from "@/lib/services/projects-service";
 import { useTasks, removeTask } from "@/lib/services/tasks-service";
 import { useContents, removeContent } from "@/lib/services/contents-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ClientHeader } from "@/components/clients/client-header";
@@ -39,7 +41,7 @@ export default function ClientDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const client = useClient(id);
+  const { client, profiles, services, loading, error, refetch } = useClient(id);
   const clientProjects = useProjects({ clientId: id });
   const clientTasks = useTasks({ clientId: id });
   const clientContents = useContents({ clientId: id });
@@ -58,6 +60,25 @@ export default function ClientDetailPage({
   const [contentDrawerOpen, setContentDrawerOpen] = useState(false);
   const [editingContent, setEditingContent] = useState<Content | null>(null);
   const [deletingContent, setDeletingContent] = useState<Content | null>(null);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-start gap-4">
+          <Skeleton className="size-14 shrink-0 rounded-xl" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorState description={error} onRetry={refetch} />;
+  }
 
   if (!client) {
     return (
@@ -216,7 +237,15 @@ export default function ClientDetailPage({
         ))}
       </Tabs>
 
-      <ClientFormDrawer open={editOpen} onOpenChange={setEditOpen} client={client} />
+      <ClientFormDrawer
+        key={client.id}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        client={client}
+        profiles={profiles}
+        services={services}
+        onSaved={refetch}
+      />
 
       <ProjectFormDrawer
         open={projectDrawerOpen}
@@ -284,10 +313,14 @@ export default function ClientDetailPage({
         title="Excluir cliente"
         description={`Tem certeza que deseja excluir "${client.name}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
-          removeClient(client.id);
-          toast.success("Cliente excluído.");
-          router.push("/clients");
+        onConfirm={async () => {
+          try {
+            await removeClient(client.id);
+            toast.success("Cliente excluído.");
+            router.push("/clients");
+          } catch {
+            toast.error("Não foi possível excluir o cliente. Tente novamente.");
+          }
         }}
       />
     </div>

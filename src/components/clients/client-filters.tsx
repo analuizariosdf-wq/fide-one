@@ -2,10 +2,8 @@
 
 import { Search } from "lucide-react";
 
-import { SERVICE_OPTIONS } from "@/lib/mock-data/clients";
-import { team } from "@/lib/mock-data/users";
 import { clientStatusConfig } from "@/lib/status";
-import type { ClientFilters } from "@/lib/services/clients-service";
+import type { ClientFilters, ProfileOption, ServiceOption } from "@/lib/data/clients";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -19,6 +17,8 @@ import { FilterBar } from "@/components/shared/filter-bar";
 interface ClientFiltersBarProps {
   filters: ClientFilters;
   onChange: (next: ClientFilters) => void;
+  profiles: ProfileOption[];
+  services: ServiceOption[];
 }
 
 function countActive(filters: ClientFilters) {
@@ -27,7 +27,7 @@ function countActive(filters: ClientFilters) {
   ).length;
 }
 
-export function ClientFiltersBar({ filters, onChange }: ClientFiltersBarProps) {
+export function ClientFiltersBar({ filters, onChange, profiles, services }: ClientFiltersBarProps) {
   const filterControls = (
     <>
       <Select
@@ -58,9 +58,9 @@ export function ClientFiltersBar({ filters, onChange }: ClientFiltersBarProps) {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="todos">Todos os responsáveis</SelectItem>
-          {team.map((member) => (
-            <SelectItem key={member.id} value={member.id}>
-              {member.name}
+          {profiles.map((profile) => (
+            <SelectItem key={profile.id} value={profile.id}>
+              {profile.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -75,9 +75,9 @@ export function ClientFiltersBar({ filters, onChange }: ClientFiltersBarProps) {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="todos">Todos os serviços</SelectItem>
-          {SERVICE_OPTIONS.map((service) => (
-            <SelectItem key={service} value={service}>
-              {service}
+          {services.map((service) => (
+            <SelectItem key={service.id} value={service.name}>
+              {service.name}
             </SelectItem>
           ))}
         </SelectContent>

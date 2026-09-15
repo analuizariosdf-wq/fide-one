@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Bell, ChevronRight, Menu, PanelLeft, Search } from "lucide-react";
 
 import { getBreadcrumb } from "@/lib/breadcrumb";
-import { getTeamMember } from "@/lib/mock-data/team";
+import { createClient } from "@/lib/supabase/client";
+import { useCurrentProfile } from "@/lib/supabase/use-current-profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -28,9 +29,17 @@ interface HeaderProps {
 
 export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const breadcrumb = getBreadcrumb(pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const user = getTeamMember("daniel");
+  const { profile } = useCurrentProfile();
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-4 sm:px-6">
@@ -138,24 +147,26 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
               aria-label="Menu do perfil"
             >
               <Avatar className="size-7">
-                <AvatarFallback>{user?.initials}</AvatarFallback>
+                <AvatarFallback>{profile?.initials ?? "…"}</AvatarFallback>
               </Avatar>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="flex flex-col gap-0.5">
               <span className="text-[13px] font-medium text-foreground">
-                {user?.name}
+                {profile?.name ?? "Carregando..."}
               </span>
               <span className="text-[12px] font-normal text-muted-foreground">
-                {user?.role}
+                {profile?.roleName ?? ""}
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Meu perfil</DropdownMenuItem>
             <DropdownMenuItem>Configurações</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">Sair</DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
+              Sair
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

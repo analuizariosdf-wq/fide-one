@@ -15,6 +15,17 @@ export const team: TeamMember[] = [
   { id: "camila", name: "Camila", initials: "CA", role: "Designer" },
 ];
 
+// Bridges real Supabase profiles (UUID ids) into the same lookup used
+// throughout the still-mock-backed UI (ClientTable, ClientHeader, ...),
+// so those approved components keep working unmodified as modules move
+// from mock data to Supabase one at a time. Populated by the real data
+// layer (src/lib/data/*) whenever it resolves a profile.
+const supabaseProfileCache = new Map<string, TeamMember>();
+
+export function registerSupabaseProfile(profile: TeamMember): void {
+  supabaseProfileCache.set(profile.id, profile);
+}
+
 export function getTeamMember(id: string): TeamMember | undefined {
-  return team.find((member) => member.id === id);
+  return team.find((member) => member.id === id) ?? supabaseProfileCache.get(id);
 }
