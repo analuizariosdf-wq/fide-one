@@ -1,0 +1,195 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  /* Fide ONE design tokens */
+  --background: #f7f7f5;
+  --foreground: #171717;
+
+  --surface: #ffffff;
+  --surface-foreground: #171717;
+
+  --card: #ffffff;
+  --card-foreground: #171717;
+
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+
+  --primary: #5b3cc4;
+  --primary-hover: #4d31a8;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f0f0ed;
+  --secondary-foreground: #171717;
+
+  --muted: #f0f0ed;
+  --muted-foreground: #6b6b6b;
+
+  --accent: #ede8fa;
+  --accent-foreground: #5b3cc4;
+
+  --destructive: #c4433c;
+  --destructive-foreground: #ffffff;
+
+  --border: #e5e5e2;
+  --input: #e5e5e2;
+  --ring: #5b3cc4;
+
+  /* Status colors — used sparingly for badges/indicators */
+  --status-danger-bg: #fbeae9;
+  --status-danger-fg: #b33129;
+  --status-danger-dot: #c4433c;
+
+  --status-warning-bg: #faf1e2;
+  --status-warning-fg: #92661a;
+  --status-warning-dot: #d29a2c;
+
+  --status-success-bg: #e9f3ea;
+  --status-success-fg: #2f6b39;
+  --status-success-dot: #4c9a56;
+
+  --status-info-bg: #eef0fb;
+  --status-info-fg: #3d4a99;
+  --status-info-dot: #5b6ad6;
+
+  --status-neutral-bg: #f0f0ed;
+  --status-neutral-fg: #6b6b6b;
+  --status-neutral-dot: #9a9a95;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #171717;
+  --sidebar-muted: #6b6b6b;
+  --sidebar-border: #e5e5e2;
+  --sidebar-accent: #ede8fa;
+  --sidebar-accent-foreground: #5b3cc4;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-fg: var(--status-danger-fg);
+  --color-status-danger-dot: var(--status-danger-dot);
+
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-warning-fg: var(--status-warning-fg);
+  --color-status-warning-dot: var(--status-warning-dot);
+
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-success-fg: var(--status-success-fg);
+  --color-status-success-dot: var(--status-success-dot);
+
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-fg: var(--status-info-fg);
+  --color-status-info-dot: var(--status-info-dot);
+
+  --color-status-neutral-bg: var(--status-neutral-bg);
+  --color-status-neutral-fg: var(--status-neutral-fg);
+  --color-status-neutral-dot: var(--status-neutral-dot);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1 {
+    font-size: 2rem; /* 32px */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    font-size: 1.5rem; /* 24px */
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  body,
+  p,
+  span,
+  div {
+    font-size: 0.875rem; /* 14px body */
+  }
+}
+
+@layer utilities {
+  .text-small {
+    font-size: 0.75rem; /* 12px */
+    font-weight: 500;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
