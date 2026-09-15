@@ -7,7 +7,7 @@ import type { Task, TaskUrgency, TaskWorkflowStatus } from "@/lib/types";
 import { clients } from "@/lib/mock-data/clients";
 import { getProjectsByClient, projects } from "@/lib/mock-data/projects";
 import { team } from "@/lib/mock-data/users";
-import { contents } from "@/lib/mock-data/contents";
+import { editorialContents } from "@/lib/mock-data/contents";
 import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
 import { createTask, updateTask } from "@/lib/services/tasks-service";
 import {
@@ -280,7 +280,7 @@ export function TaskFormDrawer({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={NO_CONTENT}>Nenhum</SelectItem>
-                    {contents.map((content) => (
+                    {editorialContents.map((content) => (
                       <SelectItem key={content.id} value={content.id}>
                         {content.title}
                       </SelectItem>

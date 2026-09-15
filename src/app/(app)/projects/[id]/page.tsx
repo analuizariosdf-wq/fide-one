@@ -11,7 +11,8 @@ import { formatDateShort } from "@/lib/format";
 import { projectStatusConfig } from "@/lib/status";
 import { useProject, removeProject } from "@/lib/services/projects-service";
 import { useTasks, removeTask } from "@/lib/services/tasks-service";
-import type { Task } from "@/lib/types";
+import { useContents, removeContent } from "@/lib/services/contents-service";
+import type { Content, Task } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -22,6 +23,8 @@ import { EntityLink } from "@/components/shared/entity-link";
 import { ProjectFormDrawer } from "@/components/projects/project-form-drawer";
 import { TaskListView } from "@/components/tasks/task-list-view";
 import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
+import { ContentTable } from "@/components/contents/content-table";
+import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
 
 export default function ProjectDetailPage({
   params,
@@ -32,12 +35,17 @@ export default function ProjectDetailPage({
   const router = useRouter();
   const project = useProject(id);
   const projectTasks = useTasks({ projectId: id });
+  const projectContents = useContents({ projectId: id });
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [taskDrawerOpen, setTaskDrawerOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+
+  const [contentDrawerOpen, setContentDrawerOpen] = useState(false);
+  const [editingContent, setEditingContent] = useState<Content | null>(null);
+  const [deletingContent, setDeletingContent] = useState<Content | null>(null);
 
   if (!project) {
     return (
@@ -141,11 +149,29 @@ export default function ProjectDetailPage({
       <Card>
         <CardHeader>
           <CardTitle>Conteúdos relacionados</CardTitle>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setEditingContent(null);
+              setContentDrawerOpen(true);
+            }}
+          >
+            <Plus className="size-4" />
+            Novo conteúdo
+          </Button>
         </CardHeader>
         <CardContent>
-          <EmptyState
-            title="Em breve"
-            description="O módulo de Conteúdos será conectado a este projeto em uma próxima etapa."
+          <ContentTable
+            contents={projectContents}
+            hideClientColumn
+            onEdit={(content) => {
+              setEditingContent(content);
+              setContentDrawerOpen(true);
+            }}
+            onDelete={(content) => setDeletingContent(content)}
+            emptyTitle="Nenhum conteúdo relacionado a este projeto"
+            emptyDescription="Crie o primeiro conteúdo para começar a planejar a produção."
           />
         </CardContent>
       </Card>
@@ -170,6 +196,27 @@ export default function ProjectDetailPage({
         task={editingTask}
         defaultClientId={project.clientId}
         defaultProjectId={project.id}
+      />
+
+      <ContentFormDrawer
+        open={contentDrawerOpen}
+        onOpenChange={setContentDrawerOpen}
+        content={editingContent}
+        defaultClientId={project.clientId}
+        defaultProjectId={project.id}
+      />
+
+      <ConfirmDialog
+        open={Boolean(deletingContent)}
+        onOpenChange={(open) => !open && setDeletingContent(null)}
+        title="Excluir conteúdo"
+        description={`Tem certeza que deseja excluir "${deletingContent?.title}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        onConfirm={() => {
+          if (!deletingContent) return;
+          removeContent(deletingContent.id);
+          toast.success("Conteúdo excluído.");
+        }}
       />
 
       <ConfirmDialog

@@ -4,7 +4,7 @@ import { useMemo, useSyncExternalStore } from "react";
 
 import type { Task, TaskUrgency, TaskWorkflowStatus } from "@/lib/types";
 import { tasksStore } from "@/lib/store/tasks-store";
-import { MOCK_TODAY, isOverdue } from "@/lib/format";
+import { MOCK_TODAY, isOverdue, toISODate } from "@/lib/format";
 
 export type TaskDueFilter = "todas" | "hoje" | "semana" | "atrasadas";
 
@@ -60,13 +60,6 @@ export function filterTasks(items: Task[], filters: TaskFilters): Task[] {
 
     return true;
   });
-}
-
-function toISODate(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 }
 
 export function useTasks(filters: TaskFilters = {}): Task[] {

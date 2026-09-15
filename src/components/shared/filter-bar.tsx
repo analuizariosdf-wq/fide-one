@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface FilterBarProps {
-  search: ReactNode;
+  search?: ReactNode;
   filters: ReactNode;
   activeCount?: number;
 }
@@ -17,8 +17,8 @@ function FilterBar({ search, filters, activeCount = 0 }: FilterBarProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-      <div className="flex-1">{search}</div>
+    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+      {search && <div className="min-w-[220px] flex-1">{search}</div>}
 
       <div className="hidden flex-wrap items-center gap-2 md:flex">{filters}</div>
 

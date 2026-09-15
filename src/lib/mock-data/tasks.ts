@@ -70,7 +70,7 @@ export const tasks: Task[] = [
     priority: "alta",
     status: "em_revisao",
     dueDate: "2026-09-15",
-    relatedContentId: "c1",
+    relatedContentId: "content-1",
     comments: [
       {
         id: "cm1",
@@ -100,7 +100,6 @@ export const tasks: Task[] = [
     priority: "normal",
     status: "em_producao",
     dueDate: "2026-09-17",
-    relatedContentId: "c2",
   },
   {
     id: "task-3",
@@ -122,6 +121,7 @@ export const tasks: Task[] = [
     priority: "normal",
     status: "backlog",
     dueDate: "2026-09-18",
+    relatedContentId: "content-5",
   },
   {
     id: "task-5",
@@ -132,6 +132,7 @@ export const tasks: Task[] = [
     priority: "alta",
     status: "backlog",
     dueDate: "2026-09-22",
+    relatedContentId: "content-6",
   },
   {
     id: "task-6",
@@ -152,6 +153,7 @@ export const tasks: Task[] = [
     priority: "normal",
     status: "backlog",
     dueDate: "2026-10-05",
+    relatedContentId: "content-4",
   },
   {
     id: "task-8",
@@ -162,6 +164,7 @@ export const tasks: Task[] = [
     priority: "alta",
     status: "em_producao",
     dueDate: "2026-09-19",
+    relatedContentId: "content-7",
   },
   {
     id: "task-9",
@@ -172,6 +175,7 @@ export const tasks: Task[] = [
     priority: "normal",
     status: "aguardando_cliente",
     dueDate: "2026-09-16",
+    relatedContentId: "content-7",
   },
   {
     id: "task-10",
@@ -202,6 +206,7 @@ export const tasks: Task[] = [
     priority: "urgente",
     status: "em_revisao",
     dueDate: "2026-09-14",
+    relatedContentId: "content-2",
   },
   {
     id: "task-13",
@@ -232,6 +237,62 @@ export const tasks: Task[] = [
     priority: "normal",
     status: "a_fazer",
     dueDate: "2026-09-16",
+    relatedContentId: "content-3",
+  },
+  {
+    id: "task-16",
+    title: "Criar briefing do Reel — Gestão",
+    clientId: "inovar",
+    projectId: "proj-inovar-gestao-set",
+    assigneeId: "fernanda",
+    priority: "normal",
+    status: "concluido",
+    dueDate: "2026-09-10",
+    relatedContentId: "content-1",
+  },
+  {
+    id: "task-17",
+    title: "Escrever roteiro do Reel — Gestão",
+    clientId: "inovar",
+    projectId: "proj-inovar-gestao-set",
+    assigneeId: "bruno",
+    priority: "normal",
+    status: "concluido",
+    dueDate: "2026-09-11",
+    relatedContentId: "content-1",
+  },
+  {
+    id: "task-18",
+    title: "Gravar Reel — Gestão",
+    clientId: "inovar",
+    projectId: "proj-inovar-gestao-set",
+    assigneeId: "camila",
+    priority: "alta",
+    status: "concluido",
+    dueDate: "2026-09-13",
+    relatedContentId: "content-1",
+  },
+  {
+    id: "task-19",
+    title: "Editar vídeo do Reel — Gestão",
+    clientId: "inovar",
+    projectId: "proj-inovar-gestao-set",
+    assigneeId: "camila",
+    priority: "alta",
+    status: "em_producao",
+    dueDate: "2026-09-14",
+    relatedContentId: "content-1",
+  },
+  {
+    id: "task-20",
+    title: "Aprovar Reel — Gestão",
+    clientId: "inovar",
+    projectId: "proj-inovar-gestao-set",
+    assigneeId: "daniel",
+    priority: "alta",
+    status: "backlog",
+    dueDate: "2026-09-15",
+    relatedContentId: "content-1",
   },
 ];
 

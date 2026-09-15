@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileWarning, Pencil, Plus, Trash2 } from "lucide-react";
 
-import type { Project, Task } from "@/lib/types";
+import type { Content, Project, Task } from "@/lib/types";
 import { useClient, removeClient } from "@/lib/services/clients-service";
 import { useProjects, removeProject } from "@/lib/services/projects-service";
 import { useTasks, removeTask } from "@/lib/services/tasks-service";
+import { useContents, removeContent } from "@/lib/services/contents-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -21,9 +22,10 @@ import { ProjectTable } from "@/components/projects/project-table";
 import { ProjectFormDrawer } from "@/components/projects/project-form-drawer";
 import { TaskListView } from "@/components/tasks/task-list-view";
 import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
+import { ContentTable } from "@/components/contents/content-table";
+import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
 
 const PLACEHOLDER_TABS = [
-  { value: "conteudos", label: "Conteúdos", description: "Conteúdos deste cliente aparecerão aqui em uma próxima etapa." },
   { value: "calendario", label: "Calendário", description: "O calendário integrado será conectado em uma próxima etapa." },
   { value: "aprovacoes", label: "Aprovações", description: "O fluxo de aprovações será implementado em uma próxima etapa." },
   { value: "financeiro", label: "Financeiro", description: "O histórico financeiro completo virá em uma próxima etapa." },
@@ -40,6 +42,7 @@ export default function ClientDetailPage({
   const client = useClient(id);
   const clientProjects = useProjects({ clientId: id });
   const clientTasks = useTasks({ clientId: id });
+  const clientContents = useContents({ clientId: id });
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -51,6 +54,10 @@ export default function ClientDetailPage({
   const [taskDrawerOpen, setTaskDrawerOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+
+  const [contentDrawerOpen, setContentDrawerOpen] = useState(false);
+  const [editingContent, setEditingContent] = useState<Content | null>(null);
+  const [deletingContent, setDeletingContent] = useState<Content | null>(null);
 
   if (!client) {
     return (
@@ -83,6 +90,7 @@ export default function ClientDetailPage({
           <TabsTrigger value="visao-geral">Visão geral</TabsTrigger>
           <TabsTrigger value="projetos">Projetos</TabsTrigger>
           <TabsTrigger value="tarefas">Tarefas</TabsTrigger>
+          <TabsTrigger value="conteudos">Conteúdos</TabsTrigger>
           {PLACEHOLDER_TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
@@ -169,6 +177,38 @@ export default function ClientDetailPage({
           </Card>
         </TabsContent>
 
+        <TabsContent value="conteudos" className="pt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Conteúdos</CardTitle>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setEditingContent(null);
+                  setContentDrawerOpen(true);
+                }}
+              >
+                <Plus className="size-4" />
+                Novo conteúdo
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <ContentTable
+                contents={clientContents}
+                hideClientColumn
+                onEdit={(content) => {
+                  setEditingContent(content);
+                  setContentDrawerOpen(true);
+                }}
+                onDelete={(content) => setDeletingContent(content)}
+                emptyTitle="Você ainda não possui conteúdos neste cliente."
+                emptyDescription="Crie o primeiro conteúdo para começar a planejar a produção."
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {PLACEHOLDER_TABS.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="pt-4">
             <EmptyState title="Em construção" description={tab.description} />
@@ -190,6 +230,26 @@ export default function ClientDetailPage({
         onOpenChange={setTaskDrawerOpen}
         task={editingTask}
         defaultClientId={client.id}
+      />
+
+      <ContentFormDrawer
+        open={contentDrawerOpen}
+        onOpenChange={setContentDrawerOpen}
+        content={editingContent}
+        defaultClientId={client.id}
+      />
+
+      <ConfirmDialog
+        open={Boolean(deletingContent)}
+        onOpenChange={(open) => !open && setDeletingContent(null)}
+        title="Excluir conteúdo"
+        description={`Tem certeza que deseja excluir "${deletingContent?.title}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        onConfirm={() => {
+          if (!deletingContent) return;
+          removeContent(deletingContent.id);
+          toast.success("Conteúdo excluído.");
+        }}
       />
 
       <ConfirmDialog

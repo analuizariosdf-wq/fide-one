@@ -1,5 +1,7 @@
 import type {
+  CalendarEventType,
   ClientStatus,
+  ContentEditorialStatus,
   ContentStatus,
   ProjectStatus,
   TaskPriority,
@@ -90,4 +92,49 @@ export const taskUrgencyConfig: Record<
   normal: { label: "Normal", dotClass: "bg-status-info-dot" },
   alta: { label: "Alta", dotClass: "bg-status-warning-dot" },
   urgente: { label: "Urgente", dotClass: "bg-status-danger-dot" },
+};
+
+/** 8-stage editorial flow for the Conteúdos module (`Content` type). */
+export const contentEditorialConfig: Record<
+  ContentEditorialStatus,
+  { label: string; variant: "info" | "success" | "warning" | "neutral" | "danger" }
+> = {
+  ideia: { label: "Ideia", variant: "neutral" },
+  briefing: { label: "Briefing", variant: "neutral" },
+  copy: { label: "Copy", variant: "neutral" },
+  design: { label: "Design", variant: "info" },
+  revisao: { label: "Revisão", variant: "warning" },
+  aprovacao: { label: "Aprovação", variant: "warning" },
+  agendado: { label: "Agendado", variant: "info" },
+  publicado: { label: "Publicado", variant: "success" },
+};
+
+export const contentEditorialOrder: ContentEditorialStatus[] = [
+  "ideia",
+  "briefing",
+  "copy",
+  "design",
+  "revisao",
+  "aprovacao",
+  "agendado",
+  "publicado",
+];
+
+export const calendarEventTypeConfig: Record<
+  CalendarEventType,
+  { label: string; dotClass: string }
+> = {
+  reuniao: { label: "Reunião", dotClass: "bg-status-info-dot" },
+  evento: { label: "Evento", dotClass: "bg-status-neutral-dot" },
+  deadline: { label: "Deadline", dotClass: "bg-status-danger-dot" },
+};
+
+/** Extends `calendarEventTypeConfig` with the two entity-backed kinds. */
+export const calendarItemKindConfig: Record<
+  "publicacao" | "tarefa" | CalendarEventType,
+  { label: string; dotClass: string }
+> = {
+  publicacao: { label: "Publicação", dotClass: "bg-primary" },
+  tarefa: { label: "Tarefa", dotClass: "bg-status-warning-dot" },
+  ...calendarEventTypeConfig,
 };

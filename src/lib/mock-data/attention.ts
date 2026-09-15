@@ -11,7 +11,7 @@ export const attentionItems: AttentionItem[] = [
     id: "at2",
     label: "3 conteúdos aguardando aprovação",
     severity: "warning",
-    href: "/conteudos",
+    href: "/contents",
   },
   {
     id: "at3",

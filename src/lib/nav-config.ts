@@ -45,8 +45,8 @@ export const navGroups: NavGroup[] = [
       { label: "Clientes", href: "/clients", icon: Users },
       { label: "Projetos", href: "/projects", icon: FolderKanban },
       { label: "Tarefas", href: "/tasks", icon: ListChecks },
-      { label: "Conteúdos", href: "/conteudos", icon: Images },
-      { label: "Calendário", href: "/calendario", icon: Calendar },
+      { label: "Conteúdos", href: "/contents", icon: Images },
+      { label: "Calendário", href: "/calendar", icon: Calendar },
     ],
   },
   {

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Menu, PanelLeft, Search } from "lucide-react";
+import { Bell, ChevronRight, Menu, PanelLeft, Search } from "lucide-react";
 
-import { getPageTitle } from "@/lib/nav-config";
+import { getBreadcrumb } from "@/lib/breadcrumb";
 import { getTeamMember } from "@/lib/mock-data/team";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,7 @@ interface HeaderProps {
 
 export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
   const pathname = usePathname();
-  const title = getPageTitle(pathname);
+  const breadcrumb = getBreadcrumb(pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const user = getTeamMember("daniel");
 
@@ -61,8 +62,24 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
         </SheetContent>
       </Sheet>
 
-      <h1 className="hidden shrink-0 text-[15px] font-semibold text-foreground sm:block">
-        {title}
+      <h1 className="hidden min-w-0 shrink items-center gap-1.5 text-[15px] font-semibold text-foreground sm:flex">
+        {breadcrumb.map((segment, index) => (
+          <span key={index} className="flex min-w-0 items-center gap-1.5">
+            {index > 0 && (
+              <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+            )}
+            {segment.href ? (
+              <Link
+                href={segment.href}
+                className="shrink-0 font-medium text-muted-foreground hover:text-foreground"
+              >
+                {segment.label}
+              </Link>
+            ) : (
+              <span className="truncate">{segment.label}</span>
+            )}
+          </span>
+        ))}
       </h1>
 
       <div className="mx-auto w-full max-w-md flex-1">

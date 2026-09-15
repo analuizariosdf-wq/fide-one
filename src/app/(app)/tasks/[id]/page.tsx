@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileWarning, Paperclip, Pencil, Trash2 } from "lucide-react";
@@ -8,7 +9,7 @@ import { FileWarning, Paperclip, Pencil, Trash2 } from "lucide-react";
 import { getClient } from "@/lib/mock-data/clients";
 import { getProject } from "@/lib/mock-data/projects";
 import { getTeamMember } from "@/lib/mock-data/users";
-import { contents } from "@/lib/mock-data/contents";
+import { getContent } from "@/lib/mock-data/contents";
 import { getTaskDueLabel, isOverdue } from "@/lib/format";
 import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
 import { useTask, updateTask, removeTask } from "@/lib/services/tasks-service";
@@ -49,7 +50,7 @@ export default function TaskDetailPage({
   const client = getClient(task.clientId);
   const project = getProject(task.projectId);
   const assignee = getTeamMember(task.assigneeId);
-  const relatedContent = contents.find((content) => content.id === task.relatedContentId);
+  const relatedContent = task.relatedContentId ? getContent(task.relatedContentId) : undefined;
   const status = taskWorkflowConfig[task.status];
   const priority = taskUrgencyConfig[task.priority];
   const overdue = task.status !== "concluido" && isOverdue(task.dueDate);
@@ -132,14 +133,17 @@ export default function TaskDetailPage({
             </CardHeader>
             <CardContent>
               {relatedContent ? (
-                <div className="flex items-center justify-between rounded-md border border-border px-3 py-2.5">
+                <Link
+                  href={`/contents/${relatedContent.id}`}
+                  className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2.5 transition-colors hover:bg-muted"
+                >
                   <span className="text-[13px] font-medium text-foreground">
                     {relatedContent.title}
                   </span>
                   <span className="text-[12px] text-muted-foreground">
-                    {relatedContent.format}
+                    {relatedContent.contentType} · {relatedContent.channel}
                   </span>
-                </div>
+                </Link>
               ) : (
                 <p className="text-muted-foreground">Nenhum conteúdo relacionado.</p>
               )}
