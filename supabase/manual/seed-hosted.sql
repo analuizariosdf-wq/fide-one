@@ -3,21 +3,30 @@
 -- (FASE F do runbook em /docs/supabase-deployment.md)
 --
 -- Diferente de supabase/seed.sql (usado só no Postgres local de teste),
--- este arquivo NÃO toca em auth.users. Ele espera que a organização
--- "Fide Comunicação" (Fase C) e os 5 usuários de desenvolvimento
--- (Fase D, criados pelo Dashboard) já existam, e resolve o id de cada
--- um por e-mail — nunca por um UUID fixo, porque o Supabase Auth quem
--- gera o UUID de cada usuário quando ele é criado pelo Dashboard.
+-- este arquivo NÃO toca em auth.users. Ele resolve o id de cada usuário
+-- por e-mail — nunca por um UUID fixo, porque é o Supabase Auth quem
+-- gera o UUID de cada usuário quando ele é criado.
 --
 -- Mesmos clientes/projetos/tarefas/conteúdos/eventos do mock do
 -- frontend e do seed local, só que os relacionamentos com usuários são
 -- resolvidos dinamicamente. Nenhuma senha aparece neste arquivo.
 --
--- Pré-requisitos (falha com mensagem clara se faltar algum):
---   1) organizations tem uma linha com slug = 'fide'
---   2) profiles tem uma linha para cada um destes e-mails:
---      daniel@fide.com.br, fernanda@fide.com.br, mariana@fide.com.br,
---      bruno@fide.com.br, camila@fide.com.br
+-- Pré-requisito obrigatório: organizations tem uma linha com slug='fide'
+-- (falha com mensagem clara se não tiver).
+--
+-- Os 5 profiles de desenvolvimento (daniel/fernanda/mariana/bruno/camila
+-- @fide.com.br) são OPCIONAIS — cada um só passa a existir depois que a
+-- pessoa aceita o convite por e-mail enviado por
+-- scripts/deploy/create-users.mjs, e esse envio pode esbarrar no limite
+-- de e-mail do Supabase (não é um erro do deploy, é um limite externo —
+-- ver aquele script). Para os dados de exemplo não dependerem de quantos
+-- convites já foram aceitos, este seed usa NULL em
+-- responsible_id/assignee_id/creator_id/created_by para qualquer pessoa
+-- cujo profile ainda não exista (essas colunas já eram nullable no
+-- schema) e só avisa (RAISE NOTICE) quem está faltando. O cliente/
+-- projeto/tarefa aparece normalmente na interface, só com "responsável"
+-- em branco até alguém atribuir manualmente — não é necessário rodar
+-- este seed de novo depois que mais convites forem aceitos.
 --
 -- Seguro rodar mais de uma vez? Não — os INSERTs abaixo não têm
 -- "on conflict", de propósito, para que uma segunda execução acidental
@@ -47,9 +56,19 @@ begin
   select id into v_bruno    from public.profiles where email = 'bruno@fide.com.br';
   select id into v_camila   from public.profiles where email = 'camila@fide.com.br';
 
+  -- Opcional, de propósito (ver comentário no topo do arquivo): quem
+  -- ainda não aceitou o convite fica como NULL nos campos de
+  -- responsável/criador dos registros de exemplo, só isso.
   if v_daniel is null or v_fernanda is null or v_mariana is null
      or v_bruno is null or v_camila is null then
-    raise exception 'Um ou mais profiles de desenvolvimento não foram encontrados. Rode as Fases D e E antes (confira com verification.sql).';
+    raise notice 'Profile(s) de desenvolvimento ainda não encontrados (convite pendente ou não aceito ainda): %',
+      trim(both ', ' from
+        (case when v_daniel is null then 'daniel@fide.com.br, ' else '' end) ||
+        (case when v_fernanda is null then 'fernanda@fide.com.br, ' else '' end) ||
+        (case when v_mariana is null then 'mariana@fide.com.br, ' else '' end) ||
+        (case when v_bruno is null then 'bruno@fide.com.br, ' else '' end) ||
+        (case when v_camila is null then 'camila@fide.com.br, ' else '' end)
+      );
   end if;
 
   -- ---------- Clientes ----------

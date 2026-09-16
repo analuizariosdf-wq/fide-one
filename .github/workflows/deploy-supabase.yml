@@ -40,6 +40,13 @@ jobs:
       - name: Instalar Supabase CLI
         run: npm install -g supabase
 
+      # ============================================================
+      # INFRAESTRUTURA — migrations, RLS, Storage, organização,
+      # verificação. Isto é o que faz o FIDE ONE funcionar; nada aqui
+      # deve depender de e-mail, envio de convite ou qualquer serviço
+      # externo além do próprio Postgres do Supabase.
+      # ============================================================
+
       - name: Montar a string de conexão (senha isolada, sem risco de erro de codificação)
         id: dbconn
         env:
@@ -77,6 +84,16 @@ jobs:
           psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
             "insert into public.organizations (name, slug) values ('Fide Comunicação', 'fide') on conflict (slug) do nothing;"
 
+      # ============================================================
+      # DADOS DE DESENVOLVIMENTO — usuários fictícios + clientes/
+      # projetos/tarefas/conteúdos/eventos de exemplo. Nada aqui é
+      # infraestrutura: se algum item desta seção não completar (ex.:
+      # limite de e-mail do Supabase), a infraestrutura acima já está
+      # aplicada e válida de qualquer forma. scripts/deploy/create-users.mjs
+      # nunca falha o workflow por causa de um limite de e-mail — só por
+      # um erro genuinamente inesperado.
+      # ============================================================
+
       - name: Convidar os 5 usuários de desenvolvimento por e-mail
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -88,6 +105,12 @@ jobs:
         env:
           SUPABASE_DB_URL: ${{ steps.dbconn.outputs.url }}
         run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/manual/seed-hosted.sql
+
+      # ============================================================
+      # De volta para INFRAESTRUTURA: estes dois conferem o estado do
+      # banco (RLS, tabelas, policies, buckets) — não dependem de
+      # nenhum usuário/dado de desenvolvimento ter sido criado.
+      # ============================================================
 
       - name: Rodar os testes de isolamento entre organizações (RLS)
         if: ${{ inputs.run_rls_tests }}
@@ -126,15 +149,18 @@ jobs:
           {
             echo "## Resumo em português (leia isto primeiro)"
             echo ""
+            echo "**Infraestrutura** (o que faz o FIDE ONE funcionar):"
             if [ "$TABLES" = "19" ]; then echo "- ✅ As 19 tabelas do FIDE ONE foram criadas."; else echo "- ❌ Esperava 19 tabelas, encontrei $TABLES."; fi
             if [ "$RLS_ON" = "19" ]; then echo "- ✅ A proteção de dados por organização está ativa em todas as tabelas."; else echo "- ❌ Proteção ativa em $RLS_ON de 19 tabelas."; fi
             if [ "$BUCKETS" = "4" ]; then echo "- ✅ Os 4 espaços de armazenamento de arquivos existem."; else echo "- ❌ Esperava 4 áreas de Storage, encontrei $BUCKETS."; fi
             if [ "$ORG" = "1" ]; then echo "- ✅ A organização \"Fide Comunicação\" existe."; else echo "- ❌ A organização não foi encontrada."; fi
+            echo ""
+            echo "**Dados de desenvolvimento** (opcional — não afeta a infraestrutura acima):"
             if [ "${PROFILES:-0}" -ge "1" ] 2>/dev/null; then
-              echo "- ✅ $PROFILES usuário(s) já com perfil ativo (aceitaram o convite por e-mail)."
+              echo "- ✅ $PROFILES de 5 usuário(s) de exemplo já com perfil ativo (aceitaram o convite por e-mail). Veja a seção \"Convites de usuários de desenvolvimento\" acima para o detalhe de cada um."
             else
-              echo "- ⚠️ Nenhum usuário aceitou o convite ainda. Normal se os e-mails ainda não foram abertos — confira a caixa de entrada (e o spam) de cada pessoa."
+              echo "- ⚠️ Nenhum usuário de exemplo aceitou o convite ainda (ou o Supabase ainda não conseguiu enviar — veja a seção \"Convites de usuários de desenvolvimento\" acima). Isso não afeta a infraestrutura: pode rodar o resto normalmente e convidar essas pessoas depois."
             fi
             echo ""
-            echo "Se algum item acima estiver com ❌, copie esta página inteira e me envie — eu identifico e corrijo."
+            echo "Se algum item de **Infraestrutura** estiver com ❌, copie esta página inteira e me envie — eu identifico e corrijo. Itens de **Dados de desenvolvimento** com ⚠️ não precisam de ação imediata."
           } >> "$GITHUB_STEP_SUMMARY"

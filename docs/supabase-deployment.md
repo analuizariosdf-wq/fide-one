@@ -91,16 +91,33 @@ as seções técnicas logo abaixo dele) e me envie — eu leio e corrijo.
 **Sobre os 5 usuários:** cada pessoa (Daniel, Fernanda, Mariana, Bruno,
 Camila) recebe um e-mail de convite do Supabase para o respectivo endereço
 `@fide.com.br` — ela mesma define a própria senha ao clicar no link. Nenhuma
-senha passa por mim, pelo GitHub ou por este chat em nenhum momento. Se o
-e-mail não chegar, veja a caixa de spam; se mesmo assim não chegar, me avise
-(pode ser necessário configurar o envio de e-mail do projeto no Supabase —
-resolvo isso quando você confirmar).
+senha passa por mim, pelo GitHub ou por este chat em nenhum momento.
+
+Esses 5 são **dados de desenvolvimento** (usuários fictícios de teste), não
+fazem parte da infraestrutura — o Supabase limita quantos e-mails um projeto
+novo pode mandar por hora sem um provedor de e-mail próprio configurado, então
+é normal que só alguns convites saiam de primeira e o resto apareça como
+"limite de e-mail atingido" no resumo do workflow. Isso nunca impede
+migrations, RLS, Storage ou o restante do deploy de completarem — e rodar o
+workflow de novo mais tarde só tenta convidar quem ainda falta, sem duplicar
+nem reenviar para quem já foi convidado. Se o e-mail de alguém não chegar
+mesmo sem aparecer como limite atingido, veja a caixa de spam.
+
+**Usuários reais** (a equipe de verdade da Fide, não esses 5 fictícios) serão
+adicionados futuramente por dentro do próprio FIDE ONE, pela tela **Equipe**
+(hoje um placeholder) — um administrador vai poder convidar um colega ali
+diretamente, sem depender do deploy nem de rodar nada no GitHub. Essa tela
+ainda não foi construída (é trabalho de uma etapa futura); por enquanto, um
+administrador pode convidar alguém manualmente pelo Dashboard do Supabase
+(Authentication → Users → Add user) caso precise antes disso.
 
 **Rodar de novo é seguro:** a automação não duplica nada — migrations já
 aplicadas são ignoradas, a organização e os usuários já existentes são
 pulados. Só desmarque "seed de dados" na segunda vez (senão ela tenta criar
 os clientes de exemplo de novo e dá erro de duplicidade, de propósito, pra
-nunca duplicar dado silenciosamente).
+nunca duplicar dado silenciosamente). O seed também não exige mais que os 5
+usuários já existam — quem ainda não aceitou o convite só fica sem
+"responsável" atribuído nos dados de exemplo, o resto funciona normalmente.
 
 ---
 
