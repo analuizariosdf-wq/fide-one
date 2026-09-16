@@ -23,7 +23,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 22+ é obrigatório: @supabase/realtime-js (dependência de
+          # @supabase/supabase-js, usado em scripts/deploy/create-users.mjs)
+          # espera o global WebSocket nativo do runtime — só existe a
+          # partir do Node 22 — e lança erro na hora de criar o client
+          # (createClient()) em qualquer versão anterior, mesmo sem usar
+          # nenhum recurso de Realtime.
+          node-version: 22
 
       - name: Instalar dependências do projeto
         run: npm ci

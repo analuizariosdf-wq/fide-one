@@ -29,7 +29,15 @@ const PERSONAS = [
   { email: "camila@fide.com.br", name: "Camila", role_slug: "design" },
 ];
 
+// "email_exists" / "user_already_exists" são os códigos estáveis que o
+// GoTrue devolve nesse caso (node_modules/@supabase/auth-js/src/lib/error-codes.ts)
+// — checar error.code é mais confiável do que procurar texto na mensagem,
+// que pode mudar de redação. Mantemos a checagem por mensagem/status como
+// reforço, caso uma versão futura da API devolva só isso.
 function isAlreadyRegistered(error) {
+  if (error?.code === "email_exists" || error?.code === "user_already_exists") {
+    return true;
+  }
   const message = (error?.message ?? "").toLowerCase();
   return (
     error?.status === 422 ||
