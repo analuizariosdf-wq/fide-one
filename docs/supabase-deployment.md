@@ -24,8 +24,14 @@ No site do Supabase (**supabase.com**, projeto do FIDE ONE), abra
 | Vá em... | Copie... | Nome exato do segredo no GitHub |
 |---|---|---|
 | Settings → Database → Connection string → aba **URI** | A string inteira, substituindo `[YOUR-PASSWORD]` pela senha do banco do projeto | `SUPABASE_DB_URL` |
-| Settings → API → **Project URL** | A URL (tipo `https://xxxxxxxx.supabase.co`) | `SUPABASE_URL` |
-| Settings → API → **service_role** (clique em "Reveal" para mostrar) | A chave inteira | `SUPABASE_SERVICE_ROLE_KEY` |
+| Settings → API → **Project URL** (ou **Connect → Server → `SUPABASE_URL`**, em painéis mais novos) | A URL (tipo `https://xxxxxxxx.supabase.co`) | `SUPABASE_URL` |
+| Settings → API → **service_role** com "Reveal" (ou **Connect → Server → `SUPABASE_SECRET_KEY`**, em painéis mais novos — começa com `sb_secret_`) | A chave inteira | `SUPABASE_SERVICE_ROLE_KEY` |
+
+> Se o seu painel mostra "Connect → Server" com `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` /
+> `SUPABASE_SECRET_KEY` / `SUPABASE_JWKS_URL` em vez da tela antiga: use `SUPABASE_URL` e
+> `SUPABASE_SECRET_KEY` de lá — são exatamente os mesmos dois valores, só com nome novo.
+> `SUPABASE_PUBLISHABLE_KEY` e `SUPABASE_JWKS_URL` não são usados por esta automação (a
+> publishable key só entra depois, no `.env.local` da aplicação, no Passo 3).
 
 Agora, no GitHub (**github.com**, no repositório do FIDE ONE):
 
