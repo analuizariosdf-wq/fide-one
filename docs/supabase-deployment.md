@@ -5,7 +5,14 @@ sozinha tudo que antes precisava ser feito manualmente no SQL Editor do
 Supabase: aplicar as 13 migrations, criar a organização, convidar os 5
 usuários de desenvolvimento por e-mail, popular os dados de exemplo, testar
 o isolamento entre organizações e conferir a estrutura final. Você só
-precisa colocar 3 informações no GitHub e clicar em um botão — nada de SQL.
+precisa colocar 4 informações no GitHub e clicar em um botão — nada de SQL.
+
+> **Atualização:** a primeira tentativa de rodar isso falhou porque a senha
+> do banco tinha um caractere especial (ex.: `@`) e, colada dentro de uma
+> única "connection string", confundiu a leitura do endereço do banco. A
+> automação agora pede a senha **separada** do resto do endereço — ela nunca
+> mais precisa ser colada dentro de um texto maior, então isso não pode mais
+> acontecer, mesmo com senha cheia de símbolos.
 
 > Por que pelo GitHub e não direto por aqui? Este ambiente de desenvolvimento
 > não tem saída de rede para `*.supabase.co` (nem via HTTPS nem via conexão
@@ -16,20 +23,37 @@ precisa colocar 3 informações no GitHub e clicar em um botão — nada de SQL.
 
 ---
 
-## PASSO 1 — Colocar 3 informações no GitHub (5 minutos, só copiar e colar)
+## PASSO 1 — Colocar 4 informações no GitHub (5 minutos, só copiar e colar)
 
-No site do Supabase (**supabase.com**, projeto do FIDE ONE), abra
-**Project Settings**:
+No site do Supabase (**supabase.com**, projeto do FIDE ONE):
 
 | Vá em... | Copie... | Nome exato do segredo no GitHub |
 |---|---|---|
-| Settings → Database → Connection string → aba **URI** | A string inteira, substituindo `[YOUR-PASSWORD]` pela senha do banco do projeto | `SUPABASE_DB_URL` |
 | Settings → API → **Project URL** (ou **Connect → Server → `SUPABASE_URL`**, em painéis mais novos) | A URL (tipo `https://xxxxxxxx.supabase.co`) | `SUPABASE_URL` |
 | Settings → API → **service_role** com "Reveal" (ou **Connect → Server → `SUPABASE_SECRET_KEY`**, em painéis mais novos — começa com `sb_secret_`) | A chave inteira | `SUPABASE_SERVICE_ROLE_KEY` |
+| Settings → Database → **Connection pooling** (ou a aba **Session pooler** da Connection string) | **Só o endereço (host)**, veja como identificar abaixo | `SUPABASE_DB_HOST` |
+| A senha do banco de dados do projeto (a que você definiu na criação, ou em "Reset database password" na mesma tela de Database) | A senha, exatamente como está, sem trocar nem cortar nada | `SUPABASE_DB_PASSWORD` |
+
+**Como identificar só o "host" do Session Pooler:** se a tela mostrar campos
+separados (Host, Port, Database, User), copie o que estiver ao lado de
+**Host** — pronto. Se só aparecer uma string única de conexão para o "Session
+pooler" (algo como `postgresql://postgres.abcdefgh:[YOUR-PASSWORD]@aws-0-xx-xxxx-1.pooler.supabase.com:5432/postgres`),
+copie **só o pedaço entre `@` e `:5432`** — no exemplo, seria
+`aws-0-xx-xxxx-1.pooler.supabase.com`. Não se preocupe com o resto da
+string (usuário, senha, porta) — a automação já sabe montar isso sozinha a
+partir dos outros 3 valores.
+
+> **Por que "Session pooler" e não "Direct connection"?** O próprio painel do
+> Supabase avisa que a Direct connection usa IPv6 por padrão — e os
+> computadores que rodam a automação no GitHub não têm acesso a IPv6, só a
+> IPv4. O Session Pooler funciona nos dois, então é a opção que realmente
+> conecta a partir do GitHub Actions. (Confirmei isso testando a resolução de
+> endereço de um host de pooler de exemplo antes de mudar — ele responde em
+> IPv4 normalmente.)
 
 > Se o seu painel mostra "Connect → Server" com `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` /
 > `SUPABASE_SECRET_KEY` / `SUPABASE_JWKS_URL` em vez da tela antiga: use `SUPABASE_URL` e
-> `SUPABASE_SECRET_KEY` de lá — são exatamente os mesmos dois valores, só com nome novo.
+> `SUPABASE_SECRET_KEY` de lá — são exatamente os mesmos valores, só com nome novo.
 > `SUPABASE_PUBLISHABLE_KEY` e `SUPABASE_JWKS_URL` não são usados por esta automação (a
 > publishable key só entra depois, no `.env.local` da aplicação, no Passo 3).
 
@@ -37,12 +61,15 @@ Agora, no GitHub (**github.com**, no repositório do FIDE ONE):
 
 1. Vá em **Settings** (do repositório, não da sua conta) → **Secrets and variables** → **Actions**.
 2. Clique em **New repository secret**.
-3. Em "Name", cole exatamente `SUPABASE_DB_URL`. Em "Secret", cole o valor copiado. Clique **Add secret**.
-4. Repita para `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`.
+3. Em "Name", cole exatamente `SUPABASE_URL`. Em "Secret", cole o valor copiado. Clique **Add secret**.
+4. Repita para `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_HOST` e `SUPABASE_DB_PASSWORD`.
+5. Se você já tinha criado um Secret chamado `SUPABASE_DB_URL` numa tentativa anterior, pode apagá-lo (não é mais usado) — clique nele na lista e depois em "Remove".
 
-Pronto — essas 3 informações ficam guardadas só pelo GitHub, criptografadas;
+Pronto — essas informações ficam guardadas só pelo GitHub, criptografadas;
 nem eu nem mais ninguém consegue vê-las depois de salvas, só usá-las dentro
-da automação.
+da automação. Como a senha agora fica isolada num campo próprio (nunca
+colada dentro de um texto maior), não existe mais risco de ela ter algum
+símbolo que "quebre" a leitura do endereço.
 
 ---
 
@@ -105,7 +132,7 @@ algo não funcionou.
 ## Checklist final
 
 ```
-[ ] 3 segredos configurados no GitHub (Passo 1)
+[ ] 4 segredos configurados no GitHub (Passo 1)
 [ ] Workflow "Deploy infraestrutura Supabase" rodou com ✔️ verde (Passo 2)
 [ ] Resumo em português sem nenhum ❌
 [ ] Convites de e-mail recebidos e senha definida por cada um dos 5 usuários

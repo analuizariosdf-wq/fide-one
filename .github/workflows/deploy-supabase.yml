@@ -34,14 +34,39 @@ jobs:
       - name: Instalar Supabase CLI
         run: npm install -g supabase
 
+      - name: Montar a string de conexão (senha isolada, sem risco de erro de codificação)
+        id: dbconn
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_DB_HOST: ${{ secrets.SUPABASE_DB_HOST }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          # A senha nunca é colada dentro de uma URL por um humano — isso é
+          # exatamente o que causou o erro anterior (um caractere especial
+          # da senha, como "@", quebrando a leitura do endereço). Aqui o
+          # próprio workflow codifica a senha corretamente antes de montar
+          # a string de conexão, então qualquer caractere na senha é seguro.
+          if [ -z "$SUPABASE_DB_HOST" ] || [ -z "$SUPABASE_DB_PASSWORD" ]; then
+            echo "::error::Faltam os Secrets SUPABASE_DB_HOST e/ou SUPABASE_DB_PASSWORD. Veja docs/supabase-deployment.md." >&2
+            exit 1
+          fi
+
+          PROJECT_REF=$(echo "$SUPABASE_URL" | sed -E 's#^https?://##; s#\.supabase\.co/?$##')
+          ENCODED_PASSWORD=$(python3 -c "import urllib.parse, os; print(urllib.parse.quote(os.environ['SUPABASE_DB_PASSWORD'], safe=''))")
+          DB_URL="postgresql://postgres.${PROJECT_REF}:${ENCODED_PASSWORD}@${SUPABASE_DB_HOST}:5432/postgres"
+
+          echo "::add-mask::$ENCODED_PASSWORD"
+          echo "::add-mask::$DB_URL"
+          echo "url=$DB_URL" >> "$GITHUB_OUTPUT"
+
       - name: Aplicar as 13 migrations no banco hospedado
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_URL: ${{ steps.dbconn.outputs.url }}
         run: supabase db push --db-url "$SUPABASE_DB_URL" --include-all --yes --workdir .
 
       - name: Criar a organização "Fide Comunicação" (se ainda não existir)
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_URL: ${{ steps.dbconn.outputs.url }}
         run: |
           psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
             "insert into public.organizations (name, slug) values ('Fide Comunicação', 'fide') on conflict (slug) do nothing;"
@@ -55,13 +80,13 @@ jobs:
       - name: Rodar o seed de dados de desenvolvimento
         if: ${{ inputs.run_seed }}
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_URL: ${{ steps.dbconn.outputs.url }}
         run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/manual/seed-hosted.sql
 
       - name: Rodar os testes de isolamento entre organizações (RLS)
         if: ${{ inputs.run_rls_tests }}
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_URL: ${{ steps.dbconn.outputs.url }}
         run: |
           {
             echo "## Testes de RLS (isolamento entre organizações)"
@@ -72,7 +97,7 @@ jobs:
 
       - name: Conferir estrutura final (tabelas, RLS, policies, Storage)
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_URL: ${{ steps.dbconn.outputs.url }}
         run: |
           {
             echo "## Verificação final da estrutura"
@@ -84,7 +109,7 @@ jobs:
       - name: Resumo em linguagem simples (role até aqui primeiro)
         if: always()
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_URL: ${{ steps.dbconn.outputs.url }}
         run: |
           TABLES=$(psql "$SUPABASE_DB_URL" -t -A -c "select count(*) from information_schema.tables where table_schema='public';")
           RLS_ON=$(psql "$SUPABASE_DB_URL" -t -A -c "select count(*) from pg_tables where schemaname='public' and rowsecurity=true;")
