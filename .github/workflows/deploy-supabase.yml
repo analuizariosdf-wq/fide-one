@@ -1,0 +1,109 @@
+name: Deploy infraestrutura Supabase
+
+# Dispara só quando alguém clica em "Run workflow" na aba Actions do
+# GitHub — nunca automaticamente em cada push, porque isso mexe direto
+# no banco de dados de produção do FIDE ONE.
+on:
+  workflow_dispatch:
+    inputs:
+      run_seed:
+        description: "Também rodar o seed de dados de exemplo (clientes, projetos, tarefas, conteúdos, eventos)?"
+        type: boolean
+        default: true
+      run_rls_tests:
+        description: "Rodar os testes de isolamento entre organizações depois de aplicar tudo?"
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências do projeto
+        run: npm ci
+
+      - name: Instalar cliente do Postgres (psql)
+        run: sudo apt-get update -y && sudo apt-get install -y --no-install-recommends postgresql-client
+
+      - name: Instalar Supabase CLI
+        run: npm install -g supabase
+
+      - name: Aplicar as 13 migrations no banco hospedado
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: supabase db push --db-url "$SUPABASE_DB_URL" --include-all --yes --workdir .
+
+      - name: Criar a organização "Fide Comunicação" (se ainda não existir)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
+            "insert into public.organizations (name, slug) values ('Fide Comunicação', 'fide') on conflict (slug) do nothing;"
+
+      - name: Convidar os 5 usuários de desenvolvimento por e-mail
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/deploy/create-users.mjs
+
+      - name: Rodar o seed de dados de desenvolvimento
+        if: ${{ inputs.run_seed }}
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/manual/seed-hosted.sql
+
+      - name: Rodar os testes de isolamento entre organizações (RLS)
+        if: ${{ inputs.run_rls_tests }}
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          {
+            echo "## Testes de RLS (isolamento entre organizações)"
+            echo '```'
+            psql "$SUPABASE_DB_URL" -f supabase/manual/rls-tests.sql 2>&1
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Conferir estrutura final (tabelas, RLS, policies, Storage)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          {
+            echo "## Verificação final da estrutura"
+            echo '```'
+            psql "$SUPABASE_DB_URL" -f supabase/manual/verification.sql 2>&1
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Resumo em linguagem simples (role até aqui primeiro)
+        if: always()
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          TABLES=$(psql "$SUPABASE_DB_URL" -t -A -c "select count(*) from information_schema.tables where table_schema='public';")
+          RLS_ON=$(psql "$SUPABASE_DB_URL" -t -A -c "select count(*) from pg_tables where schemaname='public' and rowsecurity=true;")
+          BUCKETS=$(psql "$SUPABASE_DB_URL" -t -A -c "select count(*) from storage.buckets;")
+          ORG=$(psql "$SUPABASE_DB_URL" -t -A -c "select count(*) from public.organizations where slug='fide';")
+          PROFILES=$(psql "$SUPABASE_DB_URL" -t -A -c "select count(*) from public.profiles;")
+
+          {
+            echo "## Resumo em português (leia isto primeiro)"
+            echo ""
+            if [ "$TABLES" = "19" ]; then echo "- ✅ As 19 tabelas do FIDE ONE foram criadas."; else echo "- ❌ Esperava 19 tabelas, encontrei $TABLES."; fi
+            if [ "$RLS_ON" = "19" ]; then echo "- ✅ A proteção de dados por organização está ativa em todas as tabelas."; else echo "- ❌ Proteção ativa em $RLS_ON de 19 tabelas."; fi
+            if [ "$BUCKETS" = "4" ]; then echo "- ✅ Os 4 espaços de armazenamento de arquivos existem."; else echo "- ❌ Esperava 4 áreas de Storage, encontrei $BUCKETS."; fi
+            if [ "$ORG" = "1" ]; then echo "- ✅ A organização \"Fide Comunicação\" existe."; else echo "- ❌ A organização não foi encontrada."; fi
+            if [ "${PROFILES:-0}" -ge "1" ] 2>/dev/null; then
+              echo "- ✅ $PROFILES usuário(s) já com perfil ativo (aceitaram o convite por e-mail)."
+            else
+              echo "- ⚠️ Nenhum usuário aceitou o convite ainda. Normal se os e-mails ainda não foram abertos — confira a caixa de entrada (e o spam) de cada pessoa."
+            fi
+            echo ""
+            echo "Se algum item acima estiver com ❌, copie esta página inteira e me envie — eu identifico e corrijo."
+          } >> "$GITHUB_STEP_SUMMARY"
