@@ -18,7 +18,16 @@ values
   ('content-media', 'content-media', false)
 on conflict (id) do nothing;
 
-create or replace function storage.organization_folder(object_name text)
+-- Precisa viver em `public`, não em `storage`: num projeto Supabase
+-- hospedado, o schema `storage` pertence ao papel interno
+-- `supabase_storage_admin` — o `postgres` usado para rodar migrations
+-- tem USAGE nesse schema (pode chamar `storage.foldername()`, criar
+-- policies em `storage.objects`), mas não tem CREATE nele, então
+-- `create function storage.x(...)` falha com "permission denied for
+-- schema storage" (confirmado: foi exatamente o erro desta migration
+-- na primeira aplicação contra o projeto real). `storage.foldername()`
+-- em si é uma função pronta do Supabase, só chamada aqui, não criada.
+create or replace function public.organization_folder(object_name text)
 returns uuid
 language sql
 stable
@@ -36,7 +45,7 @@ begin
       'create policy "%1$s_select_own_org" on storage.objects
          for select using (
            bucket_id = %2$L
-           and storage.organization_folder(name) = public.current_organization_id()
+           and public.organization_folder(name) = public.current_organization_id()
          );',
       bucket_id, bucket_id
     );
@@ -45,7 +54,7 @@ begin
       'create policy "%1$s_insert_own_org" on storage.objects
          for insert with check (
            bucket_id = %2$L
-           and storage.organization_folder(name) = public.current_organization_id()
+           and public.organization_folder(name) = public.current_organization_id()
          );',
       bucket_id, bucket_id
     );
@@ -54,7 +63,7 @@ begin
       'create policy "%1$s_update_own_org" on storage.objects
          for update using (
            bucket_id = %2$L
-           and storage.organization_folder(name) = public.current_organization_id()
+           and public.organization_folder(name) = public.current_organization_id()
          );',
       bucket_id, bucket_id
     );
@@ -63,7 +72,7 @@ begin
       'create policy "%1$s_delete_own_org" on storage.objects
          for delete using (
            bucket_id = %2$L
-           and storage.organization_folder(name) = public.current_organization_id()
+           and public.organization_folder(name) = public.current_organization_id()
          );',
       bucket_id, bucket_id
     );
