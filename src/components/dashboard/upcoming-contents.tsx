@@ -1,9 +1,13 @@
-import type { Client, ContentItem, TeamMember } from "@/lib/types";
-import { contentStatusConfig } from "@/lib/status";
+import { Images } from "lucide-react";
+
+import type { Content } from "@/lib/types";
+import type { ClientOption, ProfileOption } from "@/lib/data/contents";
+import { contentEditorialConfig } from "@/lib/status";
+import { formatDateShort } from "@/lib/format";
+import { toInitials } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Images } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -21,16 +25,15 @@ import {
 } from "@/components/ui/table";
 
 interface UpcomingContentsProps {
-  contents: ContentItem[];
-  getClient: (id: string) => Client | undefined;
-  getMember: (id: string) => TeamMember | undefined;
+  contents: Content[];
+  clients: ClientOption[];
+  profiles: ProfileOption[];
 }
 
-export function UpcomingContents({
-  contents,
-  getClient,
-  getMember,
-}: UpcomingContentsProps) {
+export function UpcomingContents({ contents, clients, profiles }: UpcomingContentsProps) {
+  const clientById = new Map(clients.map((c) => [c.id, c]));
+  const profileById = new Map(profiles.map((p) => [p.id, p]));
+
   return (
     <Card>
       <CardHeader>
@@ -55,9 +58,9 @@ export function UpcomingContents({
             </TableHeader>
             <TableBody>
               {contents.map((content) => {
-                const client = getClient(content.clientId);
-                const member = getMember(content.responsibleId);
-                const status = contentStatusConfig[content.status];
+                const client = clientById.get(content.clientId);
+                const member = profileById.get(content.responsibleId);
+                const status = contentEditorialConfig[content.status];
 
                 return (
                   <TableRow key={content.id}>
@@ -68,21 +71,24 @@ export function UpcomingContents({
                       <div className="flex flex-col">
                         <span className="text-foreground">{content.title}</span>
                         <span className="text-[12px] text-muted-foreground">
-                          {content.format}
+                          {content.contentType}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {content.dueLabel}
+                      {formatDateShort(content.publishDate)}
+                      {content.publishTime ? ` · ${content.publishTime}` : ""}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="size-6">
                           <AvatarFallback className="text-[10px]">
-                            {member?.initials}
+                            {member ? toInitials(member.name) : ""}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-muted-foreground">{member?.name}</span>
+                        <span className="text-muted-foreground">
+                          {member?.name ?? "Sem responsável"}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>

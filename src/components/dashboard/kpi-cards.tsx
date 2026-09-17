@@ -1,30 +1,36 @@
 import { Images, ListChecks, Wallet } from "lucide-react";
 
-import { formatCurrencyBRL } from "@/lib/format";
-import type { dashboardStats } from "@/lib/mock-data";
 import { StatCard } from "@/components/ui/stat-card";
 
-export function KpiCards({ stats }: { stats: typeof dashboardStats }) {
+interface KpiCardsProps {
+  tasksValue: number;
+  tasksHelper: string;
+  tasksOverdue: boolean;
+  contentsValue: number;
+  contentsHelper: string;
+}
+
+export function KpiCards({ tasksValue, tasksHelper, tasksOverdue, contentsValue, contentsHelper }: KpiCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <StatCard
         label="Tarefas"
-        value={String(stats.tasks.value)}
-        helperText={stats.tasks.helper}
-        helperTone="danger"
+        value={String(tasksValue)}
+        helperText={tasksHelper}
+        helperTone={tasksOverdue ? "danger" : "neutral"}
         icon={ListChecks}
       />
       <StatCard
         label="Conteúdos"
-        value={String(stats.contents.value)}
-        helperText={stats.contents.helper}
+        value={String(contentsValue)}
+        helperText={contentsHelper}
         helperTone="neutral"
         icon={Images}
       />
       <StatCard
         label="A receber"
-        value={formatCurrencyBRL(stats.receivable.value)}
-        helperText={stats.receivable.helper}
+        value="—"
+        helperText="Financeiro ainda não disponível"
         helperTone="neutral"
         icon={Wallet}
       />

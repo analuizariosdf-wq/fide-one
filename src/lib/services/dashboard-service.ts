@@ -1,51 +1,133 @@
-import {
-  attentionItems,
-  clients,
-  contents,
-  currentUser,
-  dashboardStats,
-  myTasks,
-  recentActivity,
-  team,
-  upcomingPayments,
-} from "@/lib/mock-data";
-import type {
-  ActivityItem,
-  AttentionItem,
-  Client,
-  ContentItem,
-  Payment,
-  TaskItem,
-  TeamMember,
-} from "@/lib/types";
+"use client";
+
+import { useCallback, useMemo } from "react";
+
+import { useCurrentActor } from "@/lib/auth/current-actor-context";
+import { useTasks } from "@/lib/data/tasks";
+import { useContents } from "@/lib/data/contents";
+import { MOCK_TODAY, toISODate } from "@/lib/format";
+import type { AttentionItem, Content, Task } from "@/lib/types";
 
 /**
- * Data layer for the dashboard. Today it reads from static mock data;
- * once Supabase is connected, only the function bodies below change —
- * the UI keeps calling this same interface.
+ * Fase 5.8: the Dashboard used to read from static Etapa-1 mock arrays
+ * (dashboardStats, attentionItems, myTasks, upcomingContents,
+ * recentActivity — see docs/project-status.md's mock inventory). Every
+ * card that represents an already-migrated module (Tarefas, Conteúdos)
+ * now reads the same real data layers those modules use. Financeiro
+ * isn't migrated yet (Fase 6), so its card stays honestly unavailable
+ * instead of showing the old mock currency value. "Atividade recente"
+ * has no real source either — nothing writes activity_logs yet — so it
+ * stays an honest empty state too, not mock activity.
  */
-export interface DashboardData {
-  user: TeamMember;
-  stats: typeof dashboardStats;
-  attention: AttentionItem[];
-  upcomingContents: ContentItem[];
-  myTasks: TaskItem[];
-  recentActivity: ActivityItem[];
-  clients: Client[];
-  team: TeamMember[];
-  payments: Payment[];
-}
+export function useDashboardData() {
+  const { profile } = useCurrentActor();
+  const {
+    tasks,
+    clients: taskClients,
+    loading: tasksLoading,
+    error: tasksError,
+    refetch: refetchTasks,
+  } = useTasks();
+  const {
+    contents,
+    clients: contentClients,
+    profiles: contentProfiles,
+    loading: contentsLoading,
+    error: contentsError,
+    refetch: refetchContents,
+  } = useContents();
 
-export function getDashboardData(): DashboardData {
+  const loading = tasksLoading || contentsLoading;
+  const error = tasksError ?? contentsError;
+
+  const refetch = useCallback(() => {
+    refetchTasks();
+    refetchContents();
+  }, [refetchTasks, refetchContents]);
+
+  const todayISO = toISODate(MOCK_TODAY);
+  const weekEndDate = new Date(MOCK_TODAY);
+  weekEndDate.setDate(weekEndDate.getDate() + 7);
+  const weekEndISO = toISODate(weekEndDate);
+
+  const openTasks = useMemo(
+    () => tasks.filter((task) => task.status !== "concluido" && task.status !== "cancelado"),
+    [tasks],
+  );
+  const overdueTasks = useMemo(
+    () => openTasks.filter((task) => task.dueDate && task.dueDate < todayISO),
+    [openTasks, todayISO],
+  );
+  const myTasks = useMemo<Task[]>(
+    () =>
+      profile
+        ? openTasks
+            .filter((task) => task.assigneeId === profile.id)
+            .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+            .slice(0, 5)
+        : [],
+    [openTasks, profile],
+  );
+
+  const contentsThisWeek = useMemo(
+    () => contents.filter((content) => content.publishDate >= todayISO && content.publishDate <= weekEndISO),
+    [contents, todayISO, weekEndISO],
+  );
+  const awaitingApproval = useMemo(
+    () => contents.filter((content) => content.status === "aprovacao"),
+    [contents],
+  );
+  const upcomingContents = useMemo<Content[]>(
+    () =>
+      contents
+        .filter((content) => content.publishDate >= todayISO)
+        .sort(
+          (a, b) => a.publishDate.localeCompare(b.publishDate) || (a.publishTime ?? "").localeCompare(b.publishTime ?? ""),
+        )
+        .slice(0, 5),
+    [contents, todayISO],
+  );
+
+  const attentionItems = useMemo<AttentionItem[]>(() => {
+    const items: AttentionItem[] = [];
+    if (overdueTasks.length > 0) {
+      items.push({
+        id: "attention-overdue-tasks",
+        label: `${overdueTasks.length} tarefa${overdueTasks.length > 1 ? "s" : ""} atrasada${overdueTasks.length > 1 ? "s" : ""}`,
+        severity: "danger",
+        href: "/tasks",
+      });
+    }
+    if (awaitingApproval.length > 0) {
+      items.push({
+        id: "attention-awaiting-approval",
+        label: `${awaitingApproval.length} conteúdo${awaitingApproval.length > 1 ? "s" : ""} aguardando aprovação`,
+        severity: "warning",
+        href: "/contents",
+      });
+    }
+    // Financeiro (Fase 6) has no real data source yet — deliberately no
+    // attention item is fabricated for it here.
+    return items;
+  }, [overdueTasks, awaitingApproval]);
+
   return {
-    user: currentUser,
-    stats: dashboardStats,
-    attention: attentionItems,
-    upcomingContents: contents,
+    userName: profile?.name ?? "Você",
+    loading,
+    error,
+    refetch,
+    kpis: {
+      tasksValue: openTasks.length,
+      tasksHelper: overdueTasks.length > 0 ? `${overdueTasks.length} atrasada${overdueTasks.length > 1 ? "s" : ""}` : "Nenhuma atrasada",
+      tasksOverdue: overdueTasks.length > 0,
+      contentsValue: contents.length,
+      contentsHelper: `${contentsThisWeek.length} nesta semana`,
+    },
+    attentionItems,
     myTasks,
-    recentActivity,
-    clients,
-    team,
-    payments: upcomingPayments,
+    taskClients,
+    upcomingContents,
+    contentClients,
+    contentProfiles,
   };
 }

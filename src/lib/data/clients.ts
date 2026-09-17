@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { registerSupabaseProfile } from "@/lib/mock-data/team";
+import { registerSupabaseClient } from "@/lib/mock-data/clients";
 import { toInitials } from "@/lib/utils";
 import type { Client } from "@/lib/types";
 import type { Tables } from "@/lib/supabase/database.types";
@@ -127,8 +128,13 @@ async function loadClientsData(): Promise<LoadedData> {
     serviceNamesByClientId.set(link.client_id, list);
   }
 
+  const clients = (clientsRes.data ?? []).map((row) => mapClient(row, serviceNamesByClientId));
+  for (const client of clients) {
+    registerSupabaseClient({ id: client.id, name: client.name });
+  }
+
   return {
-    clients: (clientsRes.data ?? []).map((row) => mapClient(row, serviceNamesByClientId)),
+    clients,
     profiles,
     services: servicesRes.data ?? [],
   };

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { registerSupabaseProfile } from "@/lib/mock-data/team";
+import { registerSupabaseProject } from "@/lib/mock-data/projects";
 import { toInitials } from "@/lib/utils";
 import type { Project, ProjectStatus } from "@/lib/types";
 import type { Tables } from "@/lib/supabase/database.types";
@@ -103,8 +104,13 @@ async function loadProjectsData(): Promise<LoadedData> {
 
   const campaignNameById = new Map((campaignsRes.data ?? []).map((c) => [c.id, c.name]));
 
+  const projects = (projectsRes.data ?? []).map((row) => mapProject(row, campaignNameById));
+  for (const project of projects) {
+    registerSupabaseProject({ id: project.id, name: project.name });
+  }
+
   return {
-    projects: (projectsRes.data ?? []).map((row) => mapProject(row, campaignNameById)),
+    projects,
     clients: clientsRes.data ?? [],
     profiles,
   };

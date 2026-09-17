@@ -1,121 +1,23 @@
 import type { Project } from "@/lib/types";
+import { createNameCache } from "@/lib/name-cache";
 
-export const projects: Project[] = [
-  {
-    id: "proj-inovar-gestao-set",
-    name: "Gestão Digital — Setembro",
-    clientId: "inovar",
-    campaign: "Setembro 2026",
-    description:
-      "Gestão das redes sociais da Inovar RH com foco em geração de leads para o time comercial.",
-    responsibleId: "mariana",
-    startDate: "2026-09-01",
-    endDate: "2026-09-30",
-    status: "em_andamento",
-    progress: 68,
-  },
-  {
-    id: "proj-inovar-26-anos",
-    name: "26 anos Inovar",
-    clientId: "inovar",
-    campaign: "Aniversário",
-    description: "Campanha comemorativa dos 26 anos da Inovar RH no mercado.",
-    responsibleId: "daniel",
-    startDate: "2026-10-01",
-    endDate: "2026-10-31",
-    status: "planejamento",
-    progress: 15,
-  },
-  {
-    id: "proj-pleno-conteudo-set",
-    name: "Conteúdo Setembro",
-    clientId: "pleno",
-    campaign: "Setembro 2026",
-    description: "Produção de conteúdo educativo em saúde para o Pleno Hospital Dia.",
-    responsibleId: "fernanda",
-    startDate: "2026-09-01",
-    endDate: "2026-09-30",
-    status: "em_andamento",
-    progress: 72,
-  },
-  {
-    id: "proj-pleno-reposicionamento",
-    name: "Reposicionamento de marca",
-    clientId: "pleno",
-    campaign: "Branding",
-    description: "Atualização da identidade visual e do tom de voz do Pleno Hospital Dia.",
-    responsibleId: "mariana",
-    startDate: "2026-06-01",
-    endDate: "2026-08-31",
-    status: "concluido",
-    progress: 100,
-  },
-  {
-    id: "proj-conservar-gestao-set",
-    name: "Gestão Setembro",
-    clientId: "conservar",
-    campaign: "Setembro 2026",
-    description: "Manutenção das redes sociais e briefings mensais da Conservar.",
-    responsibleId: "fernanda",
-    startDate: "2026-09-01",
-    endDate: "2026-09-30",
-    status: "em_andamento",
-    progress: 55,
-  },
-  {
-    id: "proj-conservar-verao",
-    name: "Campanha de Verão",
-    clientId: "conservar",
-    campaign: "Verão 2026",
-    description: "Campanha sazonal de verão, descontinuada por reformulação de escopo.",
-    responsibleId: "fernanda",
-    startDate: "2026-01-01",
-    endDate: "2026-02-28",
-    status: "cancelado",
-    progress: 20,
-  },
-  {
-    id: "proj-felipe-consultoria-q4",
-    name: "Consultoria de Marca — Q4",
-    clientId: "felipe-holanda",
-    campaign: "Q4 2026",
-    description: "Planejamento de posicionamento pessoal para o último trimestre do ano.",
-    responsibleId: "daniel",
-    startDate: "2026-10-01",
-    endDate: "2026-12-31",
-    status: "planejamento",
-    progress: 10,
-  },
-  {
-    id: "proj-vero-outubro-rosa",
-    name: "Campanha Outubro Rosa",
-    clientId: "vero",
-    campaign: "Outubro Rosa",
-    description: "Campanha de conscientização sobre prevenção ao câncer de mama.",
-    responsibleId: "camila",
-    startDate: "2026-09-15",
-    endDate: "2026-10-31",
-    status: "em_andamento",
-    progress: 30,
-  },
-  {
-    id: "proj-almeida-rebranding",
-    name: "Rebranding Institucional",
-    clientId: "grupo-almeida",
-    campaign: "Branding",
-    description: "Projeto pausado enquanto o Grupo Almeida revisa o orçamento anual.",
-    responsibleId: "fernanda",
-    startDate: "2026-04-01",
-    endDate: "2026-11-30",
-    status: "em_pausa",
-    progress: 40,
-  },
-];
+// Bridges real Supabase projects (UUID ids) into the same lookup used by
+// src/lib/breadcrumb.ts — same rationale as registerSupabaseClient in
+// mock-data/clients.ts. Populated by src/lib/data/projects.ts whenever it
+// loads a project. See src/lib/name-cache.ts for why this is observable.
+//
+// The demo `projects` array and getProjectsByClient() this file held
+// through Fase 5.2 were removed in Fase 5.8: Projetos has been
+// REAL/SUPABASE since Fase 5.3, and every module that could reference a
+// project (Tarefas, Conteúdos, Calendário) is real too — nothing in the
+// app can produce a mock project id anymore. Only the bridge below is
+// load-bearing now.
+export const supabaseProjectCache = createNameCache<Pick<Project, "id" | "name">>();
 
-export function getProject(id: string | null): Project | undefined {
-  return projects.find((project) => project.id === id);
+export function registerSupabaseProject(project: Pick<Project, "id" | "name">): void {
+  supabaseProjectCache.register(project);
 }
 
-export function getProjectsByClient(clientId: string): Project[] {
-  return projects.filter((project) => project.clientId === clientId);
+export function getProject(id: string | null): Project | undefined {
+  return id ? (supabaseProjectCache.get(id) as Project | undefined) : undefined;
 }

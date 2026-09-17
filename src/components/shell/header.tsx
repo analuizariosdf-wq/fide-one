@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, ChevronRight, Menu, PanelLeft, Search } from "lucide-react";
 
-import { getBreadcrumb } from "@/lib/breadcrumb";
+import { useBreadcrumb } from "@/lib/breadcrumb";
 import { createClient } from "@/lib/supabase/client";
 import { useCurrentActor } from "@/lib/auth/current-actor-context";
 import { toInitials } from "@/lib/utils";
@@ -31,7 +31,7 @@ interface HeaderProps {
 export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const breadcrumb = getBreadcrumb(pathname);
+  const breadcrumb = useBreadcrumb(pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { profile, role } = useCurrentActor();
 

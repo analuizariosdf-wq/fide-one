@@ -28,62 +28,6 @@ export interface Client {
   notes?: string;
 }
 
-export type ContentStatus =
-  | "aprovacao"
-  | "agendado"
-  | "producao"
-  | "revisao"
-  | "publicado";
-
-export interface ContentItem {
-  id: string;
-  clientId: string;
-  title: string;
-  format: string;
-  dueLabel: string;
-  dueDate: string;
-  responsibleId: string;
-  status: ContentStatus;
-}
-
-export type TaskPriority = "alta" | "media" | "baixa";
-export type TaskStatus = "pendente" | "em_andamento" | "concluida" | "atrasada";
-
-export interface TaskItem {
-  id: string;
-  title: string;
-  clientId: string | null;
-  dueLabel: string;
-  dueDate: string;
-  priority: TaskPriority;
-  status: TaskStatus;
-  assigneeId: string;
-}
-
-export interface Payment {
-  id: string;
-  clientId: string;
-  description: string;
-  amount: number;
-  dueLabel: string;
-  dueDate: string;
-  status: "previsto" | "proximo" | "atrasado";
-}
-
-export type ActivityType =
-  | "task_completed"
-  | "comment"
-  | "approval"
-  | "payment";
-
-export interface ActivityItem {
-  id: string;
-  actorId: string;
-  type: ActivityType;
-  description: string;
-  timeLabel: string;
-}
-
 export type AttentionSeverity = "danger" | "warning";
 
 export interface AttentionItem {
@@ -113,12 +57,7 @@ export interface Project {
   progress: number;
 }
 
-/**
- * Full task model for the Tarefas module (list, Kanban, detail).
- * Distinct from `TaskItem` above, which backs the Dashboard's "Minhas
- * tarefas" widget from Etapa 1 — kept untouched so that approved screen
- * stays exactly as validated. The two can be unified in a later pass.
- */
+/** Full task model for the Tarefas module (list, Kanban, detail). */
 export type TaskWorkflowStatus =
   | "backlog"
   | "a_fazer"
@@ -160,13 +99,9 @@ export interface Task {
 }
 
 /**
- * Full editorial content model for the Conteúdos module. Distinct from
- * `ContentItem` above (Etapa 1), which backs the Dashboard's "Próximas
- * publicações" widget and the client-detail KPIs — kept untouched, same
- * rationale as `Task` vs `TaskItem`.
- *
- * Content is not a task: it's the editorial object a set of tasks
- * (`taskIds`) works towards publishing.
+ * Full editorial content model for the Conteúdos module. Content is not
+ * a task: it's the editorial object a set of tasks (`taskIds`) works
+ * towards publishing.
  */
 export type ContentEditorialStatus =
   | "ideia"

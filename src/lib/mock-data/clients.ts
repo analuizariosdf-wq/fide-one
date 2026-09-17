@@ -1,151 +1,25 @@
 import type { Client } from "@/lib/types";
+import { createNameCache } from "@/lib/name-cache";
 
-export const SERVICE_OPTIONS: string[] = [
-  "Gestão Digital",
-  "Tráfego",
-  "Conteúdo",
-  "Consultoria de Marca",
-  "Assessoria de Imprensa",
-  "SEO",
-  "Branding",
-];
+// Bridges real Supabase clients (UUID ids) into the same lookup used by
+// src/lib/breadcrumb.ts, so the "Clientes / <nome>" breadcrumb resolves
+// correctly for real clients — same rationale as registerSupabaseTask in
+// mock-data/tasks.ts and registerSupabaseContent in mock-data/contents.ts.
+// Populated by src/lib/data/clients.ts whenever it loads a client. See
+// src/lib/name-cache.ts for why this is observable, not a plain Map.
+//
+// The demo `clients` array this file held through Fase 5.1 was removed in
+// Fase 5.8: Clientes has been REAL/SUPABASE since Fase 5.2, and every
+// other module that could still reference a client (Projetos, Tarefas,
+// Conteúdos, Calendário) is real too — nothing in the app can produce a
+// mock client id like "inovar" anymore, so getClient() never reached that
+// branch. Only the bridge below is load-bearing now.
+export const supabaseClientCache = createNameCache<Pick<Client, "id" | "name">>();
 
-export const clients: Client[] = [
-  {
-    id: "inovar",
-    name: "Inovar Recursos Humanos",
-    tradeName: "Inovar RH",
-    cnpj: "12.345.678/0001-90",
-    segment: "Recursos Humanos",
-    website: "https://inovarrh.com.br",
-    instagram: "@inovarrh",
-    email: "contato@inovarrh.com.br",
-    phone: "(11) 4002-8922",
-    responsibleId: "mariana",
-    services: ["Gestão Digital", "Tráfego"],
-    startDate: "2025-03-01",
-    status: "ativo",
-    monthlyFee: 6000,
-    dueDay: 5,
-    paymentMethod: "Boleto",
-    notes: "Cliente estratégico, reuniões quinzenais com o RH corporativo.",
-  },
-  {
-    id: "conservar",
-    name: "Conservar Terceirização",
-    tradeName: "Conservar",
-    cnpj: "23.456.789/0001-11",
-    segment: "Facilities",
-    website: "https://conservar.com.br",
-    instagram: "@conservarterceirizacao",
-    email: "marketing@conservar.com.br",
-    phone: "(11) 3003-1144",
-    responsibleId: "fernanda",
-    services: ["Gestão Digital"],
-    startDate: "2025-05-12",
-    status: "ativo",
-    monthlyFee: 4500,
-    dueDay: 10,
-    paymentMethod: "Pix",
-    notes: "Aprovações passam sempre pelo setor de comunicação interna.",
-  },
-  {
-    id: "pleno",
-    name: "Pleno Hospital Dia",
-    tradeName: "Pleno",
-    cnpj: "34.567.890/0001-22",
-    segment: "Saúde",
-    website: "https://plenohospitaldia.com.br",
-    instagram: "@plenohospitaldia",
-    email: "comunicacao@plenohospitaldia.com.br",
-    phone: "(11) 5005-7733",
-    responsibleId: "mariana",
-    services: ["Gestão Digital", "Conteúdo"],
-    startDate: "2024-11-20",
-    status: "ativo",
-    monthlyFee: 5000,
-    dueDay: 8,
-    paymentMethod: "Boleto",
-    notes: "Conteúdo médico precisa de validação do corpo clínico.",
-  },
-  {
-    id: "felipe-holanda",
-    name: "Felipe Holanda",
-    tradeName: "Felipe Holanda Consultoria",
-    cnpj: "45.678.901/0001-33",
-    segment: "Consultoria",
-    website: "https://felipeholanda.com.br",
-    instagram: "@felipeholanda",
-    email: "contato@felipeholanda.com.br",
-    phone: "(11) 9 8811-2200",
-    responsibleId: "daniel",
-    services: ["Consultoria de Marca", "Assessoria de Imprensa"],
-    startDate: "2025-01-15",
-    status: "ativo",
-    monthlyFee: 3500,
-    dueDay: 15,
-    paymentMethod: "Cartão de crédito",
-    notes: "Marca pessoal — validar tom de voz antes de publicar.",
-  },
-  {
-    id: "vero",
-    name: "Vero Saúde",
-    tradeName: "Vero",
-    cnpj: "56.789.012/0001-44",
-    segment: "Saúde",
-    website: "https://verosaude.com.br",
-    instagram: "@verosaude",
-    email: "hello@verosaude.com.br",
-    phone: "(11) 4111-9090",
-    responsibleId: "camila",
-    services: ["Conteúdo", "Gestão Digital"],
-    startDate: "2025-07-01",
-    status: "ativo",
-    monthlyFee: 4800,
-    dueDay: 20,
-    paymentMethod: "Pix",
-    notes: "Campanha de Outubro Rosa em produção.",
-  },
-  {
-    id: "nova-educacao",
-    name: "Nova Educação",
-    tradeName: "Nova Educação",
-    cnpj: "67.890.123/0001-55",
-    segment: "Educação",
-    website: "https://novaeducacao.com.br",
-    instagram: "@novaeducacao",
-    email: "parcerias@novaeducacao.com.br",
-    phone: "(11) 3222-4400",
-    responsibleId: "bruno",
-    services: ["Gestão Digital", "SEO"],
-    startDate: "2026-08-01",
-    status: "lead",
-    monthlyFee: 4000,
-    dueDay: 5,
-    paymentMethod: "Boleto",
-    notes: "Proposta enviada, aguardando aprovação do orçamento.",
-  },
-  {
-    id: "grupo-almeida",
-    name: "Grupo Almeida",
-    tradeName: "Grupo Almeida",
-    cnpj: "78.901.234/0001-66",
-    segment: "Varejo",
-    website: "https://grupoalmeida.com.br",
-    instagram: "@grupoalmeida",
-    email: "marketing@grupoalmeida.com.br",
-    phone: "(11) 3444-5500",
-    responsibleId: "fernanda",
-    services: ["Gestão Digital", "Branding"],
-    startDate: "2024-02-10",
-    status: "pausado",
-    monthlyFee: 5500,
-    dueDay: 12,
-    paymentMethod: "Boleto",
-    notes: "Contrato pausado enquanto o cliente revisa o orçamento anual.",
-  },
-];
+export function registerSupabaseClient(client: Pick<Client, "id" | "name">): void {
+  supabaseClientCache.register(client);
+}
 
 export function getClient(id: string | null): Client | undefined {
-  return clients.find((client) => client.id === id);
+  return id ? (supabaseClientCache.get(id) as Client | undefined) : undefined;
 }

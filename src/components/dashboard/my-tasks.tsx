@@ -1,8 +1,10 @@
 import { ListChecks } from "lucide-react";
 
-import type { Client, TaskItem } from "@/lib/types";
+import type { Task } from "@/lib/types";
+import type { ClientOption } from "@/lib/data/tasks";
 import { cn } from "@/lib/utils";
-import { taskPriorityConfig, taskStatusConfig } from "@/lib/status";
+import { getTaskDueLabel, isOverdue } from "@/lib/format";
+import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
 import {
   Card,
   CardHeader,
@@ -13,11 +15,13 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 
 interface MyTasksProps {
-  tasks: TaskItem[];
-  getClient: (id: string | null) => Client | undefined;
+  tasks: Task[];
+  clients: ClientOption[];
 }
 
-export function MyTasks({ tasks, getClient }: MyTasksProps) {
+export function MyTasks({ tasks, clients }: MyTasksProps) {
+  const clientById = new Map(clients.map((c) => [c.id, c]));
+
   return (
     <Card>
       <CardHeader>
@@ -28,9 +32,10 @@ export function MyTasks({ tasks, getClient }: MyTasksProps) {
           <EmptyState icon={ListChecks} title="Nenhuma tarefa pendente" />
         ) : (
           tasks.map((task) => {
-            const client = getClient(task.clientId);
-            const priority = taskPriorityConfig[task.priority];
-            const status = taskStatusConfig[task.status];
+            const client = task.clientId ? clientById.get(task.clientId) : undefined;
+            const priority = taskUrgencyConfig[task.priority];
+            const status = taskWorkflowConfig[task.status];
+            const overdue = task.status !== "concluido" && isOverdue(task.dueDate);
 
             return (
               <div
@@ -47,8 +52,13 @@ export function MyTasks({ tasks, getClient }: MyTasksProps) {
                     <span className="truncate text-[13px] font-medium text-foreground">
                       {task.title}
                     </span>
-                    <span className="text-[12px] text-muted-foreground">
-                      {client?.name ?? "Interno"} · {task.dueLabel}
+                    <span
+                      className={cn(
+                        "text-[12px] text-muted-foreground",
+                        overdue && "font-medium text-status-danger-fg",
+                      )}
+                    >
+                      {client?.name ?? "Interno"} · {getTaskDueLabel(task.dueDate, task.status === "concluido")}
                     </span>
                   </div>
                 </div>

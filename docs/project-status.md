@@ -202,10 +202,11 @@ ad hoc em `src/lib/mock-data/tasks.ts` + `store/tasks-store.ts` +
   "Não encontrado". Corrigido com o mesmo padrão de bridge já usado para
   perfis (`registerSupabaseProfile`): `registerSupabaseTask()` em
   `mock-data/tasks.ts`, populado pelo Data Layer real a cada tarefa
-  carregada. **Observação**: o mesmo problema existe hoje para Clientes e
-  Projetos (`getClient`/`getProject` do mock, sem bridge equivalente) —
-  não corrigido nesta fase por estar fora do escopo de Tarefas; registrado
-  aqui para tratar quando algum desses módulos for revisitado.
+  carregada. **Observação**: o mesmo problema existia para Clientes e
+  Projetos (`getClient`/`getProject` do mock, sem bridge equivalente) — não
+  corrigido nesta fase por estar fora do escopo de Tarefas. **Corrigido na
+  Fase 5.8** (ver seção 4h), incluindo um bug adicional de re-render
+  descoberto só então (cache não-reativo em navegação direta por URL).
 - Removido `src/lib/services/tasks-service.ts` (sem consumidores restantes
   após migrar Tarefas, Cliente → Tarefas e Projeto → Tarefas). **Mantidos**
   `src/lib/store/tasks-store.ts` (ainda importado diretamente por
@@ -216,9 +217,10 @@ ad hoc em `src/lib/mock-data/tasks.ts` + `store/tasks-store.ts` +
   usar o Data Layer real (aviso de mock removido dessas duas áreas
   especificamente). O KPI "Tarefas abertas" no Cliente também passou a ser
   real; "Publicações" e "Aguardando aprovação" continuam mock (Conteúdos).
-- **Dashboard**: não foi tocado — o widget "Minhas tarefas" usa o modelo
-  `TaskItem`/`myTasks`, deliberadamente separado do `Task` completo desde
-  a Etapa 1, e continua 100% mockado.
+- **Dashboard**: não foi tocado nesta fase — o widget "Minhas tarefas" usava
+  o modelo `TaskItem`/`myTasks`, deliberadamente separado do `Task` completo
+  desde a Etapa 1, e continuava 100% mockado. **Migrado na Fase 5.8** (ver
+  seção 4h) — `TaskItem`/`myTasks` não existem mais.
 
 ## 4e. Conteúdos — Fase 5.5 (feita nesta sessão)
 
@@ -288,8 +290,9 @@ Estava 100% mockado. Agora Conteúdos é o quarto módulo **REAL/SUPABASE**:
   sem nenhum consumidor depois desta fase (Clientes, Projetos, Tarefas e
   Conteúdos já são todos reais — só falta Calendário, que não usava esse
   aviso).
-- **Dashboard**: não tocado — continua usando `contents`/`ContentItem[]`
-  (mock leve da Etapa 1), documentado aqui como dependência restante.
+- **Dashboard**: não tocado nesta fase — continuava usando `contents`/
+  `ContentItem[]` (mock leve da Etapa 1). **Migrado na Fase 5.8** (ver
+  seção 4h) — `ContentItem`/`contents` não existem mais.
 
 ## 4f. Calendário — Fase 5.6 (feita nesta sessão)
 
@@ -474,6 +477,153 @@ allowlist de MIME, limite de tamanho, geração segura de path, formatação)
   nenhuma policy/schema mudou) testar upload/policy contra o Supabase
   hospedado real neste sandbox.
 
+## 4h. Auditoria final, remoção de mocks e validação — Fase 5.8 (feita nesta sessão)
+
+Fase transversal de auditoria/limpeza — não implementou nenhum módulo novo
+(Financeiro/Equipe/Relatórios permanecem placeholders, sem lógica).
+
+**Bug de breadcrumb corrigido (não era conhecido antes desta fase):** os
+bridges `getClient`/`getProject`/`getTask`/`getContent` (mocks → cache
+populado pelo Data Layer real) funcionavam para consumidores na mesma
+árvore de render da página que faz o fetch, mas o `Header` (que renderiza o
+breadcrumb) é uma árvore irmã da página de detalhe, não descendente — nada
+forçava o `Header` a re-renderizar depois do fetch resolver. Em navegação
+direta por URL (`/clients/<uuid>` digitado ou colado, sem navegar pela SPA),
+o breadcrumb podia ficar permanentemente preso em "Não encontrado" mesmo
+com a página renderizando corretamente. Corrigido com uma factory de cache
+observável (`src/lib/name-cache.ts`, contador de versão + subscribers) e um
+novo hook `useBreadcrumb()` (`src/lib/breadcrumb.ts`, via
+`useSyncExternalStore`) que o `Header` agora usa em vez do antigo
+`getBreadcrumb()` puro. `mock-data/team.ts` deliberadamente **não** recebeu
+o mesmo tratamento — seus consumidores (`ClientTable`/`ClientHeader`) estão
+na mesma árvore de render que popula o cache, então o bug não se aplica lá.
+
+**Mock morto removido (consequência direta das Fases 5.5–5.7 + do
+redesenho do Dashboard nesta fase, nunca antes auditado):**
+- `src/lib/mock-data/{clients,projects,tasks,contents}.ts`: os arrays de
+  entidade fake (`clients`, `projects`, `tasks`, `contents`,
+  `editorialContents`) e os helpers `getXByY` ficaram inalcançáveis assim
+  que Conteúdos/Calendário (últimos consumidores) migraram — confirmado com
+  busca de consumidores (`grep`) antes de cada remoção. Restou só o bridge
+  (`registerSupabaseX`/`getX`/cache) e, em `contents.ts`, o vocabulário de
+  domínio genuinamente reutilizado (`CONTENT_TYPE_OPTIONS`, `CHANNEL_OPTIONS`
+  — batem exatamente com os `CHECK` da tabela `contents`).
+- `src/lib/mock-data/team.ts`: `currentUser`/`team` (elenco fake de 5
+  pessoas) removidos — o Dashboard era o único consumidor restante, agora
+  usa `useCurrentActor()` (sessão autenticada real).
+- `src/lib/mock-data/{index,stats,attention,activity,financeiro}.ts`
+  apagados por inteiro — cada um só existia para alimentar o Dashboard
+  mockado da Etapa 1 (`dashboardStats`, `attentionItems`, `recentActivity`,
+  `upcomingPayments`), sem nenhum outro consumidor.
+- **Dashboard reescrito para dados reais**
+  (`src/lib/services/dashboard-service.ts`, agora um hook
+  `useDashboardData()`): KPI "Tarefas abertas" e "Publicações esta semana",
+  "Minhas tarefas" (via `useCurrentActor()` + `useTasks()`) e "Próximas
+  publicações" (via `useContents()`) passam a ser 100% reais. **Financeiro
+  nunca foi fabricado**: o card "A receber" mostra `—` com a legenda
+  explícita "Financeiro ainda não disponível" (nenhum número inventado), e
+  nenhum item de atenção financeiro é criado. "Atividade recente" mostra um
+  estado vazio honesto ("Ainda não disponível") em vez de inventar
+  atividade — não há infraestrutura de gravação em `activity_logs` em
+  nenhum módulo ainda.
+- **Tipos órfãos removidos** de `src/lib/types/index.ts` (confirmado via
+  `grep` que só tinham referências entre si, nenhum consumidor real):
+  `ContentStatus`, `ContentItem`, `TaskPriority`, `TaskStatus`, `TaskItem`,
+  `Payment`, `ActivityType`, `ActivityItem` — todos existiam só para o
+  Dashboard leve da Etapa 1, agora substituído pelos modelos completos
+  (`Task`/`Content`) nas seções 4d/4e. Dois comentários que citavam
+  `TaskItem`/`ContentItem` por nome (nas interfaces `Task`/`Content`) foram
+  atualizados. `src/lib/status.ts` teve `contentStatusConfig`/
+  `taskStatusConfig`/`taskPriorityConfig` removidos pelo mesmo motivo
+  (substituídos por `contentEditorialConfig`/`taskWorkflowConfig`/
+  `taskUrgencyConfig`).
+
+**Módulos já reais (Clientes, Projetos, Tarefas, Conteúdos, Calendário,
+Arquivos) re-auditados:** nenhuma dependência residual de mock encontrada
+em nenhum deles — todos os seletores (cliente/projeto/responsável) já
+usavam dados reais desde suas respectivas Fases 5.2–5.7; `client_services`
+(`syncClientServices`) e `campaigns` (`resolveCampaignId`) confirmados
+intactos e funcionando, sem expansão. Estados de loading/erro/vazio
+(`Skeleton`/`ErrorState`/`EmptyState`) confirmados presentes nas 10 telas
+reais (Dashboard, listagem + detalhe de Clientes/Projetos/Tarefas/
+Conteúdos, Calendário) e no `EntityFilesPanel` (Arquivos).
+
+**Padrões legados varridos** (busca por `grep` em todo `src/`): nenhum uso
+de `localStorage`, nenhum ID mock hardcoded (`client-1`/`project-1`/
+`task-1`/`content-1`), nenhum `TODO`/`FIXME` restante, `useSyncExternalStore`
+presente só nos dois arquivos esperados (`name-cache.ts`/`breadcrumb.ts`).
+
+**Segurança/`.env`**: `SUPABASE_SERVICE_ROLE_KEY` só aparece em
+`src/lib/supabase/server.ts` (`createServiceRoleClient`, ainda sem uso —
+reservado) — nenhum uso em código client-reachable. `.env.local` não está
+versionado (`.gitignore`: `.env*` com exceção só para
+`.env.local.example`); `git ls-files` confirma que nenhum `.env*` real está
+rastreado. Nenhum valor de secret foi impresso durante esta auditoria.
+
+**Fluxo operacional validado estaticamente** (Cliente → Projeto → Tarefa ↔
+Conteúdo → Calendário → Arquivos): confirmado por leitura de código, não
+por teste E2E contra o Supabase hospedado (ver limitação abaixo) — cada
+Data Layer (`clients.ts`, `projects.ts`, `tasks.ts`, `contents.ts`,
+`calendar.ts`, `files.ts`) popula os bridges/registra os relacionamentos de
+forma consistente; `useCalendarItems()` agrega Tarefas/Conteúdos/eventos
+reais diretamente (nunca copia dado), com `href` de volta para
+`/tasks/:id`/`/contents/:id`; `EntityFilesPanel` conectado nas 3 entidades
+com bucket (Cliente/Projeto/Conteúdo), gap de Tarefa (`task-files`)
+permanece documentado, não implementado.
+
+**O que foi validado e como (diferenciação explícita):**
+- **(A) Análise estática + build**: `npm run lint`, `npx tsc --noEmit` e
+  `npm run build` rodados e limpos após cada lote de mudanças desta fase
+  (14 rotas geradas, sem warnings novos).
+- **(B) Testes puros**: nenhum script novo nesta fase (não havia lógica
+  pura nova para testar — só remoção de mock e composição de hooks já
+  testados em fases anteriores). O projeto continua sem test runner
+  configurado (`package.json` sem script `test`); os scripts ad hoc de
+  fases anteriores (`npx tsx`, fora do repo, contra `calendar-utils.ts` e
+  `files-utils.ts`) não foram recriados nem versionados — mesmo precedente
+  das Fases 5.6/5.7 mantido.
+- **(C) Execuções anteriores do GitHub Actions**: `deploy-supabase.yml`
+  (`workflow_dispatch` manual) já validou schema/RLS/Storage no Supabase
+  hospedado em fase anterior; nenhuma migration ou policy nova nesta fase,
+  então nenhuma nova execução foi necessária — avaliado e descartado por
+  não haver mudança de infraestrutura para verificar (item 26 do escopo).
+- **(D) NÃO validado end-to-end**: login real, navegação e escrita contra o
+  Supabase hospedado **não foram exercitados nesta sessão** — o sandbox não
+  alcança `*.supabase.co` (bloqueio de rede confirmado em fases anteriores,
+  não re-testado por já ser conhecido). Isso inclui o próprio bug de
+  breadcrumb corrigido acima: a correção foi validada por leitura do
+  código/comportamento do `useSyncExternalStore`, não observando o
+  breadcrumb realmente recarregar no navegador contra dados reais.
+
+**Checklist de encerramento da Fase 5 (10 critérios) — autoavaliação:**
+1. ✅ Clientes/Projetos/Tarefas/Conteúdos/Calendário/Arquivos são
+   REAL/SUPABASE, sem mock residual — confirmado por auditoria.
+2. ✅ Dashboard não fabrica dado de módulo já migrado — reescrito nesta
+   fase; Financeiro mostra `—` honesto.
+3. ✅ Breadcrumb resolve entidades reais em todos os módulos, inclusive em
+   navegação direta por URL — corrigido nesta fase.
+4. ✅ Nenhum padrão legado (`localStorage`, IDs mock hardcoded,
+   `useSyncExternalStore` fora do lugar esperado) restante.
+5. ✅ Nenhuma duplicação perigosa de tipos/config — tipos órfãos do
+   Dashboard leve removidos.
+6. ✅ `client_services`/`campaigns` intactos, sem expansão indevida.
+7. ✅ Financeiro/Equipe/Relatórios/Configurações permanecem placeholders
+   honestos, sem mock vazando.
+8. ✅ Segurança: sem `service_role` client-reachable, `.env.local` não
+   versionado, nenhum secret impresso.
+9. ✅ `lint`/`tsc`/`build` limpos.
+10. ⚠️ **Parcial**: validação E2E contra o Supabase hospedado real não foi
+    (e não pôde ser) executada neste sandbox — limitação de rede conhecida
+    desde a Fase 4, não uma falha desta fase. Todos os outros 9 critérios
+    são satisfeitos por análise estática + build, o que é o máximo
+    verificável neste ambiente.
+
+**Conclusão**: a Fase 5 é considerada concluída dentro do que este ambiente
+consegue validar (critérios 1–9 completos); o critério 10 (E2E hospedado)
+fica como validação pendente para quando alguém puder testar fora deste
+sandbox — não é um bloqueio de qualidade de código, é uma limitação de
+ambiente já conhecida e documentada desde a Fase 4.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -524,19 +674,31 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
 - **Arquivos / Storage** (Fase 5.7): **REAL/SUPABASE** para Conteúdo,
   Cliente e Projeto (upload, listagem, download via signed URL, exclusão —
   ver seção 4g). Tarefa ainda não suportada (sem bucket dedicado).
+- **Dashboard** (Fase 1 visual + Fase 5.8 backend): **REAL/SUPABASE** para
+  tudo que representa módulo já migrado — KPIs de tarefas/publicações,
+  "Minhas tarefas" (`useCurrentActor()` + `useTasks()`), "Próximas
+  publicações" (`useContents()`). Financeiro deliberadamente não fabricado
+  (`—` + legenda honesta); "Atividade recente" é um estado vazio honesto,
+  sem `activity_logs` implementado (ver seção 4h).
 
 ## 8. Módulos ainda mockados / não iniciados
 
 - Financeiro, Equipe, Relatórios: só placeholders de tela
   (`src/app/(app)/financeiro`, `/equipe`, `/relatorios`) — nenhuma lógica.
+  Confirmado na Fase 5.8 que nenhum mock desses módulos vaza para telas
+  reais.
 - Arquivos da Tarefa: `files.task_id` existe no schema, mas não há bucket
   `task-files` — card "Arquivos" da Tarefa continua placeholder (ver
   seção 4g; decisão de qual bucket usar fica para uma fase futura).
-- Dashboard: continua com os widgets leves da Etapa 1 (`myTasks`,
-  `contents: ContentItem[]`), deliberadamente não migrados nesta fase.
-- Breadcrumb de Clientes/Projetos (`getClient`/`getProject` do mock, sem
-  bridge para UUID real) — falha pré-existente, documentada desde a Fase
-  5.4, não corrigida por estar fora do escopo de cada fase específica.
+- `content_comments`: sem UI (nunca teve, mesmo mockado) — ver seção 4e.
+- "Histórico" da Tarefa e "Atividade recente" do Dashboard: sem
+  infraestrutura de gravação em `activity_logs` em nenhum módulo ainda —
+  mostram estado "ainda não disponível" honesto em vez de dado fabricado.
+- Após a Fase 5.8, os únicos arquivos em `src/lib/mock-data/` que restam
+  são bridges de resolução de nome (`registerSupabaseX`/cache, usados pelo
+  breadcrumb e por componentes de exibição) e vocabulário de domínio
+  (`CONTENT_TYPE_OPTIONS`/`CHANNEL_OPTIONS`) — nenhuma entidade fake
+  restante em lugar nenhum do `src/`.
 
 ## 9. Roadmap
 
@@ -545,15 +707,15 @@ FASE 1 — Fundação/App Shell/Dashboard         ✅ concluída
 FASE 2 — Clientes/Projetos/Tarefas/Kanban      ✅ concluída visualmente
 FASE 3 — Conteúdos/Calendário                  ✅ concluída visualmente
 FASE 4 — Infraestrutura Supabase               ✅ concluída e validada no Supabase real
-FASE 5 — Conectar frontend ao Supabase real    🔶 em andamento
-  5.1 Auth + sessão + organização              ✅ concluída (esta sessão)
-  5.2 Clientes                                 ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.3 Projetos                                 ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.4 Tarefas + Kanban                         ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.5 Conteúdos                                ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.6 Calendário                               ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.7 Arquivos / Supabase Storage              ✅ concluída (esta sessão) — REAL/SUPABASE (Conteúdo/Cliente/Projeto)
-  5.8 Remoção final dos mocks + validação      ⏳ pendente
+FASE 5 — Conectar frontend ao Supabase real    ✅ concluída (ver seção 4h — critério 10/10 parcial: E2E hospedado não validável neste sandbox)
+  5.1 Auth + sessão + organização              ✅ concluída — REAL/SUPABASE
+  5.2 Clientes                                 ✅ concluída — REAL/SUPABASE
+  5.3 Projetos                                 ✅ concluída — REAL/SUPABASE
+  5.4 Tarefas + Kanban                         ✅ concluída — REAL/SUPABASE
+  5.5 Conteúdos                                ✅ concluída — REAL/SUPABASE
+  5.6 Calendário                               ✅ concluída — REAL/SUPABASE
+  5.7 Arquivos / Supabase Storage              ✅ concluída — REAL/SUPABASE (Conteúdo/Cliente/Projeto)
+  5.8 Remoção final dos mocks + validação      ✅ concluída (esta sessão) — ver seção 4h
 FASE 6 — Financeiro                            ⏳ não iniciada
 FASE 7 — Equipe / permissões                   ⏳ não iniciada
 FASE 8 — Relatórios                            ⏳ não iniciada
@@ -568,10 +730,16 @@ FASE 10 — Auditoria UX/UI                      ⏳ não iniciada
   projeto Supabase ao vivo no início da Etapa 4. Mantido por consistência.
 - **Migração gradual, não big-bang**: mock e Supabase coexistem
   deliberadamente; um módulo só perde o mock quando sua Fase 5.x for feita.
-- **Bridge de perfis** (`registerSupabaseProfile` em
-  `src/lib/mock-data/team.ts`): deixa componentes já aprovados (tabelas que
-  mostram "responsável") resolverem tanto IDs mockados quanto UUIDs reais
-  do Supabase sem precisar redesenhar nada.
+- **Bridge de nomes** (`registerSupabaseX`/cache em cada
+  `src/lib/mock-data/*.ts`): deixa componentes já aprovados (breadcrumb,
+  tabelas que mostram "responsável") resolverem UUIDs reais do Supabase sem
+  precisar redesenhar nada. Desde a Fase 5.8, os caches de
+  clientes/projetos/tarefas/conteúdos são observáveis
+  (`src/lib/name-cache.ts`, via `useSyncExternalStore`) para não ficarem
+  presos quando o consumidor (`Header`) está numa árvore de render
+  diferente de quem populou o cache — o de perfis (`team.ts`) continua um
+  `Map` simples, porque seus consumidores estão sempre na mesma árvore de
+  quem carrega o dado.
 - **Deploy via GitHub Actions, não localmente**: o ambiente de
   desenvolvimento (sandbox) não alcança `*.supabase.co` nem por HTTPS nem
   por conexão direta de banco — bloqueio de política confirmado, não

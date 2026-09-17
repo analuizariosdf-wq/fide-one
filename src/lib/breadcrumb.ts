@@ -1,8 +1,12 @@
+"use client";
+
+import { useSyncExternalStore } from "react";
+
 import { getPageTitle } from "@/lib/nav-config";
-import { getClient } from "@/lib/mock-data/clients";
-import { getProject } from "@/lib/mock-data/projects";
-import { getTask } from "@/lib/mock-data/tasks";
-import { getContent } from "@/lib/mock-data/contents";
+import { getClient, supabaseClientCache } from "@/lib/mock-data/clients";
+import { getProject, supabaseProjectCache } from "@/lib/mock-data/projects";
+import { getTask, supabaseTaskCache } from "@/lib/mock-data/tasks";
+import { getContent, supabaseContentCache } from "@/lib/mock-data/contents";
 
 export interface BreadcrumbSegment {
   label: string;
@@ -59,4 +63,36 @@ export function getBreadcrumb(pathname: string): BreadcrumbSegment[] {
   }
 
   return [{ label: getPageTitle(pathname) }];
+}
+
+const ALL_CACHES = [
+  supabaseClientCache,
+  supabaseProjectCache,
+  supabaseTaskCache,
+  supabaseContentCache,
+];
+
+function subscribeToAllCaches(onChange: () => void): () => void {
+  const unsubscribes = ALL_CACHES.map((cache) => cache.subscribe(onChange));
+  return () => {
+    for (const unsubscribe of unsubscribes) unsubscribe();
+  };
+}
+
+function getCombinedCacheVersion(): number {
+  return ALL_CACHES.reduce((total, cache) => total + cache.getVersion(), 0);
+}
+
+/**
+ * getBreadcrumb() alone reads a plain (if observable) module cache — fine
+ * for a component that re-renders anyway, but Header is a sibling of the
+ * page that populates the cache, not a descendant, so nothing would ever
+ * tell it to re-render once that page's own fetch resolves. This
+ * subscribes to every entity-name cache so a hard navigation straight to
+ * a detail page (/clients/<uuid>, ...) still ends up showing the real
+ * name instead of getting stuck on "Não encontrado".
+ */
+export function useBreadcrumb(pathname: string): BreadcrumbSegment[] {
+  useSyncExternalStore(subscribeToAllCaches, getCombinedCacheVersion, getCombinedCacheVersion);
+  return getBreadcrumb(pathname);
 }
