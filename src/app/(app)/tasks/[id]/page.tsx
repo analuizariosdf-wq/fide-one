@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileWarning, Paperclip, Pencil, Trash2 } from "lucide-react";
@@ -8,6 +9,8 @@ import { FileWarning, Paperclip, Pencil, Trash2 } from "lucide-react";
 import { getTaskDueLabel, isOverdue } from "@/lib/format";
 import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
 import { useTask, useTaskComments, addTaskComment, removeTask } from "@/lib/data/tasks";
+import { useTaskRelatedContents } from "@/lib/data/contents";
+import { contentEditorialConfig } from "@/lib/status";
 import { cn, toInitials } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,6 +34,12 @@ export default function TaskDetailPage({
   const { task, clients, projects, profiles, loading, error, refetch } = useTask(id);
   const { comments, loading: commentsLoading, error: commentsError, refetch: refetchComments } =
     useTaskComments(id);
+  const {
+    contents: relatedContents,
+    loading: relatedContentsLoading,
+    error: relatedContentsError,
+    refetch: refetchRelatedContents,
+  } = useTaskRelatedContents(id);
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -171,10 +180,33 @@ export default function TaskDetailPage({
               <CardTitle>Conteúdo relacionado</CardTitle>
             </CardHeader>
             <CardContent>
-              <EmptyState
-                title="Ainda não disponível"
-                description="A relação com Conteúdos (content_tasks) será implementada na Fase 5.5, junto da migração do módulo Conteúdos."
-              />
+              {relatedContentsError ? (
+                <ErrorState description={relatedContentsError} onRetry={refetchRelatedContents} />
+              ) : relatedContentsLoading ? (
+                <Skeleton className="h-12 w-full" />
+              ) : relatedContents.length === 0 ? (
+                <p className="text-muted-foreground">Nenhum conteúdo relacionado.</p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {relatedContents.map((relatedContent) => (
+                    <Link
+                      key={relatedContent.id}
+                      href={`/contents/${relatedContent.id}`}
+                      className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2.5 transition-colors hover:bg-muted"
+                    >
+                      <span className="text-[13px] font-medium text-foreground">
+                        {relatedContent.title}
+                      </span>
+                      <span className="flex items-center gap-2 text-[12px] text-muted-foreground">
+                        {relatedContent.contentType} · {relatedContent.channel}
+                        <Badge variant={contentEditorialConfig[relatedContent.status].variant}>
+                          {contentEditorialConfig[relatedContent.status].label}
+                        </Badge>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

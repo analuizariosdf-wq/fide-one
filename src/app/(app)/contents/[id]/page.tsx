@@ -1,21 +1,20 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileWarning, Paperclip, Pencil, Trash2 } from "lucide-react";
 
-import { getClient } from "@/lib/mock-data/clients";
-import { getProject } from "@/lib/mock-data/projects";
-import { getTeamMember } from "@/lib/mock-data/users";
-import { getTask } from "@/lib/mock-data/tasks";
 import { formatDateShort } from "@/lib/format";
 import { contentEditorialConfig } from "@/lib/status";
-import { useContent, removeContent } from "@/lib/services/contents-service";
+import { useContent, useContentRelatedTasks, removeContent } from "@/lib/data/contents";
+import { useTasks } from "@/lib/data/tasks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EntityLink } from "@/components/shared/entity-link";
 import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
@@ -28,10 +27,47 @@ export default function ContentDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const content = useContent(id);
+  const { content, clients, projects, profiles, loading, error, refetch } = useContent(id);
+  const { tasks } = useTasks();
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const client = useMemo(
+    () => (content ? clients.find((c) => c.id === content.clientId) : undefined),
+    [clients, content],
+  );
+  const project = useMemo(
+    () => (content?.projectId ? projects.find((p) => p.id === content.projectId) : undefined),
+    [projects, content],
+  );
+  const responsible = useMemo(
+    () => (content ? profiles.find((p) => p.id === content.responsibleId) : undefined),
+    [profiles, content],
+  );
+
+  const {
+    tasks: relatedTasks,
+    loading: relatedTasksLoading,
+    error: relatedTasksError,
+    refetch: refetchRelatedTasks,
+  } = useContentRelatedTasks(content?.taskIds ?? []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-6 w-56" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorState description={error} onRetry={refetch} />;
+  }
 
   if (!content) {
     return (
@@ -43,13 +79,18 @@ export default function ContentDetailPage({
     );
   }
 
-  const client = getClient(content.clientId);
-  const project = getProject(content.projectId);
-  const responsible = getTeamMember(content.responsibleId);
   const status = contentEditorialConfig[content.status];
-  const relatedTasks = content.taskIds
-    .map((taskId) => getTask(taskId))
-    .filter((task) => task !== undefined);
+
+  async function handleConfirmDelete() {
+    if (!content) return;
+    try {
+      await removeContent(content.id);
+      toast.success("Conteúdo excluído.");
+      router.push("/contents");
+    } catch {
+      toast.error("Não foi possível excluir o conteúdo. Tente novamente.");
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -89,7 +130,7 @@ export default function ContentDetailPage({
           value={project?.name ?? "Sem projeto"}
           href={project ? `/projects/${project.id}` : undefined}
         />
-        <MetaField label="Responsável" value={responsible?.name ?? "—"} />
+        <MetaField label="Responsável" value={responsible?.name ?? "Sem responsável"} />
         <MetaField
           label="Data"
           value={
@@ -155,12 +196,31 @@ export default function ContentDetailPage({
             <CardTitle>Tarefas relacionadas</CardTitle>
           </CardHeader>
           <CardContent>
-            <ContentTasksChecklist tasks={relatedTasks} />
+            {relatedTasksError ? (
+              <ErrorState description={relatedTasksError} onRetry={refetchRelatedTasks} />
+            ) : relatedTasksLoading ? (
+              <div className="flex flex-col gap-3">
+                {Array.from({ length: 2 }).map((_, index) => (
+                  <Skeleton key={index} className="h-10 w-full" />
+                ))}
+              </div>
+            ) : (
+              <ContentTasksChecklist tasks={relatedTasks} profiles={profiles} />
+            )}
           </CardContent>
         </Card>
       </div>
 
-      <ContentFormDrawer open={editOpen} onOpenChange={setEditOpen} content={content} />
+      <ContentFormDrawer
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        content={content}
+        clients={clients}
+        projects={projects}
+        profiles={profiles}
+        tasks={tasks}
+        onSaved={refetch}
+      />
 
       <ConfirmDialog
         open={deleteOpen}
@@ -168,11 +228,7 @@ export default function ContentDetailPage({
         title="Excluir conteúdo"
         description={`Tem certeza que deseja excluir "${content.title}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
-          removeContent(content.id);
-          toast.success("Conteúdo excluído.");
-          router.push("/contents");
-        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

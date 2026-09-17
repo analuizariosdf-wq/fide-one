@@ -226,8 +226,22 @@ export const editorialContents: Content[] = [
   },
 ];
 
+// Bridges real Supabase contents (UUID ids) into the same lookup used by
+// src/lib/breadcrumb.ts, so the "Conteúdos / <título>" breadcrumb resolves
+// correctly for real contents too — same rationale as registerSupabaseTask
+// in mock-data/tasks.ts. Populated by src/lib/data/contents.ts whenever it
+// loads a content.
+const supabaseContentCache = new Map<string, Pick<Content, "id" | "title">>();
+
+export function registerSupabaseContent(content: Pick<Content, "id" | "title">): void {
+  supabaseContentCache.set(content.id, content);
+}
+
 export function getContent(id: string): Content | undefined {
-  return editorialContents.find((content) => content.id === id);
+  return (
+    editorialContents.find((content) => content.id === id) ??
+    (supabaseContentCache.get(id) as Content | undefined)
+  );
 }
 
 export function getContentsByClient(clientId: string): Content[] {

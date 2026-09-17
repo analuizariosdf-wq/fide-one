@@ -1,12 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Images, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import type { Content } from "@/lib/types";
-import { getClient } from "@/lib/mock-data/clients";
-import { getProject } from "@/lib/mock-data/projects";
-import { getTeamMember } from "@/lib/mock-data/users";
+import type { ClientOption, ProfileOption, ProjectOption } from "@/lib/data/contents";
 import { formatDateShort } from "@/lib/format";
 import { contentEditorialConfig } from "@/lib/status";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +29,9 @@ import {
 
 interface ContentTableProps {
   contents: Content[];
+  clients: ClientOption[];
+  projects: ProjectOption[];
+  profiles: ProfileOption[];
   hideClientColumn?: boolean;
   onEdit: (content: Content) => void;
   onDelete: (content: Content) => void;
@@ -39,6 +41,9 @@ interface ContentTableProps {
 
 export function ContentTable({
   contents,
+  clients,
+  projects,
+  profiles,
   hideClientColumn,
   onEdit,
   onDelete,
@@ -46,6 +51,9 @@ export function ContentTable({
   emptyDescription = "Ajuste os filtros ou crie um novo conteúdo.",
 }: ContentTableProps) {
   const router = useRouter();
+  const clientById = useMemo(() => new Map(clients.map((c) => [c.id, c])), [clients]);
+  const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects]);
+  const profileById = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
 
   if (contents.length === 0) {
     return <EmptyState icon={Images} title={emptyTitle} description={emptyDescription} />;
@@ -68,9 +76,9 @@ export function ContentTable({
       </TableHeader>
       <TableBody>
         {contents.map((content) => {
-          const client = getClient(content.clientId);
-          const project = getProject(content.projectId);
-          const responsible = getTeamMember(content.responsibleId);
+          const client = clientById.get(content.clientId);
+          const project = content.projectId ? projectById.get(content.projectId) : undefined;
+          const responsible = profileById.get(content.responsibleId);
           const status = contentEditorialConfig[content.status];
 
           return (
@@ -100,7 +108,9 @@ export function ContentTable({
               </TableCell>
               <TableCell className="text-muted-foreground">{content.channel}</TableCell>
               <TableCell className="text-muted-foreground">{content.contentType}</TableCell>
-              <TableCell className="text-muted-foreground">{responsible?.name ?? "—"}</TableCell>
+              <TableCell className="text-muted-foreground">
+                {responsible?.name ?? "Sem responsável"}
+              </TableCell>
               <TableCell className="text-muted-foreground">
                 {formatDateShort(content.publishDate)}
               </TableCell>

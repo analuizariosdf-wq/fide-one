@@ -1,15 +1,19 @@
 import Link from "next/link";
 import { CheckSquare, ListChecks, Square } from "lucide-react";
 
-import type { Task } from "@/lib/types";
-import { getTeamMember } from "@/lib/mock-data/users";
+import type { ContentRelatedTask, ProfileOption } from "@/lib/data/contents";
 import { getTaskDueLabel, isOverdue } from "@/lib/format";
 import { taskWorkflowConfig } from "@/lib/status";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 
-export function ContentTasksChecklist({ tasks }: { tasks: Task[] }) {
+interface ContentTasksChecklistProps {
+  tasks: ContentRelatedTask[];
+  profiles: ProfileOption[];
+}
+
+export function ContentTasksChecklist({ tasks, profiles }: ContentTasksChecklistProps) {
   if (tasks.length === 0) {
     return (
       <EmptyState
@@ -20,11 +24,13 @@ export function ContentTasksChecklist({ tasks }: { tasks: Task[] }) {
     );
   }
 
+  const profileById = new Map(profiles.map((p) => [p.id, p]));
+
   return (
     <div className="flex flex-col gap-1">
       {tasks.map((task) => {
         const done = task.status === "concluido";
-        const assignee = getTeamMember(task.assigneeId);
+        const assignee = profileById.get(task.assigneeId);
         const status = taskWorkflowConfig[task.status];
         const overdue = !done && isOverdue(task.dueDate);
         const Icon = done ? CheckSquare : Square;
@@ -50,7 +56,7 @@ export function ContentTasksChecklist({ tasks }: { tasks: Task[] }) {
                   {task.title}
                 </span>
                 <span className="text-[12px] text-muted-foreground">
-                  {assignee?.name ?? "—"} ·{" "}
+                  {assignee?.name ?? "Sem responsável"} ·{" "}
                   <span className={overdue ? "font-medium text-status-danger-fg" : undefined}>
                     {getTaskDueLabel(task.dueDate, done)}
                   </span>

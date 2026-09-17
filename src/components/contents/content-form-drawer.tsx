@@ -2,15 +2,18 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { ZodError } from "zod";
 
-import type { Content, ContentChannel, ContentEditorialStatus, ContentType } from "@/lib/types";
+import type { Content, ContentChannel, ContentEditorialStatus, ContentType, Task } from "@/lib/types";
 import { CHANNEL_OPTIONS, CONTENT_TYPE_OPTIONS } from "@/lib/mock-data/contents";
-import { clients } from "@/lib/mock-data/clients";
-import { getProjectsByClient, projects } from "@/lib/mock-data/projects";
-import { team } from "@/lib/mock-data/users";
-import { getTasksByClient, tasks } from "@/lib/mock-data/tasks";
+import {
+  createContent,
+  updateContent,
+  type ClientOption,
+  type ProfileOption,
+  type ProjectOption,
+} from "@/lib/data/contents";
 import { contentEditorialConfig } from "@/lib/status";
-import { createContent, updateContent } from "@/lib/services/contents-service";
 import {
   Sheet,
   SheetContent,
@@ -32,6 +35,7 @@ import {
 } from "@/components/ui/select";
 
 const NO_PROJECT = "nenhum";
+const NO_ASSIGNEE = "nenhum";
 
 interface FormState {
   title: string;
@@ -49,7 +53,7 @@ interface FormState {
   taskIds: string[];
 }
 
-function emptyForm(defaultClientId?: string, defaultProjectId?: string): FormState {
+function emptyForm(clients: ClientOption[], defaultClientId?: string, defaultProjectId?: string): FormState {
   return {
     title: "",
     clientId: defaultClientId ?? clients[0]?.id ?? "",
@@ -57,7 +61,7 @@ function emptyForm(defaultClientId?: string, defaultProjectId?: string): FormSta
     contentType: CONTENT_TYPE_OPTIONS[0],
     channel: CHANNEL_OPTIONS[0],
     status: "ideia",
-    responsibleId: team[0]?.id ?? "",
+    responsibleId: NO_ASSIGNEE,
     publishDate: "",
     publishTime: "",
     description: "",
@@ -75,7 +79,7 @@ function toFormState(content: Content): FormState {
     contentType: content.contentType,
     channel: content.channel,
     status: content.status,
-    responsibleId: content.responsibleId,
+    responsibleId: content.responsibleId || NO_ASSIGNEE,
     publishDate: content.publishDate,
     publishTime: content.publishTime ?? "",
     description: content.description ?? "",
@@ -89,6 +93,10 @@ interface ContentFormDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   content?: Content | null;
+  clients: ClientOption[];
+  projects: ProjectOption[];
+  profiles: ProfileOption[];
+  tasks: Task[];
   defaultClientId?: string;
   defaultProjectId?: string;
   onSaved?: (content: Content) => void;
@@ -98,26 +106,43 @@ export function ContentFormDrawer({
   open,
   onOpenChange,
   content,
+  clients,
+  projects,
+  profiles,
+  tasks,
   defaultClientId,
   defaultProjectId,
   onSaved,
 }: ContentFormDrawerProps) {
   const [form, setForm] = useState<FormState>(() =>
-    content ? toFormState(content) : emptyForm(defaultClientId, defaultProjectId),
+    content ? toFormState(content) : emptyForm(clients, defaultClientId, defaultProjectId),
   );
+  const [submitting, setSubmitting] = useState(false);
   const isEditing = Boolean(content);
 
   const availableProjects = useMemo(
-    () => (form.clientId ? getProjectsByClient(form.clientId) : projects),
-    [form.clientId],
+    () => projects.filter((project) => project.clientId === form.clientId),
+    [form.clientId, projects],
   );
   const availableTasks = useMemo(
-    () => (form.clientId ? getTasksByClient(form.clientId) : tasks),
-    [form.clientId],
+    () => tasks.filter((task) => task.clientId === form.clientId),
+    [form.clientId, tasks],
   );
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function handleClientChange(clientId: string) {
+    const nextTasks = tasks.filter((task) => task.clientId === clientId);
+    setForm((prev) => ({
+      ...prev,
+      clientId,
+      projectId: projects.some((p) => p.id === prev.projectId && p.clientId === clientId)
+        ? prev.projectId
+        : NO_PROJECT,
+      taskIds: prev.taskIds.filter((id) => nextTasks.some((t) => t.id === id)),
+    }));
   }
 
   function toggleTask(taskId: string) {
@@ -129,7 +154,7 @@ export function ContentFormDrawer({
     }));
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     if (!form.title.trim() || !form.clientId || !form.publishDate) {
@@ -144,7 +169,7 @@ export function ContentFormDrawer({
       contentType: form.contentType,
       channel: form.channel,
       status: form.status,
-      responsibleId: form.responsibleId,
+      responsibleId: form.responsibleId === NO_ASSIGNEE ? null : form.responsibleId,
       publishDate: form.publishDate,
       publishTime: form.publishTime || undefined,
       description: form.description.trim() || undefined,
@@ -153,11 +178,25 @@ export function ContentFormDrawer({
       taskIds: form.taskIds,
     };
 
-    const saved = isEditing && content ? updateContent(content.id, payload) : createContent(payload);
+    setSubmitting(true);
+    try {
+      const saved =
+        isEditing && content ? await updateContent(content.id, payload) : await createContent(payload);
 
-    if (saved) onSaved?.(saved);
-    onOpenChange(false);
-    toast.success(isEditing ? "Conteúdo atualizado com sucesso." : "Conteúdo criado com sucesso.");
+      onSaved?.(saved);
+      onOpenChange(false);
+      toast.success(isEditing ? "Conteúdo atualizado com sucesso." : "Conteúdo criado com sucesso.");
+    } catch (error) {
+      if (error instanceof ZodError) {
+        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Não foi possível salvar o conteúdo. Tente novamente.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -166,7 +205,9 @@ export function ContentFormDrawer({
         <SheetHeader className="border-b border-border pb-4">
           <SheetTitle>{isEditing ? "Editar conteúdo" : "Novo conteúdo"}</SheetTitle>
           <SheetDescription>
-            Os dados são mockados nesta etapa — nada é persistido em banco.
+            {isEditing
+              ? "As alterações são salvas diretamente no banco de dados."
+              : "O conteúdo é salvo diretamente no banco de dados da sua organização."}
           </SheetDescription>
         </SheetHeader>
 
@@ -183,21 +224,7 @@ export function ContentFormDrawer({
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <FormField label="Cliente" required>
-                  <Select
-                    value={form.clientId}
-                    onValueChange={(v) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        clientId: v,
-                        projectId: getProjectsByClient(v).some((p) => p.id === prev.projectId)
-                          ? prev.projectId
-                          : NO_PROJECT,
-                        taskIds: prev.taskIds.filter((id) =>
-                          getTasksByClient(v).some((t) => t.id === id),
-                        ),
-                      }))
-                    }
-                  >
+                  <Select value={form.clientId} onValueChange={handleClientChange}>
                     <SelectTrigger aria-label="Cliente">
                       <SelectValue />
                     </SelectTrigger>
@@ -287,9 +314,10 @@ export function ContentFormDrawer({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {team.map((member) => (
-                        <SelectItem key={member.id} value={member.id}>
-                          {member.name}
+                      <SelectItem value={NO_ASSIGNEE}>Sem responsável</SelectItem>
+                      {profiles.map((profile) => (
+                        <SelectItem key={profile.id} value={profile.id}>
+                          {profile.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -368,10 +396,12 @@ export function ContentFormDrawer({
           </div>
 
           <SheetFooter className="mt-6 flex-row justify-end gap-2 px-0 pb-0">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
               Cancelar
             </Button>
-            <Button type="submit">{isEditing ? "Salvar alterações" : "Criar conteúdo"}</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Salvando..." : isEditing ? "Salvar alterações" : "Criar conteúdo"}
+            </Button>
           </SheetFooter>
         </form>
       </SheetContent>

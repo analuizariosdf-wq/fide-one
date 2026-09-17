@@ -212,6 +212,10 @@ export interface Content {
   description?: string;
   caption?: string;
   cta?: string;
+  /** Set only once the content actually reaches "publicado" — see the
+   * publication-rule note in src/lib/data/contents.ts. Distinct from
+   * publishDate/publishTime, which are the planned schedule. */
+  publishedAt?: string;
   taskIds: string[];
 }
 

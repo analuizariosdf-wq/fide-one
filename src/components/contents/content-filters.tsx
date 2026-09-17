@@ -3,11 +3,8 @@
 import { Search } from "lucide-react";
 
 import { CHANNEL_OPTIONS, CONTENT_TYPE_OPTIONS } from "@/lib/mock-data/contents";
-import { clients } from "@/lib/mock-data/clients";
-import { projects } from "@/lib/mock-data/projects";
-import { team } from "@/lib/mock-data/users";
+import type { ClientOption, ContentFilters, ProfileOption, ProjectOption } from "@/lib/data/contents";
 import { contentEditorialConfig } from "@/lib/status";
-import type { ContentFilters } from "@/lib/services/contents-service";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,6 +19,9 @@ import { FilterBar } from "@/components/shared/filter-bar";
 interface ContentFiltersBarProps {
   filters: ContentFilters;
   onChange: (next: ContentFilters) => void;
+  clients: ClientOption[];
+  projects: ProjectOption[];
+  profiles: ProfileOption[];
 }
 
 function countActive(filters: ContentFilters) {
@@ -37,7 +37,7 @@ function countActive(filters: ContentFilters) {
     (filters.dateTo ? 1 : 0);
 }
 
-export function ContentFiltersBar({ filters, onChange }: ContentFiltersBarProps) {
+export function ContentFiltersBar({ filters, onChange, clients, projects, profiles }: ContentFiltersBarProps) {
   const filterControls = (
     <>
       <Select
@@ -121,9 +121,9 @@ export function ContentFiltersBar({ filters, onChange }: ContentFiltersBarProps)
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="todos">Todos os responsáveis</SelectItem>
-          {team.map((member) => (
-            <SelectItem key={member.id} value={member.id}>
-              {member.name}
+          {profiles.map((profile) => (
+            <SelectItem key={profile.id} value={profile.id}>
+              {profile.name}
             </SelectItem>
           ))}
         </SelectContent>

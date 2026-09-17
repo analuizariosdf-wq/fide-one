@@ -220,6 +220,77 @@ ad hoc em `src/lib/mock-data/tasks.ts` + `store/tasks-store.ts` +
   `TaskItem`/`myTasks`, deliberadamente separado do `Task` completo desde
   a Etapa 1, e continua 100% mockado.
 
+## 4e. Conteúdos — Fase 5.5 (feita nesta sessão)
+
+Estava 100% mockado. Agora Conteúdos é o quarto módulo **REAL/SUPABASE**:
+
+- Novo Data Layer real: `src/lib/data/contents.ts` + `content-schema.ts`
+  (mesmo padrão de Clientes/Projetos/Tarefas). Listar, detalhe, criar,
+  editar, excluir, status editorial, cliente, projeto, responsável,
+  tipo/formato, canal, agendamento, legenda, CTA e Conteúdo ↔ Tarefas —
+  tudo real.
+- **Status editorial/tipo/canal**: conferidos contra o schema antes de
+  implementar — os 8 status (`ideia...publicado`), 9 tipos e 7 canais do
+  `CHECK` da tabela `contents` já batiam exatamente com
+  `contentEditorialConfig`/`CONTENT_TYPE_OPTIONS`/`CHANNEL_OPTIONS`
+  existentes. Nenhum enum novo, nenhuma mudança de domínio — só passou a
+  validar contra o Supabase em vez do mock.
+- **Cliente/Projeto/Responsável**: seletores usam exclusivamente dados
+  reais; cascata Cliente → Projeto preservada. Antes de gravar, valida no
+  servidor (sob RLS) que cliente/projeto/responsável pertencem à
+  organização e que o projeto pertence ao cliente informado — mesmo
+  padrão do Fase 5.4.
+- **scheduled_date/scheduled_time vs. published_at**: mantidos como
+  conceitos distintos. `scheduled_date`/`scheduled_time` (campos
+  "Data de publicação"/"Horário" do formulário) são sempre a data
+  planejada e nunca são tocados automaticamente. `published_at` só é
+  gravado (`now()`) numa transição real para "publicado", preservado se o
+  conteúdo já estava publicado, e volta a `null` ao sair desse status —
+  mesma regra do `completed_at` de Tarefas (Fase 5.4), aplicada aqui de
+  forma consistente.
+- **Conteúdo ↔ Tarefas (`content_tasks`)**: implementada a relação real
+  (many-to-many, `unique(content_id, task_id)`). A UX já existente (chips
+  de tarefas para marcar/desmarcar, filtrados pelo cliente selecionado)
+  foi preservada e migrada — no submit, sincroniza via delete-then-insert
+  (mesmo padrão de `client_services`). O card "Tarefas relacionadas" no
+  detalhe do conteúdo mostra as tarefas reais vinculadas.
+- **Tarefa → Conteúdo**: o card "Conteúdo relacionado" no detalhe da
+  Tarefa (que na Fase 5.4 mostrava "ainda não disponível") agora consulta
+  `content_tasks` e mostra os conteúdos reais relacionados àquela tarefa.
+- **content_comments**: NÃO implementado. Auditoria confirmou que o
+  detalhe de Conteúdo nunca teve UI de comentários (diferente de Tarefas,
+  que já tinha) — implementar isso agora seria criar uma tela nova, fora
+  do escopo desta fase. Documentado aqui para uma etapa futura.
+- **Arquivos/mídia**: card "Mídia" já era um estado honesto de "ainda não
+  implementado" (Supabase Storage) — mantido como estava, sem expandir
+  para um sistema de upload/DAM nesta fase.
+- **Calendário**: não tocado. `scheduled_date`/`scheduled_time`/`status`/
+  `channel`/`content_type` do Conteúdo real já existem com os nomes e
+  domínios corretos para quando o Calendário for migrado (Fase 5.6) — não
+  foi necessária nenhuma mudança de schema para isso.
+- Removido `src/lib/services/contents-service.ts` (sem consumidores
+  restantes). **Mantidos** `src/lib/store/contents-store.ts` (ainda
+  importado diretamente por `calendar-service.ts`) e
+  `src/lib/mock-data/contents.ts` (`contents`/`ContentItem[]` do Dashboard,
+  `editorialContents`, `CONTENT_TYPE_OPTIONS`, `CHANNEL_OPTIONS`,
+  `getContent`, `getContentsByClient/Project` — ainda usados pelo
+  Calendário, pelo breadcrumb e pelo widget do Dashboard).
+- **Breadcrumb**: mesmo padrão de bridge da Fase 5.4 —
+  `registerSupabaseContent()` populei o cache que `getContent()` consulta,
+  corrigindo "Conteúdos / <título>" para UUIDs reais.
+- **Cliente → Conteúdos** e **Projeto → Conteúdos**: passaram a usar dados
+  reais (aviso de mock removido dessas duas áreas). O KPI do Cliente
+  ("Publicações" e "Aguardando aprovação") também passou a ser calculado
+  com conteúdos reais — com isso, todo o card de KPIs do Cliente
+  (Publicações, Tarefas abertas, Aguardando aprovação, Receita mensal) é
+  real, e `MockModuleNotice` foi removida de lá.
+- `src/components/clients/mock-module-notice.tsx` foi **removido**: ficou
+  sem nenhum consumidor depois desta fase (Clientes, Projetos, Tarefas e
+  Conteúdos já são todos reais — só falta Calendário, que não usava esse
+  aviso).
+- **Dashboard**: não tocado — continua usando `contents`/`ContentItem[]`
+  (mock leve da Etapa 1), documentado aqui como dependência restante.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -241,35 +312,40 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
 
 - **App Shell + Dashboard** (Fase 1): visual completo, dados mockados.
 - **Clientes** (Fase 2 visual + Etapa 4 + Fase 5.2 backend): **REAL/SUPABASE**
-  — único módulo com CRUD real contra o Supabase hospedado
-  (`src/lib/data/clients.ts`). Listar, criar, editar, excluir, filtrar,
-  status, serviços contratados — tudo real, sem mock residual. A página de
-  detalhe do cliente ainda mostra abas de Tarefas/Conteúdos vindas de mock
-  (claramente sinalizado com um aviso — ver seção 4b), pois esses módulos
-  não foram migrados ainda. A aba Projetos do detalhe do cliente já é real
-  (ver seção 4c).
+  — CRUD real contra o Supabase hospedado (`src/lib/data/clients.ts`).
+  Listar, criar, editar, excluir, filtrar, status, serviços contratados —
+  tudo real. As abas Projetos, Tarefas e Conteúdos do detalhe do cliente
+  também já são reais (ver seções 4c/4d/4e); só o KPI de conteúdo é
+  calculado, o resto (mensalidade) já era real desde a Fase 5.2.
 - **Projetos** (Fase 2 visual + Fase 5.3 backend): **REAL/SUPABASE**
-  — segundo módulo com CRUD real (`src/lib/data/projects.ts`). Listar,
-  criar, editar, excluir, status, cliente, responsável, datas, descrição,
-  campanha — tudo real, sem mock residual. O detalhe do projeto mostra
-  Tarefas reais (ver seção 4d) e Conteúdos ainda mock (sinalizado).
+  — CRUD real (`src/lib/data/projects.ts`). Listar, criar, editar,
+  excluir, status, cliente, responsável, datas, descrição, campanha —
+  tudo real. Tarefas e Conteúdos relacionados no detalhe do projeto
+  também já são reais (ver seções 4d/4e).
 - **Tarefas** (Fase 2 visual + Fase 5.4 backend): **REAL/SUPABASE** —
-  terceiro módulo com CRUD real (`src/lib/data/tasks.ts`). Listagem,
-  Kanban, detalhe, criar, editar, status, prioridade, prazo, cliente,
-  projeto, responsável, conclusão e comentários — tudo real. "Conteúdo
-  relacionado" e "Histórico" no detalhe mostram avisos de "ainda não
-  disponível" em vez de mock (ver seção 4d).
-- **Conteúdos, Calendário** (Fase 3): UI e navegação completas, mas dados
-  ainda mockados (`src/lib/mock-data/*`, `src/lib/services/*-service.ts`,
+  CRUD real (`src/lib/data/tasks.ts`). Listagem, Kanban, detalhe, criar,
+  editar, status, prioridade, prazo, cliente, projeto, responsável,
+  conclusão e comentários — tudo real. "Conteúdo relacionado" no detalhe
+  também já é real (ver seção 4e); "Histórico" segue como "ainda não
+  disponível" (sem infraestrutura de `activity_logs`).
+- **Conteúdos** (Fase 3 visual + Fase 5.5 backend): **REAL/SUPABASE** —
+  CRUD real (`src/lib/data/contents.ts`). Listagem, detalhe, criar,
+  editar, status editorial, cliente, projeto, responsável, tipo, canal,
+  agendamento, legenda, CTA e Conteúdo ↔ Tarefas (`content_tasks`) — tudo
+  real. `content_comments` não tem UI (nunca teve, mesmo mockado) — ver
+  seção 4e. Mídia segue "ainda não implementado" (Storage).
+- **Calendário** (Fase 3): UI e navegação completas, mas dados ainda
+  mockados (`src/lib/mock-data/*`, `src/lib/services/calendar-service.ts`,
   `src/lib/store/*-store.ts`).
 
 ## 8. Módulos ainda mockados / não iniciados
 
-- Conteúdos, Calendário: UI pronta, sem ligação ao Supabase (é a
-  Fase 5.5–5.6).
+- Calendário: UI pronta, sem ligação ao Supabase (é a Fase 5.6).
 - Financeiro, Equipe, Relatórios: só placeholders de tela
   (`src/app/(app)/financeiro`, `/equipe`, `/relatorios`) — nenhuma lógica.
 - Upload de arquivos (Storage): infraestrutura pronta, sem UI (Fase 5.7).
+- Dashboard: continua com os widgets leves da Etapa 1 (`myTasks`,
+  `contents: ContentItem[]`), deliberadamente não migrados nesta fase.
 
 ## 9. Roadmap
 
@@ -283,7 +359,7 @@ FASE 5 — Conectar frontend ao Supabase real    🔶 em andamento
   5.2 Clientes                                 ✅ concluída (esta sessão) — REAL/SUPABASE
   5.3 Projetos                                 ✅ concluída (esta sessão) — REAL/SUPABASE
   5.4 Tarefas + Kanban                         ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.5 Conteúdos                                ⏳ pendente
+  5.5 Conteúdos                                ✅ concluída (esta sessão) — REAL/SUPABASE
   5.6 Calendário                               ⏳ pendente
   5.7 Arquivos / Supabase Storage              ⏳ pendente
   5.8 Remoção final dos mocks + validação      ⏳ pendente
@@ -345,6 +421,7 @@ Server).
 | Data Layer real (Clientes) | `src/lib/data/clients.ts`, `client-schema.ts`, `organization.ts` |
 | Data Layer real (Projetos) | `src/lib/data/projects.ts`, `project-schema.ts` |
 | Data Layer real (Tarefas) | `src/lib/data/tasks.ts`, `task-schema.ts` |
+| Data Layer real (Conteúdos) | `src/lib/data/contents.ts`, `content-schema.ts` |
 | Migrations | `supabase/migrations/*.sql` |
 | Seed hospedado | `supabase/manual/seed-hosted.sql` |
 | Testes de RLS | `supabase/manual/rls-tests.sql` |

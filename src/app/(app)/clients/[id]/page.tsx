@@ -9,7 +9,7 @@ import type { Content, Project, Task } from "@/lib/types";
 import { useClient, removeClient } from "@/lib/data/clients";
 import { useProjects, filterProjects, removeProject } from "@/lib/data/projects";
 import { useTasks, filterTasks, removeTask } from "@/lib/data/tasks";
-import { useContents, removeContent } from "@/lib/services/contents-service";
+import { useContents, filterContents, removeContent } from "@/lib/data/contents";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -19,7 +19,6 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ClientHeader } from "@/components/clients/client-header";
 import { ClientKpis } from "@/components/clients/client-kpis";
-import { MockModuleNotice } from "@/components/clients/mock-module-notice";
 import { ClientFormDrawer } from "@/components/clients/client-form-drawer";
 import { ProjectTable } from "@/components/projects/project-table";
 import { ProjectFormDrawer } from "@/components/projects/project-form-drawer";
@@ -69,7 +68,19 @@ export default function ClientDetailPage({
     () => clientTasks.filter((task) => task.status !== "concluido" && task.status !== "cancelado").length,
     [clientTasks],
   );
-  const clientContents = useContents({ clientId: id });
+  const {
+    contents: allContents,
+    clients: contentClients,
+    projects: contentProjects,
+    profiles: contentProfiles,
+    loading: contentsLoading,
+    error: contentsError,
+    refetch: refetchContents,
+  } = useContents();
+  const clientContents = useMemo(
+    () => filterContents(allContents, { clientId: id }),
+    [allContents, id],
+  );
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -146,9 +157,9 @@ export default function ClientDetailPage({
 
         <TabsContent value="visao-geral" className="pt-4">
           <ClientKpis
-            clientId={client.id}
             monthlyFee={client.monthlyFee}
             openTasksCount={openTasksCount}
+            contents={clientContents}
           />
 
           {client.notes && (
@@ -253,7 +264,6 @@ export default function ClientDetailPage({
         </TabsContent>
 
         <TabsContent value="conteudos" className="pt-4">
-          <MockModuleNotice module="Conteúdos" />
           <Card>
             <CardHeader>
               <CardTitle>Conteúdos</CardTitle>
@@ -270,17 +280,30 @@ export default function ClientDetailPage({
               </Button>
             </CardHeader>
             <CardContent>
-              <ContentTable
-                contents={clientContents}
-                hideClientColumn
-                onEdit={(content) => {
-                  setEditingContent(content);
-                  setContentDrawerOpen(true);
-                }}
-                onDelete={(content) => setDeletingContent(content)}
-                emptyTitle="Você ainda não possui conteúdos neste cliente."
-                emptyDescription="Crie o primeiro conteúdo para começar a planejar a produção."
-              />
+              {contentsError ? (
+                <ErrorState description={contentsError} onRetry={refetchContents} />
+              ) : contentsLoading ? (
+                <div className="flex flex-col gap-3">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} className="h-11 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <ContentTable
+                  contents={clientContents}
+                  clients={contentClients}
+                  projects={contentProjects}
+                  profiles={contentProfiles}
+                  hideClientColumn
+                  onEdit={(content) => {
+                    setEditingContent(content);
+                    setContentDrawerOpen(true);
+                  }}
+                  onDelete={(content) => setDeletingContent(content)}
+                  emptyTitle="Você ainda não possui conteúdos neste cliente."
+                  emptyDescription="Crie o primeiro conteúdo para começar a planejar a produção."
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -327,7 +350,12 @@ export default function ClientDetailPage({
         open={contentDrawerOpen}
         onOpenChange={setContentDrawerOpen}
         content={editingContent}
+        clients={contentClients}
+        projects={contentProjects}
+        profiles={contentProfiles}
+        tasks={allTasks}
         defaultClientId={client.id}
+        onSaved={refetchContents}
       />
 
       <ConfirmDialog
@@ -336,10 +364,15 @@ export default function ClientDetailPage({
         title="Excluir conteúdo"
         description={`Tem certeza que deseja excluir "${deletingContent?.title}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!deletingContent) return;
-          removeContent(deletingContent.id);
-          toast.success("Conteúdo excluído.");
+          try {
+            await removeContent(deletingContent.id);
+            toast.success("Conteúdo excluído.");
+            refetchContents();
+          } catch {
+            toast.error("Não foi possível excluir o conteúdo. Tente novamente.");
+          }
         }}
       />
 

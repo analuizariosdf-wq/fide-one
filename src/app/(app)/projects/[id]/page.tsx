@@ -9,7 +9,7 @@ import { formatDateShort } from "@/lib/format";
 import { projectStatusConfig } from "@/lib/status";
 import { useProject, removeProject } from "@/lib/data/projects";
 import { useTasks, filterTasks, removeTask } from "@/lib/data/tasks";
-import { useContents, removeContent } from "@/lib/services/contents-service";
+import { useContents, filterContents, removeContent } from "@/lib/data/contents";
 import type { Content, Task } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EntityLink } from "@/components/shared/entity-link";
-import { MockModuleNotice } from "@/components/clients/mock-module-notice";
 import { ProjectFormDrawer } from "@/components/projects/project-form-drawer";
 import { TaskListView } from "@/components/tasks/task-list-view";
 import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
@@ -48,7 +47,19 @@ export default function ProjectDetailPage({
     () => filterTasks(allTasks, { projectId: id }),
     [allTasks, id],
   );
-  const projectContents = useContents({ projectId: id });
+  const {
+    contents: allContents,
+    clients: contentClients,
+    projects: contentProjects,
+    profiles: contentProfiles,
+    loading: contentsLoading,
+    error: contentsError,
+    refetch: refetchContents,
+  } = useContents();
+  const projectContents = useMemo(
+    () => filterContents(allContents, { projectId: id }),
+    [allContents, id],
+  );
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -222,18 +233,30 @@ export default function ProjectDetailPage({
           </Button>
         </CardHeader>
         <CardContent>
-          <MockModuleNotice module="Conteúdos" />
-          <ContentTable
-            contents={projectContents}
-            hideClientColumn
-            onEdit={(content) => {
-              setEditingContent(content);
-              setContentDrawerOpen(true);
-            }}
-            onDelete={(content) => setDeletingContent(content)}
-            emptyTitle="Nenhum conteúdo relacionado a este projeto"
-            emptyDescription="Crie o primeiro conteúdo para começar a planejar a produção."
-          />
+          {contentsError ? (
+            <ErrorState description={contentsError} onRetry={refetchContents} />
+          ) : contentsLoading ? (
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} className="h-11 w-full" />
+              ))}
+            </div>
+          ) : (
+            <ContentTable
+              contents={projectContents}
+              clients={contentClients}
+              projects={contentProjects}
+              profiles={contentProfiles}
+              hideClientColumn
+              onEdit={(content) => {
+                setEditingContent(content);
+                setContentDrawerOpen(true);
+              }}
+              onDelete={(content) => setDeletingContent(content)}
+              emptyTitle="Nenhum conteúdo relacionado a este projeto"
+              emptyDescription="Crie o primeiro conteúdo para começar a planejar a produção."
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -274,8 +297,13 @@ export default function ProjectDetailPage({
         open={contentDrawerOpen}
         onOpenChange={setContentDrawerOpen}
         content={editingContent}
+        clients={contentClients}
+        projects={contentProjects}
+        profiles={contentProfiles}
+        tasks={allTasks}
         defaultClientId={project.clientId}
         defaultProjectId={project.id}
+        onSaved={refetchContents}
       />
 
       <ConfirmDialog
@@ -284,10 +312,15 @@ export default function ProjectDetailPage({
         title="Excluir conteúdo"
         description={`Tem certeza que deseja excluir "${deletingContent?.title}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!deletingContent) return;
-          removeContent(deletingContent.id);
-          toast.success("Conteúdo excluído.");
+          try {
+            await removeContent(deletingContent.id);
+            toast.success("Conteúdo excluído.");
+            refetchContents();
+          } catch {
+            toast.error("Não foi possível excluir o conteúdo. Tente novamente.");
+          }
         }}
       />
 
