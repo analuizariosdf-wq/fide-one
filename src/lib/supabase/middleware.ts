@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import type { User } from "@supabase/supabase-js";
 
 const PUBLIC_PATHS = ["/login"];
 
@@ -10,32 +11,47 @@ const PUBLIC_PATHS = ["/login"];
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          for (const { name, value } of cookiesToSet) {
-            request.cookies.set(name, value);
-          }
-          supabaseResponse = NextResponse.next({ request });
-          for (const { name, value, options } of cookiesToSet) {
-            supabaseResponse.cookies.set(name, value, options);
-          }
+  // Middleware runs in the Edge Runtime, outside the React tree — a thrown
+  // error here never reaches app/error.tsx, it becomes a bare, bodyless
+  // 500 (confirmed: this is exactly what happens with a misconfigured/
+  // unreachable Supabase project). If Supabase can't be reached at all, we
+  // can't determine auth state either way, so let the request through
+  // unmodified: the page/layout underneath (getCurrentActor) hits the same
+  // Supabase call, and *that* failure is a normal React render error that
+  // app/error.tsx catches and explains — one honest failure surface
+  // instead of two different broken ones.
+  let user: User | null = null;
+  try {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            for (const { name, value } of cookiesToSet) {
+              request.cookies.set(name, value);
+            }
+            supabaseResponse = NextResponse.next({ request });
+            for (const { name, value, options } of cookiesToSet) {
+              supabaseResponse.cookies.set(name, value, options);
+            }
+          },
         },
       },
-    },
-  );
+    );
 
-  // IMPORTANT: do not remove — this call refreshes the auth token and
-  // must run on every request for the session to stay alive.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    // IMPORTANT: do not remove — this call refreshes the auth token and
+    // must run on every request for the session to stay alive.
+    const {
+      data: { user: refreshedUser },
+    } = await supabase.auth.getUser();
+    user = refreshedUser;
+  } catch {
+    return supabaseResponse;
+  }
 
   const isPublicPath = PUBLIC_PATHS.some((path) =>
     request.nextUrl.pathname.startsWith(path),

@@ -7,7 +7,8 @@ import { Bell, ChevronRight, Menu, PanelLeft, Search } from "lucide-react";
 
 import { getBreadcrumb } from "@/lib/breadcrumb";
 import { createClient } from "@/lib/supabase/client";
-import { useCurrentProfile } from "@/lib/supabase/use-current-profile";
+import { useCurrentActor } from "@/lib/auth/current-actor-context";
+import { toInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -32,7 +33,7 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
   const router = useRouter();
   const breadcrumb = getBreadcrumb(pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { profile } = useCurrentProfile();
+  const { profile, role } = useCurrentActor();
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -147,17 +148,17 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
               aria-label="Menu do perfil"
             >
               <Avatar className="size-7">
-                <AvatarFallback>{profile?.initials ?? "…"}</AvatarFallback>
+                <AvatarFallback>{profile ? toInitials(profile.name) : "—"}</AvatarFallback>
               </Avatar>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="flex flex-col gap-0.5">
               <span className="text-[13px] font-medium text-foreground">
-                {profile?.name ?? "Carregando..."}
+                {profile?.name ?? "Perfil não encontrado"}
               </span>
               <span className="text-[12px] font-normal text-muted-foreground">
-                {profile?.roleName ?? ""}
+                {role?.name ?? ""}
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

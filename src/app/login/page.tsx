@@ -31,22 +31,38 @@ function LoginForm() {
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // createClient() itself throws synchronously if NEXT_PUBLIC_SUPABASE_URL
+    // is missing/malformed (e.g. still a placeholder) — without this
+    // try/catch that exception is uncaught, and the button is stuck on
+    // "Entrando..." forever with no explanation. Same friendly message as
+    // the network-failure case below, since from the user's side it's the
+    // same problem: can't reach the server.
+    try {
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    setLoading(false);
+      if (signInError) {
+        if (signInError.name === "AuthRetryableFetchError") {
+          setError("Não foi possível conectar ao servidor. Tente novamente em instantes.");
+        } else if (signInError.code === "invalid_credentials") {
+          setError("E-mail ou senha incorretos. Tente novamente.");
+        } else {
+          setError("Não foi possível entrar agora. Tente novamente.");
+        }
+        return;
+      }
 
-    if (signInError) {
-      setError("E-mail ou senha incorretos. Tente novamente.");
-      return;
+      toast.success("Login realizado com sucesso.");
+      router.push(searchParams.get("redirectTo") || "/");
+      router.refresh();
+    } catch {
+      setError("Não foi possível conectar ao servidor. Tente novamente em instantes.");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Login realizado com sucesso.");
-    router.push(searchParams.get("redirectTo") || "/");
-    router.refresh();
   }
 
   return (
