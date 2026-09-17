@@ -32,6 +32,9 @@ export default function DashboardPage() {
             tasksOverdue={data.kpis.tasksOverdue}
             contentsValue={data.kpis.contentsValue}
             contentsHelper={data.kpis.contentsHelper}
+            receivableValue={data.kpis.receivableValue}
+            payableValue={data.kpis.payableValue}
+            overdueTransactionsCount={data.kpis.overdueTransactionsCount}
           />
 
           {data.attentionItems.length > 0 && <AttentionSection items={data.attentionItems} />}

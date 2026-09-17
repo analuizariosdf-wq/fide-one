@@ -624,6 +624,72 @@ fica como validação pendente para quando alguém puder testar fora deste
 sandbox — não é um bloqueio de qualidade de código, é uma limitação de
 ambiente já conhecida e documentada desde a Fase 4.
 
+## 4i. Financeiro + Equipe — Fase 6 (feita nesta sessão)
+
+**Financeiro** passa a ser **REAL/SUPABASE**, usando o schema já existente
+desde a Etapa 4 (`financial_categories`/`financial_transactions`) — nenhuma
+migration foi necessária, RLS genérica por `organization_id` já cobria as
+duas tabelas com CRUD completo.
+
+- Novo Data Layer: `src/lib/data/financial.ts` + `financial-schema.ts`.
+  CRUD de lançamentos, criação simples de categoria (inline, no próprio
+  formulário), fluxo de caixa (`computeCashFlowSummary`) e status efetivo
+  derivado (`getEffectiveStatus`).
+- **Decisão importante — tipo (receita/despesa)**: a tabela
+  `financial_transactions` não tem coluna `type`; o tipo é sempre derivado
+  da categoria vinculada (`financial_categories.type`). Por isso o app
+  exige categoria no formulário (Zod), mesmo a coluna `category_id` sendo
+  nullable no banco — nenhum lançamento sem categoria é criado pela UI.
+- **Gap de schema conhecido, não bloqueante**: `financial_transactions`
+  não tem `project_id` nem `notes` — só `client_id`. Um lançamento pode
+  ser vinculado a um cliente, nunca a um projeto específico, e não há
+  campo de observações. Documentado aqui como pendência de schema para
+  quando houver necessidade real comprovada; não foi feita migration
+  silenciosa para isso.
+- **Status "atrasado"**: já existe no `CHECK` (`previsto/proximo/pago/
+  atrasado`), mas nada escreve essa transição automaticamente. A UI calcula
+  o status efetivo (`vencimento < hoje && status != pago` → "Atrasado")
+  só para exibição/filtro, sem sobrescrever o valor persistido.
+- **Recorrência**: schema não suporta — não foi criado nenhum motor de
+  recorrência; lançamentos são cadastrados individualmente (pendência
+  pós-MVP, como já era esperado).
+- Tela `/financeiro`: KPIs (entradas, saídas, saldo, a receber, a pagar,
+  aviso de vencidos), filtros (tipo, status, categoria, cliente, período),
+  tabela com criar/editar/excluir/marcar como pago-recebido.
+- Cliente → Financeiro: a aba (antes placeholder) agora mostra uma lista
+  simples e somente-leitura dos lançamentos daquele cliente
+  (`TransactionTable` com `readOnly`), com atalho para o módulo completo.
+- Dashboard: card "A receber" agora é real (`useCashFlowSummary`), com
+  "a pagar"/vencidos na legenda; item de atenção adicionado quando há
+  lançamento vencido. Nenhum outro card do Dashboard foi alterado.
+
+**Equipe** passa a ser **REAL/SUPABASE** (leitura + edição do próprio
+perfil); permissões continuam sendo aplicadas pelo RLS, não pela UI.
+
+- Novo Data Layer: `src/lib/data/team.ts` (`useTeam()`, join `profiles` +
+  `roles` em JS). `mock-data/team.ts` não é mais usado por esta tela — só
+  segue como bridge para `ClientTable`/`ClientHeader` (fora de escopo).
+- Tela `/equipe`: lista real de perfis (nome, e-mail, avatar/iniciais,
+  função) com "Editar meu perfil" visível somente no próprio card.
+- **Decisão importante — sem gestão de outros usuários**: a policy
+  `profiles_update_self` só permite `id = auth.uid()` — não existe forma
+  de um perfil editar o de outro colega sem `service_role` (proibido no
+  frontend). Por isso não há edição de `role_id` nem convite de usuário
+  nesta fase — inclusão de membros continua pelo fluxo de admin do
+  Supabase (`deploy-supabase.yml`), como já documentado desde a Fase 4/5.
+- `role_id` não é editável nem para o próprio usuário (evita
+  auto-promoção), embora a RLS atual tecnicamente não distinga colunas —
+  a restrição é só de UI, registrada aqui para não ser reintroduzida sem
+  decisão explícita.
+- Configurações: não expandido — segue placeholder, não havia necessidade
+  clara para a Equipe funcionar.
+
+**Validação**: `npm run lint`, `npx tsc --noEmit` e `npm run build`
+limpos (14 rotas, sem warnings novos). Nenhum script de teste ad hoc foi
+necessário — a lógica nova (`computeCashFlowSummary`/`getEffectiveStatus`)
+é simples o suficiente para revisão direta, sem estado de tempo real
+imprevisível.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -674,19 +740,27 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
 - **Arquivos / Storage** (Fase 5.7): **REAL/SUPABASE** para Conteúdo,
   Cliente e Projeto (upload, listagem, download via signed URL, exclusão —
   ver seção 4g). Tarefa ainda não suportada (sem bucket dedicado).
-- **Dashboard** (Fase 1 visual + Fase 5.8 backend): **REAL/SUPABASE** para
-  tudo que representa módulo já migrado — KPIs de tarefas/publicações,
-  "Minhas tarefas" (`useCurrentActor()` + `useTasks()`), "Próximas
-  publicações" (`useContents()`). Financeiro deliberadamente não fabricado
-  (`—` + legenda honesta); "Atividade recente" é um estado vazio honesto,
-  sem `activity_logs` implementado (ver seção 4h).
+- **Dashboard** (Fase 1 visual + Fase 5.8/6 backend): **REAL/SUPABASE**
+  para tudo que representa módulo já migrado — KPIs de tarefas/
+  publicações/a receber, "Minhas tarefas" (`useCurrentActor()` +
+  `useTasks()`), "Próximas publicações" (`useContents()`). "Atividade
+  recente" é um estado vazio honesto, sem `activity_logs` implementado.
+- **Financeiro** (Fase 6): **REAL/SUPABASE** — CRUD real
+  (`src/lib/data/financial.ts`). Contas a receber/pagar, categorias,
+  status, cliente, fluxo de caixa, filtros — ver seção 4i. Projeto
+  relacionado e recorrência não suportados (schema não tem essas colunas).
+- **Equipe** (Fase 6): **REAL/SUPABASE** — leitura real de `profiles` +
+  `roles` (`src/lib/data/team.ts`), edição do próprio perfil. Sem gestão
+  de outros usuários/roles (RLS não permite sem `service_role`) — ver
+  seção 4i.
 
 ## 8. Módulos ainda mockados / não iniciados
 
-- Financeiro, Equipe, Relatórios: só placeholders de tela
-  (`src/app/(app)/financeiro`, `/equipe`, `/relatorios`) — nenhuma lógica.
-  Confirmado na Fase 5.8 que nenhum mock desses módulos vaza para telas
-  reais.
+- Relatórios: só placeholder de tela (`src/app/(app)/relatorios`) —
+  nenhuma lógica.
+- Gestão de outros usuários (convite, troca de role de colega): fora do
+  MVP da Fase 6 — RLS só permite `profiles_update_self`; inclusão de
+  membros continua pelo fluxo de admin do Supabase.
 - Arquivos da Tarefa: `files.task_id` existe no schema, mas não há bucket
   `task-files` — card "Arquivos" da Tarefa continua placeholder (ver
   seção 4g; decisão de qual bucket usar fica para uma fase futura).
@@ -716,12 +790,17 @@ FASE 5 — Conectar frontend ao Supabase real    ✅ concluída (ver seção 4h 
   5.6 Calendário                               ✅ concluída — REAL/SUPABASE
   5.7 Arquivos / Supabase Storage              ✅ concluída — REAL/SUPABASE (Conteúdo/Cliente/Projeto)
   5.8 Remoção final dos mocks + validação      ✅ concluída (esta sessão) — ver seção 4h
-FASE 6 — Financeiro                            ⏳ não iniciada
-FASE 7 — Equipe / permissões                   ⏳ não iniciada
-FASE 8 — Relatórios                            ⏳ não iniciada
-FASE 9 — Rentabilidade / carga de trabalho     ⏳ não iniciada
-FASE 10 — Auditoria UX/UI                      ⏳ não iniciada
+FASE 6 — Financeiro + Equipe (MVP essencial)   ✅ concluída (esta sessão) — ver seção 4i — REAL/SUPABASE
+FASE 7 — Relatórios                            ⏳ não iniciada
+FASE 8 — Rentabilidade / carga de trabalho     ⏳ não iniciada
+FASE 9 — Auditoria UX/UI                       ⏳ não iniciada
 ```
+
+Pendências pós-MVP registradas na Fase 6 (não bloqueiam a conclusão):
+projeto relacionado e observações em lançamentos financeiros (sem coluna
+no schema), recorrência financeira, conciliação/boleto/Pix/nota fiscal,
+gestão de outros usuários e troca de role (exige `service_role`, fora do
+frontend).
 
 ## 10. Decisões técnicas importantes
 

@@ -1,5 +1,6 @@
 import { Images, ListChecks, Wallet } from "lucide-react";
 
+import { formatCurrencyBRL } from "@/lib/format";
 import { StatCard } from "@/components/ui/stat-card";
 
 interface KpiCardsProps {
@@ -8,9 +9,21 @@ interface KpiCardsProps {
   tasksOverdue: boolean;
   contentsValue: number;
   contentsHelper: string;
+  receivableValue: number;
+  payableValue: number;
+  overdueTransactionsCount: number;
 }
 
-export function KpiCards({ tasksValue, tasksHelper, tasksOverdue, contentsValue, contentsHelper }: KpiCardsProps) {
+export function KpiCards({
+  tasksValue,
+  tasksHelper,
+  tasksOverdue,
+  contentsValue,
+  contentsHelper,
+  receivableValue,
+  payableValue,
+  overdueTransactionsCount,
+}: KpiCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <StatCard
@@ -29,9 +42,13 @@ export function KpiCards({ tasksValue, tasksHelper, tasksOverdue, contentsValue,
       />
       <StatCard
         label="A receber"
-        value="—"
-        helperText="Financeiro ainda não disponível"
-        helperTone="neutral"
+        value={formatCurrencyBRL(receivableValue)}
+        helperText={
+          overdueTransactionsCount > 0
+            ? `${overdueTransactionsCount} vencido${overdueTransactionsCount > 1 ? "s" : ""}`
+            : `${formatCurrencyBRL(payableValue)} a pagar`
+        }
+        helperTone={overdueTransactionsCount > 0 ? "danger" : "neutral"}
         icon={Wallet}
       />
     </div>

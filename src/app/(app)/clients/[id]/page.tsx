@@ -27,11 +27,12 @@ import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
 import { ContentTable } from "@/components/contents/content-table";
 import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
 import { EntityFilesPanel } from "@/components/files/entity-files-panel";
+import { useFinancialData, filterTransactions } from "@/lib/data/financial";
+import { TransactionTable } from "@/components/financeiro/transaction-table";
 
 const PLACEHOLDER_TABS = [
   { value: "calendario", label: "Calendário", description: "O calendário integrado será conectado em uma próxima etapa." },
   { value: "aprovacoes", label: "Aprovações", description: "O fluxo de aprovações será implementado em uma próxima etapa." },
-  { value: "financeiro", label: "Financeiro", description: "O histórico financeiro completo virá em uma próxima etapa." },
 ];
 
 export default function ClientDetailPage({
@@ -80,6 +81,19 @@ export default function ClientDetailPage({
   const clientContents = useMemo(
     () => filterContents(allContents, { clientId: id }),
     [allContents, id],
+  );
+  const {
+    transactions: allTransactions,
+    categories: financialCategories,
+    clients: financialClients,
+    loading: financialLoading,
+    error: financialError,
+    refetch: refetchFinancial,
+  } = useFinancialData();
+  const financialCategoryById = useMemo(() => new Map(financialCategories.map((c) => [c.id, c])), [financialCategories]);
+  const clientTransactions = useMemo(
+    () => filterTransactions(allTransactions, financialCategoryById, { clientId: id }),
+    [allTransactions, financialCategoryById, id],
   );
 
   const [editOpen, setEditOpen] = useState(false);
@@ -149,6 +163,7 @@ export default function ClientDetailPage({
           <TabsTrigger value="tarefas">Tarefas</TabsTrigger>
           <TabsTrigger value="conteudos">Conteúdos</TabsTrigger>
           <TabsTrigger value="arquivos">Arquivos</TabsTrigger>
+          <TabsTrigger value="financeiro">Financeiro</TabsTrigger>
           {PLACEHOLDER_TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
@@ -316,6 +331,38 @@ export default function ClientDetailPage({
             </CardHeader>
             <CardContent>
               <EntityFilesPanel entityType="client" entityId={client.id} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="financeiro" className="pt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Financeiro</CardTitle>
+              <Button size="sm" variant="outline" onClick={() => router.push("/financeiro")}>
+                Ver no Financeiro
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {financialError ? (
+                <ErrorState description={financialError} onRetry={refetchFinancial} />
+              ) : financialLoading ? (
+                <div className="flex flex-col gap-3">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} className="h-11 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <TransactionTable
+                  transactions={clientTransactions}
+                  categories={financialCategories}
+                  clients={financialClients}
+                  hideClientColumn
+                  readOnly
+                  emptyTitle="Nenhum lançamento financeiro neste cliente."
+                  emptyDescription="Lançamentos relacionados a este cliente aparecem aqui."
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

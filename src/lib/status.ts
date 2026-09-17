@@ -2,6 +2,8 @@ import type {
   CalendarEventType,
   ClientStatus,
   ContentEditorialStatus,
+  FinancialCategoryType,
+  FinancialTransactionStatus,
   ProjectStatus,
   TaskUrgency,
   TaskWorkflowStatus,
@@ -87,6 +89,25 @@ export const contentEditorialOrder: ContentEditorialStatus[] = [
   "agendado",
   "publicado",
 ];
+
+export const financialCategoryTypeConfig: Record<
+  FinancialCategoryType,
+  { label: string; variant: "info" | "success" | "warning" | "neutral" | "danger" }
+> = {
+  receita: { label: "Receita", variant: "success" },
+  despesa: { label: "Despesa", variant: "danger" },
+};
+
+/** "atrasado" is only ever shown here computed at render time — see isTransactionOverdue(). */
+export const financialTransactionStatusConfig: Record<
+  FinancialTransactionStatus,
+  { label: string; variant: "info" | "success" | "warning" | "neutral" | "danger" }
+> = {
+  previsto: { label: "Previsto", variant: "neutral" },
+  proximo: { label: "Próximo", variant: "warning" },
+  pago: { label: "Pago", variant: "success" },
+  atrasado: { label: "Atrasado", variant: "danger" },
+};
 
 export const calendarEventTypeConfig: Record<
   CalendarEventType,

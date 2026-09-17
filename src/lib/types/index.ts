@@ -28,6 +28,42 @@ export interface Client {
   notes?: string;
 }
 
+export type FinancialCategoryType = "receita" | "despesa";
+
+export interface FinancialCategory {
+  id: string;
+  name: string;
+  type: FinancialCategoryType;
+}
+
+/**
+ * Matches the `financial_transactions.status` CHECK constraint exactly
+ * (Etapa 4 schema). "atrasado" is a valid persisted value, but the app
+ * never writes it automatically — see isTransactionOverdue() in
+ * src/lib/data/financial.ts for why it's derived for display instead.
+ */
+export type FinancialTransactionStatus = "previsto" | "proximo" | "pago" | "atrasado";
+
+/**
+ * There is no `type` column on `financial_transactions` — receita/despesa
+ * is always derived from the linked category's `type` (see
+ * src/lib/data/financial.ts), which is why `categoryId` is required at the
+ * app layer even though the database column is nullable. There is also no
+ * `project_id` column, so a transaction can only ever relate to a client,
+ * never a project — a schema gap documented in docs/project-status.md.
+ */
+export interface FinancialTransaction {
+  id: string;
+  organizationId: string;
+  clientId: string | null;
+  categoryId: string | null;
+  description: string;
+  amount: number;
+  dueDate: string | null;
+  paidAt: string | null;
+  status: FinancialTransactionStatus;
+}
+
 export type AttentionSeverity = "danger" | "warning";
 
 export interface AttentionItem {

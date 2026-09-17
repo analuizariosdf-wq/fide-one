@@ -5,6 +5,7 @@ import { useCallback, useMemo } from "react";
 import { useCurrentActor } from "@/lib/auth/current-actor-context";
 import { useTasks } from "@/lib/data/tasks";
 import { useContents } from "@/lib/data/contents";
+import { useFinancialData, useCashFlowSummary } from "@/lib/data/financial";
 import { MOCK_TODAY, toISODate } from "@/lib/format";
 import type { AttentionItem, Content, Task } from "@/lib/types";
 
@@ -13,11 +14,13 @@ import type { AttentionItem, Content, Task } from "@/lib/types";
  * (dashboardStats, attentionItems, myTasks, upcomingContents,
  * recentActivity — see docs/project-status.md's mock inventory). Every
  * card that represents an already-migrated module (Tarefas, Conteúdos)
- * now reads the same real data layers those modules use. Financeiro
- * isn't migrated yet (Fase 6), so its card stays honestly unavailable
- * instead of showing the old mock currency value. "Atividade recente"
- * has no real source either — nothing writes activity_logs yet — so it
- * stays an honest empty state too, not mock activity.
+ * now reads the same real data layers those modules use. "Atividade
+ * recente" has no real source either — nothing writes activity_logs yet
+ * — so it stays an honest empty state, not mock activity.
+ *
+ * Fase 6: Financeiro is real now, so "A receber" uses the same
+ * useCashFlowSummary() the Financeiro module itself uses — pending
+ * receivables only (not yet paid), never a fabricated number.
  */
 export function useDashboardData() {
   const { profile } = useCurrentActor();
@@ -36,14 +39,23 @@ export function useDashboardData() {
     error: contentsError,
     refetch: refetchContents,
   } = useContents();
+  const {
+    transactions,
+    categories: financialCategories,
+    loading: financialLoading,
+    error: financialError,
+    refetch: refetchFinancial,
+  } = useFinancialData();
+  const cashFlow = useCashFlowSummary(transactions, financialCategories);
 
-  const loading = tasksLoading || contentsLoading;
-  const error = tasksError ?? contentsError;
+  const loading = tasksLoading || contentsLoading || financialLoading;
+  const error = tasksError ?? contentsError ?? financialError;
 
   const refetch = useCallback(() => {
     refetchTasks();
     refetchContents();
-  }, [refetchTasks, refetchContents]);
+    refetchFinancial();
+  }, [refetchTasks, refetchContents, refetchFinancial]);
 
   const todayISO = toISODate(MOCK_TODAY);
   const weekEndDate = new Date(MOCK_TODAY);
@@ -106,10 +118,16 @@ export function useDashboardData() {
         href: "/contents",
       });
     }
-    // Financeiro (Fase 6) has no real data source yet — deliberately no
-    // attention item is fabricated for it here.
+    if (cashFlow.vencidasCount > 0) {
+      items.push({
+        id: "attention-overdue-transactions",
+        label: `${cashFlow.vencidasCount} lançamento${cashFlow.vencidasCount > 1 ? "s" : ""} financeiro${cashFlow.vencidasCount > 1 ? "s" : ""} vencido${cashFlow.vencidasCount > 1 ? "s" : ""}`,
+        severity: "danger",
+        href: "/financeiro",
+      });
+    }
     return items;
-  }, [overdueTasks, awaitingApproval]);
+  }, [overdueTasks, awaitingApproval, cashFlow.vencidasCount]);
 
   return {
     userName: profile?.name ?? "Você",
@@ -122,6 +140,9 @@ export function useDashboardData() {
       tasksOverdue: overdueTasks.length > 0,
       contentsValue: contents.length,
       contentsHelper: `${contentsThisWeek.length} nesta semana`,
+      receivableValue: cashFlow.aReceber,
+      payableValue: cashFlow.aPagar,
+      overdueTransactionsCount: cashFlow.vencidasCount,
     },
     attentionItems,
     myTasks,
