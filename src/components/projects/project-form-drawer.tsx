@@ -2,12 +2,16 @@
 
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { ZodError } from "zod";
 
 import type { Project, ProjectStatus } from "@/lib/types";
-import { clients } from "@/lib/mock-data/clients";
-import { team } from "@/lib/mock-data/users";
+import {
+  createProject,
+  updateProject,
+  type ClientOption,
+  type ProfileOption,
+} from "@/lib/data/projects";
 import { projectStatusConfig } from "@/lib/status";
-import { createProject, updateProject } from "@/lib/services/projects-service";
 import {
   Sheet,
   SheetContent,
@@ -39,13 +43,13 @@ interface FormState {
   status: ProjectStatus;
 }
 
-function emptyForm(defaultClientId?: string): FormState {
+function emptyForm(defaultClientId: string | undefined, clients: ClientOption[], profiles: ProfileOption[]): FormState {
   return {
     name: "",
     clientId: defaultClientId ?? clients[0]?.id ?? "",
     campaign: "",
     description: "",
-    responsibleId: team[0]?.id ?? "",
+    responsibleId: profiles[0]?.id ?? "",
     startDate: "",
     endDate: "",
     status: "planejamento",
@@ -69,6 +73,8 @@ interface ProjectFormDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project?: Project | null;
+  clients: ClientOption[];
+  profiles: ProfileOption[];
   defaultClientId?: string;
   onSaved?: (project: Project) => void;
 }
@@ -77,23 +83,31 @@ export function ProjectFormDrawer({
   open,
   onOpenChange,
   project,
+  clients,
+  profiles,
   defaultClientId,
   onSaved,
 }: ProjectFormDrawerProps) {
   const [form, setForm] = useState<FormState>(() =>
-    project ? toFormState(project) : emptyForm(defaultClientId),
+    project ? toFormState(project) : emptyForm(defaultClientId, clients, profiles),
   );
+  const [submitting, setSubmitting] = useState(false);
   const isEditing = Boolean(project);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     if (!form.name.trim() || !form.clientId || !form.startDate || !form.endDate) {
       toast.error("Preencha nome, cliente e o período do projeto.");
+      return;
+    }
+
+    if (!form.responsibleId) {
+      toast.error("Selecione um responsável.");
       return;
     }
 
@@ -109,12 +123,25 @@ export function ProjectFormDrawer({
       progress: project?.progress ?? 0,
     };
 
-    const saved =
-      isEditing && project ? updateProject(project.id, payload) : createProject(payload);
+    setSubmitting(true);
+    try {
+      const saved =
+        isEditing && project
+          ? await updateProject(project.id, payload)
+          : await createProject(payload);
 
-    if (saved) onSaved?.(saved);
-    onOpenChange(false);
-    toast.success(isEditing ? "Projeto atualizado com sucesso." : "Projeto criado com sucesso.");
+      onSaved?.(saved);
+      onOpenChange(false);
+      toast.success(isEditing ? "Projeto atualizado com sucesso." : "Projeto criado com sucesso.");
+    } catch (error) {
+      if (error instanceof ZodError) {
+        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
+      } else {
+        toast.error("Não foi possível salvar o projeto. Tente novamente.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -123,7 +150,9 @@ export function ProjectFormDrawer({
         <SheetHeader className="border-b border-border pb-4">
           <SheetTitle>{isEditing ? "Editar projeto" : "Novo projeto"}</SheetTitle>
           <SheetDescription>
-            Os dados são mockados nesta etapa — nada é persistido em banco.
+            {isEditing
+              ? "As alterações são salvas diretamente no banco de dados."
+              : "O projeto é salvo diretamente no banco de dados da sua organização."}
           </SheetDescription>
         </SheetHeader>
 
@@ -165,9 +194,9 @@ export function ProjectFormDrawer({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {team.map((member) => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {member.name}
+                  {profiles.map((profile) => (
+                    <SelectItem key={profile.id} value={profile.id}>
+                      {profile.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -211,10 +240,12 @@ export function ProjectFormDrawer({
           </div>
 
           <SheetFooter className="mt-6 flex-row justify-end gap-2 px-0 pb-0">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
               Cancelar
             </Button>
-            <Button type="submit">{isEditing ? "Salvar alterações" : "Criar projeto"}</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Salvando..." : isEditing ? "Salvar alterações" : "Criar projeto"}
+            </Button>
           </SheetFooter>
         </form>
       </SheetContent>

@@ -103,6 +103,48 @@ sessão auditou, removeu mock morto e deixou explícito o que ainda é mock:
 - `src/lib/mock-data/clients.ts` (dados brutos) **não** foi removido —
   ainda é usado por Projetos/Tarefas/Conteúdos/Calendário.
 
+## 4c. Projetos — Fase 5.3 (feita nesta sessão)
+
+Estava 100% mockado (UI e navegação prontas, dados de `src/lib/mock-data/projects.ts`
++ `src/lib/store/projects-store.ts` + `src/lib/services/projects-service.ts`).
+Agora Projetos é o segundo módulo **REAL/SUPABASE**:
+
+- Novo Data Layer real: `src/lib/data/projects.ts` + `project-schema.ts`
+  (mesmo padrão de `clients.ts`: flat queries + join em JS, Zod antes do
+  Supabase, `organization_id` sempre via `getCurrentOrganizationId()`).
+  Listar, criar, editar, excluir, status, cliente, responsável, datas,
+  descrição, campanha — tudo real.
+- **Cliente**: o seletor de cliente do formulário e da listagem usa
+  exclusivamente `clients` reais (`select id, name` da tabela `clients`),
+  nunca `src/lib/mock-data/clients.ts`.
+- **Responsável**: idem, usa `profiles` reais da organização
+  (`select id, name`), nunca `src/lib/mock-data/team.ts`.
+- **Campanha**: a tabela `campaigns` já existia no schema (Etapa 4) como
+  relacionamento simples de Projeto (`client_id`, `name`), sem módulo de UI
+  próprio. Mantido assim — não foi criado um módulo de Campanhas. O campo
+  "Campanha" continua sendo um texto livre no formulário (UX inalterada);
+  ao salvar, o Data Layer resolve isso internamente (busca uma campanha com
+  esse nome para aquele cliente e reaproveita, ou cria uma nova) e grava só
+  o `campaign_id`. Nenhuma tela nova, nenhuma tabela nova.
+- Removidos `src/lib/services/projects-service.ts` e
+  `src/lib/store/projects-store.ts` (mock antigo de Projetos) — confirmado
+  zero uso restante antes de apagar.
+- `src/lib/mock-data/projects.ts` (`projects`, `getProject`,
+  `getProjectsByClient`) **não** foi removido — ainda é usado por
+  Tarefas/Conteúdos/Calendário/breadcrumb, que continuam mockados e
+  referenciam projetos pelos IDs mock antigos (ex.: `proj-inovar-...`),
+  não pelos UUIDs reais.
+- A aba "Projetos" dentro do detalhe do Cliente (`clients/[id]`) passou a
+  consultar o Data Layer real também (antes usava o mock) — já que ambos os
+  lados da relação (Cliente e Projeto) são reais agora, o aviso de mock foi
+  removido dessa aba especificamente. As abas Tarefas/Conteúdos/KPIs do
+  Cliente continuam mockadas e mantêm o aviso (nenhuma mudança nelas).
+- Dentro do detalhe do Projeto (`projects/[id]`), as seções "Tarefas do
+  projeto" e "Conteúdos relacionados" continuam mockadas (Fases 5.4/5.5) e
+  agora mostram `MockModuleNotice` — como esses mocks filtram por um UUID
+  de projeto que não existe nos dados de exemplo, sempre apareceriam vazios
+  sem o aviso, o que poderia parecer "projeto sem nada" real.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -127,18 +169,24 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
   — único módulo com CRUD real contra o Supabase hospedado
   (`src/lib/data/clients.ts`). Listar, criar, editar, excluir, filtrar,
   status, serviços contratados — tudo real, sem mock residual. A página de
-  detalhe do cliente ainda mostra abas de Projetos/Tarefas/Conteúdos vindas
-  de mock (claramente sinalizado com um aviso — ver seção 4b), pois esses
-  módulos não foram migrados ainda.
-- **Projetos, Tarefas (Kanban), Conteúdos, Calendário** (Fases 2/3): UI e
-  navegação completas, mas dados ainda mockados
+  detalhe do cliente ainda mostra abas de Tarefas/Conteúdos vindas de mock
+  (claramente sinalizado com um aviso — ver seção 4b), pois esses módulos
+  não foram migrados ainda. A aba Projetos do detalhe do cliente já é real
+  (ver seção 4c).
+- **Projetos** (Fase 2 visual + Fase 5.3 backend): **REAL/SUPABASE**
+  — segundo módulo com CRUD real (`src/lib/data/projects.ts`). Listar,
+  criar, editar, excluir, status, cliente, responsável, datas, descrição,
+  campanha — tudo real, sem mock residual. O detalhe do projeto ainda
+  mostra Tarefas/Conteúdos vindos de mock (sinalizado — ver seção 4c).
+- **Tarefas (Kanban), Conteúdos, Calendário** (Fases 2/3): UI e navegação
+  completas, mas dados ainda mockados
   (`src/lib/mock-data/*`, `src/lib/services/*-service.ts`,
   `src/lib/store/*-store.ts`).
 
 ## 8. Módulos ainda mockados / não iniciados
 
-- Projetos, Tarefas, Conteúdos, Calendário: UI pronta, sem ligação ao
-  Supabase (é a Fase 5.3–5.6).
+- Tarefas, Conteúdos, Calendário: UI pronta, sem ligação ao Supabase (é a
+  Fase 5.4–5.6).
 - Financeiro, Equipe, Relatórios: só placeholders de tela
   (`src/app/(app)/financeiro`, `/equipe`, `/relatorios`) — nenhuma lógica.
 - Upload de arquivos (Storage): infraestrutura pronta, sem UI (Fase 5.7).
@@ -153,7 +201,7 @@ FASE 4 — Infraestrutura Supabase               ✅ concluída e validada no Su
 FASE 5 — Conectar frontend ao Supabase real    🔶 em andamento
   5.1 Auth + sessão + organização              ✅ concluída (esta sessão)
   5.2 Clientes                                 ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.3 Projetos                                 ⏳ pendente
+  5.3 Projetos                                 ✅ concluída (esta sessão) — REAL/SUPABASE
   5.4 Tarefas + Kanban                         ⏳ pendente
   5.5 Conteúdos                                ⏳ pendente
   5.6 Calendário                               ⏳ pendente
@@ -215,6 +263,7 @@ Server).
 | Error boundary raiz | `src/app/error.tsx` |
 | Login | `src/app/login/page.tsx` |
 | Data Layer real (Clientes) | `src/lib/data/clients.ts`, `client-schema.ts`, `organization.ts` |
+| Data Layer real (Projetos) | `src/lib/data/projects.ts`, `project-schema.ts` |
 | Migrations | `supabase/migrations/*.sql` |
 | Seed hospedado | `supabase/manual/seed-hosted.sql` |
 | Testes de RLS | `supabase/manual/rls-tests.sql` |

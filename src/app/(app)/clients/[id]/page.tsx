@@ -1,13 +1,13 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileWarning, Pencil, Plus, Trash2 } from "lucide-react";
 
 import type { Content, Project, Task } from "@/lib/types";
 import { useClient, removeClient } from "@/lib/data/clients";
-import { useProjects, removeProject } from "@/lib/services/projects-service";
+import { useProjects, filterProjects, removeProject } from "@/lib/data/projects";
 import { useTasks, removeTask } from "@/lib/services/tasks-service";
 import { useContents, removeContent } from "@/lib/services/contents-service";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,18 @@ export default function ClientDetailPage({
   const { id } = use(params);
   const router = useRouter();
   const { client, profiles, services, loading, error, refetch } = useClient(id);
-  const clientProjects = useProjects({ clientId: id });
+  const {
+    projects: allProjects,
+    clients: projectClients,
+    profiles: projectProfiles,
+    loading: projectsLoading,
+    error: projectsError,
+    refetch: refetchProjects,
+  } = useProjects();
+  const clientProjects = useMemo(
+    () => filterProjects(allProjects, { clientId: id }),
+    [allProjects, id],
+  );
   const clientTasks = useTasks({ clientId: id });
   const clientContents = useContents({ clientId: id });
 
@@ -136,7 +147,6 @@ export default function ClientDetailPage({
         </TabsContent>
 
         <TabsContent value="projetos" className="pt-4">
-          <MockModuleNotice module="Projetos" />
           <Card>
             <CardHeader>
               <CardTitle>Projetos</CardTitle>
@@ -153,17 +163,29 @@ export default function ClientDetailPage({
               </Button>
             </CardHeader>
             <CardContent>
-              <ProjectTable
-                projects={clientProjects}
-                hideClientColumn
-                onEdit={(project) => {
-                  setEditingProject(project);
-                  setProjectDrawerOpen(true);
-                }}
-                onDelete={(project) => setDeletingProject(project)}
-                emptyTitle="Você ainda não possui projetos neste cliente."
-                emptyDescription="Crie o primeiro projeto para começar a organizar as entregas."
-              />
+              {projectsError ? (
+                <ErrorState description={projectsError} onRetry={refetchProjects} />
+              ) : projectsLoading ? (
+                <div className="flex flex-col gap-3">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} className="h-11 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <ProjectTable
+                  projects={clientProjects}
+                  clients={projectClients}
+                  profiles={projectProfiles}
+                  hideClientColumn
+                  onEdit={(project) => {
+                    setEditingProject(project);
+                    setProjectDrawerOpen(true);
+                  }}
+                  onDelete={(project) => setDeletingProject(project)}
+                  emptyTitle="Você ainda não possui projetos neste cliente."
+                  emptyDescription="Crie o primeiro projeto para começar a organizar as entregas."
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -255,7 +277,10 @@ export default function ClientDetailPage({
         open={projectDrawerOpen}
         onOpenChange={setProjectDrawerOpen}
         project={editingProject}
+        clients={projectClients}
+        profiles={projectProfiles}
         defaultClientId={client.id}
+        onSaved={refetchProjects}
       />
 
       <TaskFormDrawer
@@ -291,10 +316,15 @@ export default function ClientDetailPage({
         title="Excluir projeto"
         description={`Tem certeza que deseja excluir "${deletingProject?.name}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!deletingProject) return;
-          removeProject(deletingProject.id);
-          toast.success("Projeto excluído.");
+          try {
+            await removeProject(deletingProject.id);
+            toast.success("Projeto excluído.");
+            refetchProjects();
+          } catch {
+            toast.error("Não foi possível excluir o projeto. Tente novamente.");
+          }
         }}
       />
 

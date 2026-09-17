@@ -1,15 +1,13 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileWarning, Pencil, Plus, Trash2 } from "lucide-react";
 
-import { getClient } from "@/lib/mock-data/clients";
-import { getTeamMember } from "@/lib/mock-data/users";
 import { formatDateShort } from "@/lib/format";
 import { projectStatusConfig } from "@/lib/status";
-import { useProject, removeProject } from "@/lib/services/projects-service";
+import { useProject, removeProject } from "@/lib/data/projects";
 import { useTasks, removeTask } from "@/lib/services/tasks-service";
 import { useContents, removeContent } from "@/lib/services/contents-service";
 import type { Content, Task } from "@/lib/types";
@@ -18,8 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EntityLink } from "@/components/shared/entity-link";
+import { MockModuleNotice } from "@/components/clients/mock-module-notice";
 import { ProjectFormDrawer } from "@/components/projects/project-form-drawer";
 import { TaskListView } from "@/components/tasks/task-list-view";
 import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
@@ -33,7 +34,7 @@ export default function ProjectDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const project = useProject(id);
+  const { project, clients, profiles, loading, error, refetch } = useProject(id);
   const projectTasks = useTasks({ projectId: id });
   const projectContents = useContents({ projectId: id });
 
@@ -47,6 +48,31 @@ export default function ProjectDetailPage({
   const [editingContent, setEditingContent] = useState<Content | null>(null);
   const [deletingContent, setDeletingContent] = useState<Content | null>(null);
 
+  const client = useMemo(
+    () => (project ? clients.find((c) => c.id === project.clientId) : undefined),
+    [clients, project],
+  );
+  const responsible = useMemo(
+    () => (project ? profiles.find((p) => p.id === project.responsibleId) : undefined),
+    [profiles, project],
+  );
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-6 w-56" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorState description={error} onRetry={refetch} />;
+  }
+
   if (!project) {
     return (
       <EmptyState
@@ -57,9 +83,18 @@ export default function ProjectDetailPage({
     );
   }
 
-  const client = getClient(project.clientId);
-  const responsible = getTeamMember(project.responsibleId);
   const status = projectStatusConfig[project.status];
+
+  async function handleConfirmDelete() {
+    if (!project) return;
+    try {
+      await removeProject(project.id);
+      toast.success("Projeto excluído.");
+      router.push("/projects");
+    } catch {
+      toast.error("Não foi possível excluir o projeto. Tente novamente.");
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -132,6 +167,7 @@ export default function ProjectDetailPage({
           </Button>
         </CardHeader>
         <CardContent>
+          <MockModuleNotice module="Tarefas" />
           <TaskListView
             tasks={projectTasks}
             hideProjectColumn
@@ -162,6 +198,7 @@ export default function ProjectDetailPage({
           </Button>
         </CardHeader>
         <CardContent>
+          <MockModuleNotice module="Conteúdos" />
           <ContentTable
             contents={projectContents}
             hideClientColumn
@@ -188,7 +225,14 @@ export default function ProjectDetailPage({
         </CardContent>
       </Card>
 
-      <ProjectFormDrawer open={editOpen} onOpenChange={setEditOpen} project={project} />
+      <ProjectFormDrawer
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        project={project}
+        clients={clients}
+        profiles={profiles}
+        onSaved={refetch}
+      />
 
       <TaskFormDrawer
         open={taskDrawerOpen}
@@ -238,11 +282,7 @@ export default function ProjectDetailPage({
         title="Excluir projeto"
         description={`Tem certeza que deseja excluir "${project.name}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
-          removeProject(project.id);
-          toast.success("Projeto excluído.");
-          router.push("/projects");
-        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

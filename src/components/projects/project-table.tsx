@@ -1,11 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { FolderKanban, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import type { Project } from "@/lib/types";
-import { getClient } from "@/lib/mock-data/clients";
-import { getTeamMember } from "@/lib/mock-data/users";
+import type { ClientOption, ProfileOption } from "@/lib/data/projects";
 import { formatDateShort } from "@/lib/format";
 import { projectStatusConfig } from "@/lib/status";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,8 @@ import {
 
 interface ProjectTableProps {
   projects: Project[];
+  clients: ClientOption[];
+  profiles: ProfileOption[];
   hideClientColumn?: boolean;
   onEdit: (project: Project) => void;
   onDelete: (project: Project) => void;
@@ -39,6 +41,8 @@ interface ProjectTableProps {
 
 export function ProjectTable({
   projects,
+  clients,
+  profiles,
   hideClientColumn,
   onEdit,
   onDelete,
@@ -46,6 +50,8 @@ export function ProjectTable({
   emptyDescription = "Ajuste os filtros ou crie um novo projeto.",
 }: ProjectTableProps) {
   const router = useRouter();
+  const clientById = useMemo(() => new Map(clients.map((c) => [c.id, c])), [clients]);
+  const profileById = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
 
   if (projects.length === 0) {
     return (
@@ -68,8 +74,8 @@ export function ProjectTable({
       </TableHeader>
       <TableBody>
         {projects.map((project) => {
-          const client = getClient(project.clientId);
-          const responsible = getTeamMember(project.responsibleId);
+          const client = clientById.get(project.clientId);
+          const responsible = profileById.get(project.responsibleId);
           const status = projectStatusConfig[project.status];
 
           return (

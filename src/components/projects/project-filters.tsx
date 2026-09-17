@@ -2,10 +2,8 @@
 
 import { Search } from "lucide-react";
 
-import { clients } from "@/lib/mock-data/clients";
-import { team } from "@/lib/mock-data/users";
+import type { ClientOption, ProfileOption, ProjectFilters } from "@/lib/data/projects";
 import { projectStatusConfig } from "@/lib/status";
-import type { ProjectFilters } from "@/lib/services/projects-service";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -19,6 +17,8 @@ import { FilterBar } from "@/components/shared/filter-bar";
 interface ProjectFiltersBarProps {
   filters: ProjectFilters;
   onChange: (next: ProjectFilters) => void;
+  clients: ClientOption[];
+  profiles: ProfileOption[];
 }
 
 function countActive(filters: ProjectFilters) {
@@ -27,7 +27,7 @@ function countActive(filters: ProjectFilters) {
   ).length;
 }
 
-export function ProjectFiltersBar({ filters, onChange }: ProjectFiltersBarProps) {
+export function ProjectFiltersBar({ filters, onChange, clients, profiles }: ProjectFiltersBarProps) {
   const filterControls = (
     <>
       <Select
@@ -58,9 +58,9 @@ export function ProjectFiltersBar({ filters, onChange }: ProjectFiltersBarProps)
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="todos">Todos os responsáveis</SelectItem>
-          {team.map((member) => (
-            <SelectItem key={member.id} value={member.id}>
-              {member.name}
+          {profiles.map((profile) => (
+            <SelectItem key={profile.id} value={profile.id}>
+              {profile.name}
             </SelectItem>
           ))}
         </SelectContent>
