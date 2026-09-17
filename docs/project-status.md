@@ -385,6 +385,95 @@ useCalendarItems() → CalendarItem[]
   data+horário, agrupamento por dia cruzando mês, exclusão de item sem
   data) — todas passaram. Não foi necessário Supabase hospedado para isso.
 
+## 4g. Arquivos / Storage — Fase 5.7 (feita nesta sessão)
+
+Infraestrutura de arquivos passa a ser **REAL/SUPABASE** para Conteúdo,
+Cliente e Projeto. Tarefa fica documentada como pendência (ver abaixo).
+
+**Infraestrutura já existente (Etapa 4), confirmada antes de implementar:**
+- 4 buckets: `logos` (público, não usado nesta fase — é logo de
+  organização/cliente, fora do escopo de anexos), `client-files`,
+  `project-files`, `content-media` (privados).
+- Isolamento por organização: todo objeto é salvo como
+  `{organization_id}/{...}`; as policies de `storage.objects` (uma por
+  bucket, para select/insert/update/delete) comparam o primeiro segmento
+  do path com `current_organization_id()` via `public.organization_folder()`.
+- Tabela `files`: metadados + relacionamento (`client_id`, `project_id`,
+  `content_id`, `task_id` — todos nullable, `task_id` incluído). RLS
+  genérica por `organization_id` (mesmo padrão das outras tabelas).
+- Nenhuma migration foi necessária — schema e policies já suportavam
+  exatamente o fluxo implementado.
+
+**Novo Data Layer**: `src/lib/files-utils.ts` (puro, sem Supabase —
+allowlist de MIME, limite de tamanho, geração segura de path, formatação)
++ `src/lib/data/files.ts` (`useEntityFiles`, `uploadEntityFile`,
+`removeEntityFile`, `getFileSignedUrl`).
+
+- **Entidades suportadas**: `client`, `project`, `content` — as três com
+  bucket próprio. **Tarefa ficou de fora**: `files.task_id` existe na
+  tabela, mas não existe bucket `task-files` na infraestrutura da Etapa 4.
+  Criar um agora seria alterar infraestrutura sem necessidade comprovada
+  (proibido nesta fase) — o card "Arquivos" da Tarefa continua como
+  placeholder, documentado aqui para decisão em fase futura (criar bucket
+  dedicado, ou reaproveitar `project-files` quando a tarefa tiver
+  projeto — nenhuma das duas foi decidida ainda).
+- **Path**: `{organization_id}/{uuid}.{extensão}` — nunca o nome original,
+  nunca fornecido pelo navegador. `organization_id` vem de
+  `getCurrentOrganizationId()` no servidor; o nome original só é guardado
+  como metadado (`files.name`), nunca faz parte do path (evita colisão,
+  overwrite e path injection).
+- **MIME allowlist** (`src/lib/files-utils.ts`): imagens
+  (jpeg/png/webp/gif), vídeo (mp4/webm/quicktime) e documentos comuns de
+  agência (pdf, doc/docx, xls/xlsx, ppt/pptx, txt, zip). Validado tanto no
+  input do navegador (`accept`) quanto antes do upload — nunca confia só
+  na extensão.
+- **Limite de tamanho**: nenhum limite estava documentado ou configurado
+  nos buckets; defini um teto único e centralizado de 25 MB
+  (`MAX_FILE_SIZE_BYTES`), deliberadamente conservador e abaixo do limite
+  padrão de 50 MB por objeto do Supabase Storage. Um único ponto para
+  ajustar, sem magic numbers espalhados.
+- **Upload**: valida MIME + tamanho → confirma que a entidade pertence à
+  organização (consulta própria sob RLS, nunca confia só no ID do
+  navegador) → sobe pro Storage → insere em `files`. Se o insert falhar
+  depois do upload ter funcionado, o objeto é removido do Storage (evita
+  arquivo órfão que a UI nunca mais conseguiria ver/gerenciar).
+- **Exclusão**: sempre a partir de um `file_id` que já veio de
+  `useEntityFiles()` (lista RLS-scoped) — nunca de um path arbitrário.
+  Remove do Storage primeiro; se o delete de `files` falhar depois, o erro
+  é reportado com uma mensagem específica em vez de falha silenciosa.
+- **Visualização/download**: signed URL gerada sob demanda
+  (`createSignedUrl`, 60s de validade), aberta imediatamente numa nova
+  aba — nunca salva no banco, nunca tratada como identificador permanente.
+  Buckets privados continuam privados; nenhum bucket foi tornado público.
+- **Preview de imagem**: não implementado na listagem (evitaria N chamadas
+  de signed URL só para renderizar miniaturas); abrir a imagem já mostra o
+  arquivo real via signed URL. Decisão deliberada para não expandir escopo.
+- **Componentes reutilizáveis**: `FileUploader`, `FileList` (+ `FileItem`
+  interno) e `EntityFilesPanel` (combina os dois + `useEntityFiles` +
+  confirmação de exclusão) em `src/components/files/`. Cada tela
+  (`contents/[id]`, `projects/[id]`, `clients/[id]`) só usa
+  `<EntityFilesPanel entityType="..." entityId="..." />` — nenhuma
+  reimplementação de upload por tela.
+- **Cliente → Arquivos**: a aba "Arquivos" (antes um placeholder genérico
+  dentro de `PLACEHOLDER_TABS`) virou uma aba própria, conectada.
+- **Falhas parciais**: os 3 cenários do enunciado foram tratados
+  explicitamente — (A) upload ok + insert falha → remove o objeto do
+  Storage; (B) delete do Storage ok + delete de `files` falha → erro
+  específico ao usuário, sem exclusão "pela metade" silenciosa; (C)
+  registro existe mas objeto sumiu do Storage → `createSignedUrl` falha e
+  a UI mostra "Não foi possível abrir o arquivo. Ele pode ter sido
+  removido do armazenamento." em vez de travar.
+- **Testes sem rede**: como o projeto não tem test runner, rodei um script
+  Node avulso (`npx tsx`, fora do repo) contra as funções reais de
+  `files-utils.ts` — 13 checagens (allowlist de MIME, rejeição de
+  executável/script, limite de tamanho no limite exato e acima,
+  sanitização de extensão contra path traversal/injeção, geração de path
+  sempre prefixado por `organization_id`, nome original nunca vazando pro
+  path, duas uploads do mesmo nome nunca colidindo, formatação de
+  tamanho) — todas passaram. Não foi possível (nem necessário, já que
+  nenhuma policy/schema mudou) testar upload/policy contra o Supabase
+  hospedado real neste sandbox.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -427,17 +516,22 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
   editar, status editorial, cliente, projeto, responsável, tipo, canal,
   agendamento, legenda, CTA e Conteúdo ↔ Tarefas (`content_tasks`) — tudo
   real. `content_comments` não tem UI (nunca teve, mesmo mockado) — ver
-  seção 4e. Mídia segue "ainda não implementado" (Storage).
+  seção 4e. Mídia agora é real (Storage — ver seção 4g).
 - **Calendário** (Fase 3 visual + Fase 5.6 backend): **REAL/SUPABASE** —
   Month/Week/List agregam Conteúdos + Tarefas + `calendar_events` reais
   (ver seção 4f), sem nenhuma cópia de dados. CRUD completo de eventos
   manuais (reunião/evento/prazo) novo nesta fase.
+- **Arquivos / Storage** (Fase 5.7): **REAL/SUPABASE** para Conteúdo,
+  Cliente e Projeto (upload, listagem, download via signed URL, exclusão —
+  ver seção 4g). Tarefa ainda não suportada (sem bucket dedicado).
 
 ## 8. Módulos ainda mockados / não iniciados
 
 - Financeiro, Equipe, Relatórios: só placeholders de tela
   (`src/app/(app)/financeiro`, `/equipe`, `/relatorios`) — nenhuma lógica.
-- Upload de arquivos (Storage): infraestrutura pronta, sem UI (Fase 5.7).
+- Arquivos da Tarefa: `files.task_id` existe no schema, mas não há bucket
+  `task-files` — card "Arquivos" da Tarefa continua placeholder (ver
+  seção 4g; decisão de qual bucket usar fica para uma fase futura).
 - Dashboard: continua com os widgets leves da Etapa 1 (`myTasks`,
   `contents: ContentItem[]`), deliberadamente não migrados nesta fase.
 - Breadcrumb de Clientes/Projetos (`getClient`/`getProject` do mock, sem
@@ -458,7 +552,7 @@ FASE 5 — Conectar frontend ao Supabase real    🔶 em andamento
   5.4 Tarefas + Kanban                         ✅ concluída (esta sessão) — REAL/SUPABASE
   5.5 Conteúdos                                ✅ concluída (esta sessão) — REAL/SUPABASE
   5.6 Calendário                               ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.7 Arquivos / Supabase Storage              ⏳ pendente
+  5.7 Arquivos / Supabase Storage              ✅ concluída (esta sessão) — REAL/SUPABASE (Conteúdo/Cliente/Projeto)
   5.8 Remoção final dos mocks + validação      ⏳ pendente
 FASE 6 — Financeiro                            ⏳ não iniciada
 FASE 7 — Equipe / permissões                   ⏳ não iniciada
@@ -520,6 +614,7 @@ Server).
 | Data Layer real (Tarefas) | `src/lib/data/tasks.ts`, `task-schema.ts` |
 | Data Layer real (Conteúdos) | `src/lib/data/contents.ts`, `content-schema.ts` |
 | Data Layer real (Calendário) | `src/lib/data/calendar.ts`, `calendar-schema.ts`, `src/lib/services/calendar-service.ts` (agregador) |
+| Data Layer real (Arquivos) | `src/lib/data/files.ts`, `src/lib/files-utils.ts`, `src/components/files/*` |
 | Migrations | `supabase/migrations/*.sql` |
 | Seed hospedado | `supabase/manual/seed-hosted.sql` |
 | Testes de RLS | `supabase/manual/rls-tests.sql` |

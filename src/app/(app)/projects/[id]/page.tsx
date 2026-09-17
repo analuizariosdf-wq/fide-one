@@ -25,6 +25,7 @@ import { TaskListView } from "@/components/tasks/task-list-view";
 import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
 import { ContentTable } from "@/components/contents/content-table";
 import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
+import { EntityFilesPanel } from "@/components/files/entity-files-panel";
 
 export default function ProjectDetailPage({
   params,
@@ -265,10 +266,7 @@ export default function ProjectDetailPage({
           <CardTitle>Arquivos</CardTitle>
         </CardHeader>
         <CardContent>
-          <EmptyState
-            title="Nenhum arquivo anexado"
-            description="Os anexos serão suportados em uma próxima etapa."
-          />
+          <EntityFilesPanel entityType="project" entityId={project.id} />
         </CardContent>
       </Card>
 

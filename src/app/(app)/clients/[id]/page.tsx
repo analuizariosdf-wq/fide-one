@@ -26,12 +26,12 @@ import { TaskListView } from "@/components/tasks/task-list-view";
 import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
 import { ContentTable } from "@/components/contents/content-table";
 import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
+import { EntityFilesPanel } from "@/components/files/entity-files-panel";
 
 const PLACEHOLDER_TABS = [
   { value: "calendario", label: "Calendário", description: "O calendário integrado será conectado em uma próxima etapa." },
   { value: "aprovacoes", label: "Aprovações", description: "O fluxo de aprovações será implementado em uma próxima etapa." },
   { value: "financeiro", label: "Financeiro", description: "O histórico financeiro completo virá em uma próxima etapa." },
-  { value: "arquivos", label: "Arquivos", description: "O repositório de arquivos será implementado em uma próxima etapa." },
 ];
 
 export default function ClientDetailPage({
@@ -148,6 +148,7 @@ export default function ClientDetailPage({
           <TabsTrigger value="projetos">Projetos</TabsTrigger>
           <TabsTrigger value="tarefas">Tarefas</TabsTrigger>
           <TabsTrigger value="conteudos">Conteúdos</TabsTrigger>
+          <TabsTrigger value="arquivos">Arquivos</TabsTrigger>
           {PLACEHOLDER_TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
@@ -304,6 +305,17 @@ export default function ClientDetailPage({
                   emptyDescription="Crie o primeiro conteúdo para começar a planejar a produção."
                 />
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="arquivos" className="pt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Arquivos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <EntityFilesPanel entityType="client" entityId={client.id} />
             </CardContent>
           </Card>
         </TabsContent>

@@ -3,7 +3,7 @@
 import { use, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { FileWarning, Paperclip, Pencil, Trash2 } from "lucide-react";
+import { FileWarning, Pencil, Trash2 } from "lucide-react";
 
 import { formatDateShort } from "@/lib/format";
 import { contentEditorialConfig } from "@/lib/status";
@@ -19,6 +19,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EntityLink } from "@/components/shared/entity-link";
 import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
 import { ContentTasksChecklist } from "@/components/contents/content-tasks-checklist";
+import { EntityFilesPanel } from "@/components/files/entity-files-panel";
 
 export default function ContentDetailPage({
   params,
@@ -182,11 +183,7 @@ export default function ContentDetailPage({
               <CardTitle>Mídia</CardTitle>
             </CardHeader>
             <CardContent>
-              <EmptyState
-                icon={Paperclip}
-                title="Nenhum arquivo anexado"
-                description="Os arquivos serão implementados posteriormente com Supabase Storage."
-              />
+              <EntityFilesPanel entityType="content" entityId={content.id} />
             </CardContent>
           </Card>
         </div>
