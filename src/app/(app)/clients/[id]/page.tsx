@@ -19,6 +19,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ClientHeader } from "@/components/clients/client-header";
 import { ClientKpis } from "@/components/clients/client-kpis";
+import { MockModuleNotice } from "@/components/clients/mock-module-notice";
 import { ClientFormDrawer } from "@/components/clients/client-form-drawer";
 import { ProjectTable } from "@/components/projects/project-table";
 import { ProjectFormDrawer } from "@/components/projects/project-form-drawer";
@@ -135,6 +136,7 @@ export default function ClientDetailPage({
         </TabsContent>
 
         <TabsContent value="projetos" className="pt-4">
+          <MockModuleNotice module="Projetos" />
           <Card>
             <CardHeader>
               <CardTitle>Projetos</CardTitle>
@@ -167,6 +169,7 @@ export default function ClientDetailPage({
         </TabsContent>
 
         <TabsContent value="tarefas" className="pt-4">
+          <MockModuleNotice module="Tarefas" />
           <Card>
             <CardHeader>
               <CardTitle>Tarefas</CardTitle>
@@ -199,6 +202,7 @@ export default function ClientDetailPage({
         </TabsContent>
 
         <TabsContent value="conteudos" className="pt-4">
+          <MockModuleNotice module="Conteúdos" />
           <Card>
             <CardHeader>
               <CardTitle>Conteúdos</CardTitle>

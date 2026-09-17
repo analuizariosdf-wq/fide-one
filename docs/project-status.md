@@ -83,6 +83,26 @@ schema real — `supabase gen types` não disponível neste sandbox).
   deploy. Nunca em `NEXT_PUBLIC_*`, nunca importado por Client Component
   (confirmado inspecionando o bundle gerado pelo build).
 
+## 4b. Clientes — Fase 5.2 (feita nesta sessão)
+
+Já estava com CRUD real desde a Etapa 4 (`src/lib/data/clients.ts`); esta
+sessão auditou, removeu mock morto e deixou explícito o que ainda é mock:
+
+- `src/lib/services/clients-service.ts` e `src/lib/store/clients-store.ts`
+  (mock antigo de Clientes) removidos — confirmado zero uso em qualquer
+  outro arquivo antes de apagar.
+- `src/components/clients/mock-module-notice.tsx` (novo): banner
+  "ainda usa dados de exemplo" aplicado nas abas Projetos/Tarefas/
+  Conteúdos e no card de KPIs da página de detalhe do cliente — esses
+  dados vêm de Projetos/Tarefas/Conteúdos (ainda mock, Fases 5.3–5.5),
+  filtrados por um UUID de cliente que o mock não conhece, então sempre
+  aparecem vazios; o aviso evita que isso pareça "cliente sem nada" real.
+- Nenhuma mudança em `src/lib/data/clients.ts`, migrations ou RLS —
+  já corretos (organization_id nunca vem do formulário, sempre resolvido
+  via `getCurrentOrganizationId()` a partir da sessão + profile).
+- `src/lib/mock-data/clients.ts` (dados brutos) **não** foi removido —
+  ainda é usado por Projetos/Tarefas/Conteúdos/Calendário.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -103,9 +123,13 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
 ## 7. Módulos concluídos
 
 - **App Shell + Dashboard** (Fase 1): visual completo, dados mockados.
-- **Clientes** (Fase 2 visual + Etapa 4 backend): único módulo com CRUD
-  real contra o Supabase hospedado (`src/lib/data/clients.ts`). Listar,
-  criar, editar, excluir, filtrar — tudo real.
+- **Clientes** (Fase 2 visual + Etapa 4 + Fase 5.2 backend): **REAL/SUPABASE**
+  — único módulo com CRUD real contra o Supabase hospedado
+  (`src/lib/data/clients.ts`). Listar, criar, editar, excluir, filtrar,
+  status, serviços contratados — tudo real, sem mock residual. A página de
+  detalhe do cliente ainda mostra abas de Projetos/Tarefas/Conteúdos vindas
+  de mock (claramente sinalizado com um aviso — ver seção 4b), pois esses
+  módulos não foram migrados ainda.
 - **Projetos, Tarefas (Kanban), Conteúdos, Calendário** (Fases 2/3): UI e
   navegação completas, mas dados ainda mockados
   (`src/lib/mock-data/*`, `src/lib/services/*-service.ts`,
@@ -128,7 +152,7 @@ FASE 3 — Conteúdos/Calendário                  ✅ concluída visualmente
 FASE 4 — Infraestrutura Supabase               ✅ concluída e validada no Supabase real
 FASE 5 — Conectar frontend ao Supabase real    🔶 em andamento
   5.1 Auth + sessão + organização              ✅ concluída (esta sessão)
-  5.2 Clientes                                 ⏳ próximo passo (já parcialmente pronto desde a Etapa 4 — revisar/completar)
+  5.2 Clientes                                 ✅ concluída (esta sessão) — REAL/SUPABASE
   5.3 Projetos                                 ⏳ pendente
   5.4 Tarefas + Kanban                         ⏳ pendente
   5.5 Conteúdos                                ⏳ pendente
