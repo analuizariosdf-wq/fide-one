@@ -690,6 +690,50 @@ necessário — a lógica nova (`computeCashFlowSummary`/`getEffectiveStatus`)
 é simples o suficiente para revisão direta, sem estado de tempo real
 imprevisível.
 
+## 4j. Relatórios / Rentabilidade / Workload — Fase 7 (feita nesta sessão)
+
+**Relatórios** passa a ser **REAL/SUPABASE**. Nenhuma migration — tudo
+derivado dos dados já reais de Clientes/Projetos/Tarefas/Conteúdos/Equipe/
+Financeiro, compostos em `src/lib/data/reports.ts` (reaproveita os hooks
+`useClients`/`useProjects`/`useTasks`/`useContents`/`useTeam`/
+`useFinancialData` já existentes — nenhuma query nova ao Supabase).
+
+- Tela `/relatorios`: filtros (período, cliente, projeto, responsável) +
+  4 abas — Visão geral (KPIs de clientes/projetos/tarefas/conteúdos/
+  financeiro + tarefas por status + receita x despesa), Clientes (tabela
+  com projetos/tarefas/conteúdos/receita/despesa/resultado + top 8 por
+  receita), Projetos (tabela operacional + progresso), Equipe (workload +
+  tarefas sem responsável). Gráficos são barras simples com o `Progress`
+  já existente — nenhuma biblioteca de charts foi adicionada.
+- **Rentabilidade por cliente**: real. `financial_transactions.client_id`
+  é uma coluna de verdade, então receita/despesa por cliente vêm
+  diretamente dela (nunca uma alocação inventada); "Resultado" =
+  receita paga − despesa paga daquele cliente.
+- **Rentabilidade por projeto**: **não implementada de propósito** —
+  `financial_transactions` continua sem `project_id` (confirmado de novo
+  nesta fase, mesma limitação já registrada na Fase 6). A aba Projetos
+  mostra só desempenho operacional (tarefas, conteúdos, progresso) e
+  exibe um aviso explícito de que a rentabilidade financeira por projeto
+  não está disponível no schema atual — sem migration para viabilizar isso.
+- **Workload**: baseado em volume de tarefas (abertas/em andamento/
+  atrasadas/concluídas/total por pessoa), nunca em horas — não existe
+  estimativa, apontamento nem timesheet no schema. A sinalização "Volume
+  acima da média" compara tarefas abertas de cada pessoa com a média do
+  time (>1.5x); rotulada explicitamente como volume, não produtividade.
+  "Tarefas sem responsável" listadas à parte.
+- Dashboard: não alterado nesta fase (já tinha "A receber" real desde a
+  Fase 6).
+
+**Validação**: `npm run lint`, `npx tsc --noEmit` e `npm run build`
+limpos (14 rotas). Sem script de teste novo — os cálculos
+(`computeOverview`/`computeClientReports`/`computeProjectReports`/
+`computeWorkloadReport`) são funções puras simples, revisadas
+diretamente, sem estado assíncrono próprio.
+
+**Pendências pós-MVP**: rentabilidade por projeto (exige `project_id` em
+`financial_transactions` — migration futura, não feita aqui), timesheet/
+horas, exportação/PDF de relatórios, envio agendado, insights com IA.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -753,11 +797,14 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
   `roles` (`src/lib/data/team.ts`), edição do próprio perfil. Sem gestão
   de outros usuários/roles (RLS não permite sem `service_role`) — ver
   seção 4i.
+- **Relatórios** (Fase 7): **REAL/SUPABASE** — Visão geral, Clientes,
+  Projetos e Equipe, tudo derivado dos dados reais existentes
+  (`src/lib/data/reports.ts`), sem nenhuma query nova ao Supabase. Ver
+  seção 4j para o que é real vs. as limitações de schema (rentabilidade
+  por projeto, workload em horas).
 
 ## 8. Módulos ainda mockados / não iniciados
 
-- Relatórios: só placeholder de tela (`src/app/(app)/relatorios`) —
-  nenhuma lógica.
 - Gestão de outros usuários (convite, troca de role de colega): fora do
   MVP da Fase 6 — RLS só permite `profiles_update_self`; inclusão de
   membros continua pelo fluxo de admin do Supabase.
@@ -790,17 +837,17 @@ FASE 5 — Conectar frontend ao Supabase real    ✅ concluída (ver seção 4h 
   5.6 Calendário                               ✅ concluída — REAL/SUPABASE
   5.7 Arquivos / Supabase Storage              ✅ concluída — REAL/SUPABASE (Conteúdo/Cliente/Projeto)
   5.8 Remoção final dos mocks + validação      ✅ concluída (esta sessão) — ver seção 4h
-FASE 6 — Financeiro + Equipe (MVP essencial)   ✅ concluída (esta sessão) — ver seção 4i — REAL/SUPABASE
-FASE 7 — Relatórios                            ⏳ não iniciada
-FASE 8 — Rentabilidade / carga de trabalho     ⏳ não iniciada
-FASE 9 — Auditoria UX/UI                       ⏳ não iniciada
+FASE 6 — Financeiro + Equipe (MVP essencial)   ✅ concluída — ver seção 4i — REAL/SUPABASE
+FASE 7 — Relatórios/Rentabilidade/Workload     ✅ concluída (esta sessão) — ver seção 4j — REAL/SUPABASE
+FASE 8 — Auditoria UX/UI                       ⏳ não iniciada
 ```
 
-Pendências pós-MVP registradas na Fase 6 (não bloqueiam a conclusão):
-projeto relacionado e observações em lançamentos financeiros (sem coluna
-no schema), recorrência financeira, conciliação/boleto/Pix/nota fiscal,
-gestão de outros usuários e troca de role (exige `service_role`, fora do
-frontend).
+Pendências pós-MVP acumuladas (não bloqueiam a conclusão de nenhuma fase):
+projeto relacionado e observações em lançamentos financeiros, rentabilidade
+financeira por projeto, recorrência financeira, conciliação/boleto/Pix/
+nota fiscal, timesheet/horas, gestão de outros usuários e troca de role
+(exige `service_role`, fora do frontend), exportação/PDF/agendamento de
+relatórios, insights com IA.
 
 ## 10. Decisões técnicas importantes
 
