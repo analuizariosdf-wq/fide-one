@@ -1,9 +1,16 @@
 "use client";
 
+import { useMemo } from "react";
 import { toast } from "sonner";
 
 import type { Task, TaskWorkflowStatus } from "@/lib/types";
-import { groupTasksByStatus, updateTask } from "@/lib/services/tasks-service";
+import {
+  groupTasksByStatus,
+  updateTaskStatus,
+  type ClientOption,
+  type ProfileOption,
+  type ProjectOption,
+} from "@/lib/data/tasks";
 import { taskWorkflowConfig, taskWorkflowOrder } from "@/lib/status";
 import { EmptyState } from "@/components/ui/empty-state";
 import { TaskCard } from "@/components/tasks/task-card";
@@ -11,10 +18,17 @@ import { ListChecks } from "lucide-react";
 
 interface TaskKanbanViewProps {
   tasks: Task[];
+  clients: ClientOption[];
+  projects: ProjectOption[];
+  profiles: ProfileOption[];
+  onChanged: () => void;
 }
 
-export function TaskKanbanView({ tasks }: TaskKanbanViewProps) {
+export function TaskKanbanView({ tasks, clients, projects, profiles, onChanged }: TaskKanbanViewProps) {
   const groups = groupTasksByStatus(tasks);
+  const clientById = useMemo(() => new Map(clients.map((c) => [c.id, c])), [clients]);
+  const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects]);
+  const profileById = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
 
   if (tasks.length === 0) {
     return (
@@ -26,9 +40,14 @@ export function TaskKanbanView({ tasks }: TaskKanbanViewProps) {
     );
   }
 
-  function handleMove(task: Task, status: TaskWorkflowStatus) {
-    updateTask(task.id, { status });
-    toast.success(`Tarefa movida para "${taskWorkflowConfig[status].label}".`);
+  async function handleMove(task: Task, status: TaskWorkflowStatus) {
+    try {
+      await updateTaskStatus(task.id, status);
+      toast.success(`Tarefa movida para "${taskWorkflowConfig[status].label}".`);
+      onChanged();
+    } catch {
+      toast.error("Não foi possível mover a tarefa. Tente novamente.");
+    }
   }
 
   return (
@@ -58,6 +77,9 @@ export function TaskKanbanView({ tasks }: TaskKanbanViewProps) {
                   <TaskCard
                     key={task.id}
                     task={task}
+                    client={task.clientId ? clientById.get(task.clientId) : undefined}
+                    project={task.projectId ? projectById.get(task.projectId) : undefined}
+                    assignee={profileById.get(task.assigneeId)}
                     onMove={(nextStatus) => handleMove(task, nextStatus)}
                   />
                 ))

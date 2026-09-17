@@ -8,7 +8,7 @@ import { FileWarning, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Content, Project, Task } from "@/lib/types";
 import { useClient, removeClient } from "@/lib/data/clients";
 import { useProjects, filterProjects, removeProject } from "@/lib/data/projects";
-import { useTasks, removeTask } from "@/lib/services/tasks-service";
+import { useTasks, filterTasks, removeTask } from "@/lib/data/tasks";
 import { useContents, removeContent } from "@/lib/services/contents-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,7 +55,20 @@ export default function ClientDetailPage({
     () => filterProjects(allProjects, { clientId: id }),
     [allProjects, id],
   );
-  const clientTasks = useTasks({ clientId: id });
+  const {
+    tasks: allTasks,
+    clients: taskClients,
+    projects: taskProjects,
+    profiles: taskProfiles,
+    loading: tasksLoading,
+    error: tasksError,
+    refetch: refetchTasks,
+  } = useTasks();
+  const clientTasks = useMemo(() => filterTasks(allTasks, { clientId: id }), [allTasks, id]);
+  const openTasksCount = useMemo(
+    () => clientTasks.filter((task) => task.status !== "concluido" && task.status !== "cancelado").length,
+    [clientTasks],
+  );
   const clientContents = useContents({ clientId: id });
 
   const [editOpen, setEditOpen] = useState(false);
@@ -132,7 +145,11 @@ export default function ClientDetailPage({
         </TabsList>
 
         <TabsContent value="visao-geral" className="pt-4">
-          <ClientKpis clientId={client.id} monthlyFee={client.monthlyFee} />
+          <ClientKpis
+            clientId={client.id}
+            monthlyFee={client.monthlyFee}
+            openTasksCount={openTasksCount}
+          />
 
           {client.notes && (
             <Card className="mt-4">
@@ -191,7 +208,6 @@ export default function ClientDetailPage({
         </TabsContent>
 
         <TabsContent value="tarefas" className="pt-4">
-          <MockModuleNotice module="Tarefas" />
           <Card>
             <CardHeader>
               <CardTitle>Tarefas</CardTitle>
@@ -208,17 +224,30 @@ export default function ClientDetailPage({
               </Button>
             </CardHeader>
             <CardContent>
-              <TaskListView
-                tasks={clientTasks}
-                hideClientColumn
-                onEdit={(task) => {
-                  setEditingTask(task);
-                  setTaskDrawerOpen(true);
-                }}
-                onDelete={(task) => setDeletingTask(task)}
-                emptyTitle="Você ainda não possui tarefas neste cliente."
-                emptyDescription="Crie a primeira tarefa para começar a acompanhar a operação."
-              />
+              {tasksError ? (
+                <ErrorState description={tasksError} onRetry={refetchTasks} />
+              ) : tasksLoading ? (
+                <div className="flex flex-col gap-3">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} className="h-11 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <TaskListView
+                  tasks={clientTasks}
+                  clients={taskClients}
+                  projects={taskProjects}
+                  profiles={taskProfiles}
+                  hideClientColumn
+                  onEdit={(task) => {
+                    setEditingTask(task);
+                    setTaskDrawerOpen(true);
+                  }}
+                  onDelete={(task) => setDeletingTask(task)}
+                  emptyTitle="Você ainda não possui tarefas neste cliente."
+                  emptyDescription="Crie a primeira tarefa para começar a acompanhar a operação."
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -287,7 +316,11 @@ export default function ClientDetailPage({
         open={taskDrawerOpen}
         onOpenChange={setTaskDrawerOpen}
         task={editingTask}
+        clients={taskClients}
+        projects={taskProjects}
+        profiles={taskProfiles}
         defaultClientId={client.id}
+        onSaved={refetchTasks}
       />
 
       <ContentFormDrawer
@@ -334,10 +367,15 @@ export default function ClientDetailPage({
         title="Excluir tarefa"
         description={`Tem certeza que deseja excluir "${deletingTask?.title}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!deletingTask) return;
-          removeTask(deletingTask.id);
-          toast.success("Tarefa excluída.");
+          try {
+            await removeTask(deletingTask.id);
+            toast.success("Tarefa excluída.");
+            refetchTasks();
+          } catch {
+            toast.error("Não foi possível excluir a tarefa. Tente novamente.");
+          }
         }}
       />
 

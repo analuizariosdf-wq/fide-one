@@ -1,24 +1,21 @@
 "use client";
 
-import { use, useState } from "react";
-import Link from "next/link";
+import { use, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FileWarning, Paperclip, Pencil, Trash2 } from "lucide-react";
 
-import { getClient } from "@/lib/mock-data/clients";
-import { getProject } from "@/lib/mock-data/projects";
-import { getTeamMember } from "@/lib/mock-data/users";
-import { getContent } from "@/lib/mock-data/contents";
 import { getTaskDueLabel, isOverdue } from "@/lib/format";
 import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
-import { useTask, updateTask, removeTask } from "@/lib/services/tasks-service";
-import { cn } from "@/lib/utils";
+import { useTask, useTaskComments, addTaskComment, removeTask } from "@/lib/data/tasks";
+import { cn, toInitials } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EntityLink } from "@/components/shared/entity-link";
@@ -31,11 +28,44 @@ export default function TaskDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const task = useTask(id);
+  const { task, clients, projects, profiles, loading, error, refetch } = useTask(id);
+  const { comments, loading: commentsLoading, error: commentsError, refetch: refetchComments } =
+    useTaskComments(id);
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [comment, setComment] = useState("");
+  const [sendingComment, setSendingComment] = useState(false);
+
+  const client = useMemo(
+    () => (task?.clientId ? clients.find((c) => c.id === task.clientId) : undefined),
+    [clients, task],
+  );
+  const project = useMemo(
+    () => (task?.projectId ? projects.find((p) => p.id === task.projectId) : undefined),
+    [projects, task],
+  );
+  const assignee = useMemo(
+    () => (task ? profiles.find((p) => p.id === task.assigneeId) : undefined),
+    [profiles, task],
+  );
+  const profileById = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-6 w-56" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorState description={error} onRetry={refetch} />;
+  }
 
   if (!task) {
     return (
@@ -47,24 +77,33 @@ export default function TaskDetailPage({
     );
   }
 
-  const client = getClient(task.clientId);
-  const project = getProject(task.projectId);
-  const assignee = getTeamMember(task.assigneeId);
-  const relatedContent = task.relatedContentId ? getContent(task.relatedContentId) : undefined;
   const status = taskWorkflowConfig[task.status];
   const priority = taskUrgencyConfig[task.priority];
   const overdue = task.status !== "concluido" && isOverdue(task.dueDate);
 
-  function handleSendComment() {
-    if (!comment.trim() || !task) return;
+  async function handleSendComment() {
+    if (!comment.trim()) return;
+    setSendingComment(true);
+    try {
+      await addTaskComment(id, comment.trim());
+      setComment("");
+      refetchComments();
+    } catch {
+      toast.error("Não foi possível enviar o comentário. Tente novamente.");
+    } finally {
+      setSendingComment(false);
+    }
+  }
 
-    updateTask(task.id, {
-      comments: [
-        ...(task.comments ?? []),
-        { id: crypto.randomUUID(), authorId: "daniel", message: comment.trim(), timeLabel: "agora" },
-      ],
-    });
-    setComment("");
+  async function handleConfirmDelete() {
+    if (!task) return;
+    try {
+      await removeTask(task.id);
+      toast.success("Tarefa excluída.");
+      router.push("/tasks");
+    } catch {
+      toast.error("Não foi possível excluir a tarefa. Tente novamente.");
+    }
   }
 
   return (
@@ -106,7 +145,7 @@ export default function TaskDetailPage({
           value={getTaskDueLabel(task.dueDate, task.status === "concluido")}
           valueClassName={overdue ? "text-status-danger-fg" : undefined}
         />
-        <MetaField label="Responsável" value={assignee?.name ?? "—"} />
+        <MetaField label="Responsável" value={assignee?.name ?? "Sem responsável"} />
         <MetaField
           label="Projeto"
           value={project?.name ?? "Sem projeto"}
@@ -132,21 +171,10 @@ export default function TaskDetailPage({
               <CardTitle>Conteúdo relacionado</CardTitle>
             </CardHeader>
             <CardContent>
-              {relatedContent ? (
-                <Link
-                  href={`/contents/${relatedContent.id}`}
-                  className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2.5 transition-colors hover:bg-muted"
-                >
-                  <span className="text-[13px] font-medium text-foreground">
-                    {relatedContent.title}
-                  </span>
-                  <span className="text-[12px] text-muted-foreground">
-                    {relatedContent.contentType} · {relatedContent.channel}
-                  </span>
-                </Link>
-              ) : (
-                <p className="text-muted-foreground">Nenhum conteúdo relacionado.</p>
-              )}
+              <EmptyState
+                title="Ainda não disponível"
+                description="A relação com Conteúdos (content_tasks) será implementada na Fase 5.5, junto da migração do módulo Conteúdos."
+              />
             </CardContent>
           </Card>
 
@@ -168,21 +196,34 @@ export default function TaskDetailPage({
               <CardTitle>Comentários</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              {(task.comments ?? []).length === 0 ? (
+              {commentsError ? (
+                <ErrorState description={commentsError} onRetry={refetchComments} />
+              ) : commentsLoading ? (
+                <div className="flex flex-col gap-3">
+                  {Array.from({ length: 2 }).map((_, index) => (
+                    <Skeleton key={index} className="h-10 w-full" />
+                  ))}
+                </div>
+              ) : comments.length === 0 ? (
                 <p className="text-muted-foreground">Nenhum comentário ainda.</p>
               ) : (
-                task.comments?.map((item) => {
-                  const author = getTeamMember(item.authorId);
+                comments.map((item) => {
+                  const author = profileById.get(item.authorId);
                   return (
                     <div key={item.id} className="flex items-start gap-2.5">
                       <Avatar className="size-7 shrink-0">
-                        <AvatarFallback className="text-[11px]">{author?.initials}</AvatarFallback>
+                        <AvatarFallback className="text-[11px]">
+                          {author ? toInitials(author.name) : "—"}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
                         <p className="text-[13px] text-foreground">
-                          <span className="font-medium">{author?.name}</span> {item.message}
+                          <span className="font-medium">{author?.name ?? "Usuário removido"}</span>{" "}
+                          {item.message}
                         </p>
-                        <span className="text-[12px] text-muted-foreground">{item.timeLabel}</span>
+                        <span className="text-[12px] text-muted-foreground">
+                          {new Date(item.createdAt).toLocaleString("pt-BR")}
+                        </span>
                       </div>
                     </div>
                   );
@@ -195,9 +236,10 @@ export default function TaskDetailPage({
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendComment()}
+                  disabled={sendingComment}
                 />
-                <Button variant="outline" onClick={handleSendComment}>
-                  Enviar
+                <Button variant="outline" onClick={handleSendComment} disabled={sendingComment}>
+                  {sendingComment ? "Enviando..." : "Enviar"}
                 </Button>
               </div>
             </CardContent>
@@ -208,27 +250,24 @@ export default function TaskDetailPage({
           <CardHeader>
             <CardTitle>Histórico</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            {(task.history ?? []).length === 0 ? (
-              <p className="text-muted-foreground">Sem histórico.</p>
-            ) : (
-              task.history?.map((entry) => {
-                const actor = getTeamMember(entry.actorId);
-                return (
-                  <div key={entry.id} className="flex flex-col gap-0.5 border-l-2 border-border pl-3">
-                    <p className="text-[13px] text-foreground">
-                      <span className="font-medium">{actor?.name}</span> {entry.description}
-                    </p>
-                    <span className="text-[12px] text-muted-foreground">{entry.timeLabel}</span>
-                  </div>
-                );
-              })
-            )}
+          <CardContent>
+            <EmptyState
+              title="Ainda não disponível"
+              description="O histórico de atividade (activity_logs) será implementado em uma etapa futura."
+            />
           </CardContent>
         </Card>
       </div>
 
-      <TaskFormDrawer open={editOpen} onOpenChange={setEditOpen} task={task} />
+      <TaskFormDrawer
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        task={task}
+        clients={clients}
+        projects={projects}
+        profiles={profiles}
+        onSaved={refetch}
+      />
 
       <ConfirmDialog
         open={deleteOpen}
@@ -236,11 +275,7 @@ export default function TaskDetailPage({
         title="Excluir tarefa"
         description={`Tem certeza que deseja excluir "${task.title}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
-          removeTask(task.id);
-          toast.success("Tarefa excluída.");
-          router.push("/tasks");
-        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

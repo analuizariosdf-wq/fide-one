@@ -296,8 +296,19 @@ export const tasks: Task[] = [
   },
 ];
 
+// Bridges real Supabase tasks (UUID ids) into the same lookup used by
+// src/lib/breadcrumb.ts, so the "Tarefas / <título>" breadcrumb resolves
+// correctly for real tasks too — same rationale as registerSupabaseProfile
+// in mock-data/team.ts. Populated by src/lib/data/tasks.ts whenever it
+// loads a task.
+const supabaseTaskCache = new Map<string, Pick<Task, "id" | "title">>();
+
+export function registerSupabaseTask(task: Pick<Task, "id" | "title">): void {
+  supabaseTaskCache.set(task.id, task);
+}
+
 export function getTask(id: string): Task | undefined {
-  return tasks.find((task) => task.id === id);
+  return tasks.find((task) => task.id === id) ?? (supabaseTaskCache.get(id) as Task | undefined);
 }
 
 export function getTasksByClient(clientId: string): Task[] {

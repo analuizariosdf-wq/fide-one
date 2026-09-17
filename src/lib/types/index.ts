@@ -125,7 +125,8 @@ export type TaskWorkflowStatus =
   | "em_producao"
   | "em_revisao"
   | "aguardando_cliente"
-  | "concluido";
+  | "concluido"
+  | "cancelado";
 
 export type TaskUrgency = "baixa" | "normal" | "alta" | "urgente";
 

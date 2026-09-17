@@ -2,14 +2,17 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { ZodError } from "zod";
 
 import type { Task, TaskUrgency, TaskWorkflowStatus } from "@/lib/types";
-import { clients } from "@/lib/mock-data/clients";
-import { getProjectsByClient, projects } from "@/lib/mock-data/projects";
-import { team } from "@/lib/mock-data/users";
-import { editorialContents } from "@/lib/mock-data/contents";
+import {
+  createTask,
+  updateTask,
+  type ClientOption,
+  type ProfileOption,
+  type ProjectOption,
+} from "@/lib/data/tasks";
 import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
-import { createTask, updateTask } from "@/lib/services/tasks-service";
 import {
   Sheet,
   SheetContent,
@@ -30,8 +33,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const NO_CLIENT = "nenhum";
 const NO_PROJECT = "nenhum";
-const NO_CONTENT = "nenhum";
+const NO_ASSIGNEE = "nenhum";
 
 interface FormState {
   title: string;
@@ -42,20 +46,18 @@ interface FormState {
   priority: TaskUrgency;
   status: TaskWorkflowStatus;
   dueDate: string;
-  relatedContentId: string;
 }
 
 function emptyForm(defaults?: { clientId?: string; projectId?: string }): FormState {
   return {
     title: "",
     description: "",
-    clientId: defaults?.clientId ?? "",
+    clientId: defaults?.clientId ?? NO_CLIENT,
     projectId: defaults?.projectId ?? NO_PROJECT,
-    assigneeId: team[0]?.id ?? "",
+    assigneeId: NO_ASSIGNEE,
     priority: "normal",
     status: "backlog",
     dueDate: "",
-    relatedContentId: NO_CONTENT,
   };
 }
 
@@ -63,13 +65,12 @@ function toFormState(task: Task): FormState {
   return {
     title: task.title,
     description: task.description ?? "",
-    clientId: task.clientId ?? "",
+    clientId: task.clientId ?? NO_CLIENT,
     projectId: task.projectId ?? NO_PROJECT,
-    assigneeId: task.assigneeId,
+    assigneeId: task.assigneeId || NO_ASSIGNEE,
     priority: task.priority,
     status: task.status,
     dueDate: task.dueDate,
-    relatedContentId: task.relatedContentId ?? NO_CONTENT,
   };
 }
 
@@ -77,6 +78,9 @@ interface TaskFormDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   task?: Task | null;
+  clients: ClientOption[];
+  projects: ProjectOption[];
+  profiles: ProfileOption[];
   defaultClientId?: string;
   defaultProjectId?: string;
   onSaved?: (task: Task) => void;
@@ -86,6 +90,9 @@ export function TaskFormDrawer({
   open,
   onOpenChange,
   task,
+  clients,
+  projects,
+  profiles,
   defaultClientId,
   defaultProjectId,
   onSaved,
@@ -93,11 +100,15 @@ export function TaskFormDrawer({
   const [form, setForm] = useState<FormState>(() =>
     task ? toFormState(task) : emptyForm({ clientId: defaultClientId, projectId: defaultProjectId }),
   );
+  const [submitting, setSubmitting] = useState(false);
   const isEditing = Boolean(task);
 
   const availableProjects = useMemo(
-    () => (form.clientId ? getProjectsByClient(form.clientId) : projects),
-    [form.clientId],
+    () =>
+      form.clientId === NO_CLIENT
+        ? projects
+        : projects.filter((project) => project.clientId === form.clientId),
+    [form.clientId, projects],
   );
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -111,13 +122,14 @@ export function TaskFormDrawer({
       projectId:
         prev.projectId === NO_PROJECT
           ? NO_PROJECT
-          : getProjectsByClient(clientId).some((p) => p.id === prev.projectId)
+          : clientId === NO_CLIENT ||
+              projects.some((p) => p.id === prev.projectId && p.clientId === clientId)
             ? prev.projectId
             : NO_PROJECT,
     }));
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     if (!form.title.trim() || !form.dueDate) {
@@ -128,20 +140,32 @@ export function TaskFormDrawer({
     const payload = {
       title: form.title.trim(),
       description: form.description.trim() || undefined,
-      clientId: form.clientId || null,
+      clientId: form.clientId === NO_CLIENT ? null : form.clientId,
       projectId: form.projectId === NO_PROJECT ? null : form.projectId,
-      assigneeId: form.assigneeId,
+      assigneeId: form.assigneeId === NO_ASSIGNEE ? null : form.assigneeId,
       priority: form.priority,
       status: form.status,
       dueDate: form.dueDate,
-      relatedContentId: form.relatedContentId === NO_CONTENT ? null : form.relatedContentId,
     };
 
-    const saved = isEditing && task ? updateTask(task.id, payload) : createTask(payload);
+    setSubmitting(true);
+    try {
+      const saved = isEditing && task ? await updateTask(task.id, payload) : await createTask(payload);
 
-    if (saved) onSaved?.(saved);
-    onOpenChange(false);
-    toast.success(isEditing ? "Tarefa atualizada com sucesso." : "Tarefa criada com sucesso.");
+      onSaved?.(saved);
+      onOpenChange(false);
+      toast.success(isEditing ? "Tarefa atualizada com sucesso." : "Tarefa criada com sucesso.");
+    } catch (error) {
+      if (error instanceof ZodError) {
+        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Não foi possível salvar a tarefa. Tente novamente.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -150,7 +174,9 @@ export function TaskFormDrawer({
         <SheetHeader className="border-b border-border pb-4">
           <SheetTitle>{isEditing ? "Editar tarefa" : "Nova tarefa"}</SheetTitle>
           <SheetDescription>
-            Os dados são mockados nesta etapa — nada é persistido em banco.
+            {isEditing
+              ? "As alterações são salvas diretamente no banco de dados."
+              : "A tarefa é salva diretamente no banco de dados da sua organização."}
           </SheetDescription>
         </SheetHeader>
 
@@ -174,12 +200,12 @@ export function TaskFormDrawer({
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <FormField label="Cliente">
-                  <Select value={form.clientId || "nenhum"} onValueChange={(v) => handleClientChange(v === "nenhum" ? "" : v)}>
+                  <Select value={form.clientId} onValueChange={handleClientChange}>
                     <SelectTrigger aria-label="Cliente">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="nenhum">Interno (sem cliente)</SelectItem>
+                      <SelectItem value={NO_CLIENT}>Interno (sem cliente)</SelectItem>
                       {clients.map((client) => (
                         <SelectItem key={client.id} value={client.id}>
                           {client.name}
@@ -211,9 +237,10 @@ export function TaskFormDrawer({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {team.map((member) => (
-                        <SelectItem key={member.id} value={member.id}>
-                          {member.name}
+                      <SelectItem value={NO_ASSIGNEE}>Sem responsável</SelectItem>
+                      {profiles.map((profile) => (
+                        <SelectItem key={profile.id} value={profile.id}>
+                          {profile.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -265,37 +292,15 @@ export function TaskFormDrawer({
                 </FormField>
               </div>
             </section>
-
-            <section className="flex flex-col gap-3">
-              <h3 className="text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Relacionamentos
-              </h3>
-              <FormField label="Conteúdo relacionado">
-                <Select
-                  value={form.relatedContentId}
-                  onValueChange={(v) => update("relatedContentId", v)}
-                >
-                  <SelectTrigger aria-label="Conteúdo relacionado">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NO_CONTENT}>Nenhum</SelectItem>
-                    {editorialContents.map((content) => (
-                      <SelectItem key={content.id} value={content.id}>
-                        {content.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormField>
-            </section>
           </div>
 
           <SheetFooter className="mt-6 flex-row justify-end gap-2 px-0 pb-0">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
               Cancelar
             </Button>
-            <Button type="submit">{isEditing ? "Salvar alterações" : "Criar tarefa"}</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Salvando..." : isEditing ? "Salvar alterações" : "Criar tarefa"}
+            </Button>
           </SheetFooter>
         </form>
       </SheetContent>

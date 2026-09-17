@@ -1,12 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ListChecks, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import type { Task } from "@/lib/types";
-import { getClient } from "@/lib/mock-data/clients";
-import { getProject } from "@/lib/mock-data/projects";
-import { getTeamMember } from "@/lib/mock-data/users";
+import type { ClientOption, ProfileOption, ProjectOption } from "@/lib/data/tasks";
 import { getTaskDueLabel, isOverdue } from "@/lib/format";
 import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
 import { cn } from "@/lib/utils";
@@ -31,6 +30,9 @@ import {
 
 interface TaskListViewProps {
   tasks: Task[];
+  clients: ClientOption[];
+  projects: ProjectOption[];
+  profiles: ProfileOption[];
   hideClientColumn?: boolean;
   hideProjectColumn?: boolean;
   onEdit: (task: Task) => void;
@@ -41,6 +43,9 @@ interface TaskListViewProps {
 
 export function TaskListView({
   tasks,
+  clients,
+  projects,
+  profiles,
   hideClientColumn,
   hideProjectColumn,
   onEdit,
@@ -49,6 +54,9 @@ export function TaskListView({
   emptyDescription = "Ajuste os filtros ou crie uma nova tarefa.",
 }: TaskListViewProps) {
   const router = useRouter();
+  const clientById = useMemo(() => new Map(clients.map((c) => [c.id, c])), [clients]);
+  const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects]);
+  const profileById = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
 
   if (tasks.length === 0) {
     return <EmptyState icon={ListChecks} title={emptyTitle} description={emptyDescription} />;
@@ -70,9 +78,9 @@ export function TaskListView({
       </TableHeader>
       <TableBody>
         {tasks.map((task) => {
-          const client = getClient(task.clientId);
-          const project = getProject(task.projectId);
-          const assignee = getTeamMember(task.assigneeId);
+          const client = task.clientId ? clientById.get(task.clientId) : undefined;
+          const project = task.projectId ? projectById.get(task.projectId) : undefined;
+          const assignee = profileById.get(task.assigneeId);
           const status = taskWorkflowConfig[task.status];
           const priority = taskUrgencyConfig[task.priority];
           const overdue = task.status !== "concluido" && isOverdue(task.dueDate);
@@ -104,7 +112,9 @@ export function TaskListView({
                   )}
                 </TableCell>
               )}
-              <TableCell className="text-muted-foreground">{assignee?.name ?? "—"}</TableCell>
+              <TableCell className="text-muted-foreground">
+                {assignee?.name ?? "Sem responsável"}
+              </TableCell>
               <TableCell>
                 <span className="flex items-center gap-1.5 text-muted-foreground">
                   <span className={cn("size-2 rounded-full", priority.dotClass)} aria-hidden />

@@ -8,7 +8,7 @@ import { FileWarning, Pencil, Plus, Trash2 } from "lucide-react";
 import { formatDateShort } from "@/lib/format";
 import { projectStatusConfig } from "@/lib/status";
 import { useProject, removeProject } from "@/lib/data/projects";
-import { useTasks, removeTask } from "@/lib/services/tasks-service";
+import { useTasks, filterTasks, removeTask } from "@/lib/data/tasks";
 import { useContents, removeContent } from "@/lib/services/contents-service";
 import type { Content, Task } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +35,19 @@ export default function ProjectDetailPage({
   const { id } = use(params);
   const router = useRouter();
   const { project, clients, profiles, loading, error, refetch } = useProject(id);
-  const projectTasks = useTasks({ projectId: id });
+  const {
+    tasks: allTasks,
+    clients: taskClients,
+    projects: taskProjects,
+    profiles: taskProfiles,
+    loading: tasksLoading,
+    error: tasksError,
+    refetch: refetchTasks,
+  } = useTasks();
+  const projectTasks = useMemo(
+    () => filterTasks(allTasks, { projectId: id }),
+    [allTasks, id],
+  );
   const projectContents = useContents({ projectId: id });
 
   const [editOpen, setEditOpen] = useState(false);
@@ -167,18 +179,30 @@ export default function ProjectDetailPage({
           </Button>
         </CardHeader>
         <CardContent>
-          <MockModuleNotice module="Tarefas" />
-          <TaskListView
-            tasks={projectTasks}
-            hideProjectColumn
-            onEdit={(task) => {
-              setEditingTask(task);
-              setTaskDrawerOpen(true);
-            }}
-            onDelete={(task) => setDeletingTask(task)}
-            emptyTitle="Nenhuma tarefa neste projeto"
-            emptyDescription="Crie a primeira tarefa para começar a acompanhar a entrega."
-          />
+          {tasksError ? (
+            <ErrorState description={tasksError} onRetry={refetchTasks} />
+          ) : tasksLoading ? (
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} className="h-11 w-full" />
+              ))}
+            </div>
+          ) : (
+            <TaskListView
+              tasks={projectTasks}
+              clients={taskClients}
+              projects={taskProjects}
+              profiles={taskProfiles}
+              hideProjectColumn
+              onEdit={(task) => {
+                setEditingTask(task);
+                setTaskDrawerOpen(true);
+              }}
+              onDelete={(task) => setDeletingTask(task)}
+              emptyTitle="Nenhuma tarefa neste projeto"
+              emptyDescription="Crie a primeira tarefa para começar a acompanhar a entrega."
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -238,8 +262,12 @@ export default function ProjectDetailPage({
         open={taskDrawerOpen}
         onOpenChange={setTaskDrawerOpen}
         task={editingTask}
+        clients={taskClients}
+        projects={taskProjects}
+        profiles={taskProfiles}
         defaultClientId={project.clientId}
         defaultProjectId={project.id}
+        onSaved={refetchTasks}
       />
 
       <ContentFormDrawer
@@ -269,10 +297,15 @@ export default function ProjectDetailPage({
         title="Excluir tarefa"
         description={`Tem certeza que deseja excluir "${deletingTask?.title}"? Essa ação não pode ser desfeita.`}
         confirmLabel="Excluir"
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!deletingTask) return;
-          removeTask(deletingTask.id);
-          toast.success("Tarefa excluída.");
+          try {
+            await removeTask(deletingTask.id);
+            toast.success("Tarefa excluída.");
+            refetchTasks();
+          } catch {
+            toast.error("Não foi possível excluir a tarefa. Tente novamente.");
+          }
         }}
       />
 

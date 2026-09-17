@@ -73,6 +73,7 @@ export const taskWorkflowConfig: Record<
   em_revisao: { label: "Em revisão", variant: "warning" },
   aguardando_cliente: { label: "Aguardando cliente", variant: "warning" },
   concluido: { label: "Concluído", variant: "success" },
+  cancelado: { label: "Cancelado", variant: "danger" },
 };
 
 export const taskWorkflowOrder: TaskWorkflowStatus[] = [
@@ -82,6 +83,7 @@ export const taskWorkflowOrder: TaskWorkflowStatus[] = [
   "em_revisao",
   "aguardando_cliente",
   "concluido",
+  "cancelado",
 ];
 
 export const taskUrgencyConfig: Record<

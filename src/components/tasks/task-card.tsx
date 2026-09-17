@@ -4,9 +4,8 @@ import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 
 import type { Task, TaskWorkflowStatus } from "@/lib/types";
-import { getClient } from "@/lib/mock-data/clients";
-import { getProject } from "@/lib/mock-data/projects";
-import { getTeamMember } from "@/lib/mock-data/users";
+import type { ClientOption, ProfileOption, ProjectOption } from "@/lib/data/tasks";
+import { toInitials } from "@/lib/utils";
 import { getTaskDueLabel, isOverdue } from "@/lib/format";
 import { taskUrgencyConfig, taskWorkflowConfig, taskWorkflowOrder } from "@/lib/status";
 import { cn } from "@/lib/utils";
@@ -23,14 +22,14 @@ import {
 
 interface TaskCardProps {
   task: Task;
+  client?: ClientOption;
+  project?: ProjectOption;
+  assignee?: ProfileOption;
   onMove: (status: TaskWorkflowStatus) => void;
 }
 
-export function TaskCard({ task, onMove }: TaskCardProps) {
+export function TaskCard({ task, client, project, assignee, onMove }: TaskCardProps) {
   const router = useRouter();
-  const client = getClient(task.clientId);
-  const project = getProject(task.projectId);
-  const assignee = getTeamMember(task.assigneeId);
   const priority = taskUrgencyConfig[task.priority];
   const overdue = task.status !== "concluido" && isOverdue(task.dueDate);
 
@@ -93,7 +92,7 @@ export function TaskCard({ task, onMove }: TaskCardProps) {
         </span>
         {assignee && (
           <Avatar className="size-6">
-            <AvatarFallback className="text-[10px]">{assignee.initials}</AvatarFallback>
+            <AvatarFallback className="text-[10px]">{toInitials(assignee.name)}</AvatarFallback>
           </Avatar>
         )}
       </div>

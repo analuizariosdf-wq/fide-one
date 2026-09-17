@@ -4,26 +4,26 @@ import { Clock, DollarSign, Images, ListChecks } from "lucide-react";
 
 import { contents } from "@/lib/mock-data/contents";
 import { formatCurrencyBRL } from "@/lib/format";
-import { useTasks } from "@/lib/services/tasks-service";
 import { StatCard } from "@/components/ui/stat-card";
 import { MockModuleNotice } from "@/components/clients/mock-module-notice";
 
 export function ClientKpis({
   clientId,
   monthlyFee,
+  openTasksCount,
 }: {
   clientId: string;
   monthlyFee: number;
+  openTasksCount: number;
 }) {
-  const openTasks = useTasks({ clientId }).filter((task) => task.status !== "concluido");
   const clientContents = contents.filter((content) => content.clientId === clientId);
   const awaitingApproval = clientContents.filter((content) => content.status === "aprovacao");
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Publicações/Tarefas/Aguardando aprovação vêm de Conteúdos e Tarefas,
-          que ainda são mock — só "Receita mensal" é dado real do cliente. */}
-      <MockModuleNotice module="Publicações, tarefas abertas e aguardando aprovação" />
+      {/* Publicações/Aguardando aprovação vêm de Conteúdos, que ainda é mock —
+          "Tarefas abertas" (Fase 5.4) e "Receita mensal" já são dados reais. */}
+      <MockModuleNotice module="Publicações e aguardando aprovação" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Publicações"
@@ -33,7 +33,7 @@ export function ClientKpis({
         />
         <StatCard
           label="Tarefas abertas"
-          value={String(openTasks.length)}
+          value={String(openTasksCount)}
           icon={ListChecks}
         />
         <StatCard

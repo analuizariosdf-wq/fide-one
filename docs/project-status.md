@@ -145,6 +145,81 @@ Agora Projetos é o segundo módulo **REAL/SUPABASE**:
   de projeto que não existe nos dados de exemplo, sempre apareceriam vazios
   sem o aviso, o que poderia parecer "projeto sem nada" real.
 
+## 4d. Tarefas — Fase 5.4 (feita nesta sessão)
+
+Estava 100% mockado (listagem, Kanban, detalhe, comentários e "histórico"
+ad hoc em `src/lib/mock-data/tasks.ts` + `store/tasks-store.ts` +
+`services/tasks-service.ts`). Agora Tarefas é o terceiro módulo
+**REAL/SUPABASE**:
+
+- Novo Data Layer real: `src/lib/data/tasks.ts` + `task-schema.ts` (mesmo
+  padrão de Clientes/Projetos: flat queries + join em JS, Zod antes do
+  Supabase, `organization_id` via `getCurrentOrganizationId()`). Listar,
+  Kanban, detalhe, criar, editar, excluir, status, prioridade, prazo,
+  cliente, projeto, responsável, conclusão e comentários — tudo real.
+- **Status**: o schema/constraint da tabela `tasks` sempre teve 7 valores
+  (`backlog, a_fazer, em_producao, em_revisao, aguardando_cliente,
+  concluido, cancelado`), mas o tipo `TaskWorkflowStatus` e
+  `taskWorkflowConfig`/`taskWorkflowOrder` (`src/lib/status.ts`) só tinham
+  6 — faltava `cancelado`. Corrigido (era uma lacuna pré-existente do mock,
+  não uma mudança de domínio). O Kanban ganhou uma 7ª coluna; sem
+  redesenho, com o mesmo scroll horizontal já existente.
+- **Prioridade**: `baixa/normal/alta/urgente` já batia exatamente com o
+  schema — sem mudanças.
+- **Cliente/Projeto/Responsável**: os seletores usam exclusivamente
+  `clients`/`projects`/`profiles` reais (nunca os mocks). O seletor de
+  Projeto é filtrado pelo cliente selecionado no formulário (cascata
+  Cliente → Projeto, preservando a UX já existente). Antes de gravar, o
+  Data Layer valida no servidor (consultas próprias, sob RLS) que o
+  cliente/projeto/responsável informados realmente pertencem à organização
+  autenticada — nunca confia só no dropdown do formulário — e que o
+  projeto informado pertence ao cliente informado.
+- **Responsável ausente**: `assignee_id` é opcional no schema; a UI mostra
+  "Sem responsável" (não um mock fictício) quando não há um definido.
+- **completed_at**: passa a refletir `now()` só na transição real para
+  "concluído" (não é reescrito a cada edição de uma tarefa que já estava
+  concluída) e volta a `null` assim que a tarefa sai desse status.
+- **Kanban**: sem drag-and-drop na versão mockada (já era por menu "Mover
+  para") — mantido; mover agora chama `updateTaskStatus()` (persiste no
+  Supabase) e só atualiza a tela após confirmação do servidor, com toast de
+  erro e sem alterar a UI se a escrita falhar.
+- **Comentários** (`task_comments`, já existia no schema): migrados para
+  Supabase real — `task_id`, `author_id` (usuário autenticado),
+  `organization_id`, `message`, `created_at`. Sem menções, notificações ou
+  edição/exclusão de comentário (não existiam na UX mockada).
+- **Conteúdo relacionado** (campo ad hoc do mock, sem coluna própria na
+  tabela `tasks` — a relação real seria via `content_tasks`, que exige
+  Conteúdos real): removido do formulário e, no detalhe da tarefa,
+  substituído por um aviso "Ainda não disponível — Fase 5.5", em vez de
+  mostrar conteúdo mock associado a uma tarefa real.
+- **Histórico** (`task.history` do mock, sem tabela própria — `activity_logs`
+  já existe no schema mas não há nenhuma infraestrutura de gravação para
+  ela em nenhum módulo ainda): substituído pelo mesmo tipo de aviso
+  "Ainda não disponível", em vez de inventar um sistema de auditoria nesta
+  fase. Fica documentado aqui para uma etapa futura.
+- **Breadcrumb**: `src/lib/breadcrumb.ts` resolvia o título da tarefa via
+  `getTask()` do mock — para uma tarefa real (UUID), isso sempre retornava
+  "Não encontrado". Corrigido com o mesmo padrão de bridge já usado para
+  perfis (`registerSupabaseProfile`): `registerSupabaseTask()` em
+  `mock-data/tasks.ts`, populado pelo Data Layer real a cada tarefa
+  carregada. **Observação**: o mesmo problema existe hoje para Clientes e
+  Projetos (`getClient`/`getProject` do mock, sem bridge equivalente) —
+  não corrigido nesta fase por estar fora do escopo de Tarefas; registrado
+  aqui para tratar quando algum desses módulos for revisitado.
+- Removido `src/lib/services/tasks-service.ts` (sem consumidores restantes
+  após migrar Tarefas, Cliente → Tarefas e Projeto → Tarefas). **Mantidos**
+  `src/lib/store/tasks-store.ts` (ainda importado diretamente por
+  `calendar-service.ts`) e `src/lib/mock-data/tasks.ts` (ainda usado por
+  Conteúdos, Calendário e pelo breadcrumb) — Conteúdos/Calendário continuam
+  mockados e referenciam tarefas pelos IDs antigos (`task-1`, ...).
+- **Cliente → Tarefas** e **Projeto → Tarefas**: as abas/cards passaram a
+  usar o Data Layer real (aviso de mock removido dessas duas áreas
+  especificamente). O KPI "Tarefas abertas" no Cliente também passou a ser
+  real; "Publicações" e "Aguardando aprovação" continuam mock (Conteúdos).
+- **Dashboard**: não foi tocado — o widget "Minhas tarefas" usa o modelo
+  `TaskItem`/`myTasks`, deliberadamente separado do `Task` completo desde
+  a Etapa 1, e continua 100% mockado.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -176,17 +251,22 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
 - **Projetos** (Fase 2 visual + Fase 5.3 backend): **REAL/SUPABASE**
   — segundo módulo com CRUD real (`src/lib/data/projects.ts`). Listar,
   criar, editar, excluir, status, cliente, responsável, datas, descrição,
-  campanha — tudo real, sem mock residual. O detalhe do projeto ainda
-  mostra Tarefas/Conteúdos vindos de mock (sinalizado — ver seção 4c).
-- **Tarefas (Kanban), Conteúdos, Calendário** (Fases 2/3): UI e navegação
-  completas, mas dados ainda mockados
-  (`src/lib/mock-data/*`, `src/lib/services/*-service.ts`,
+  campanha — tudo real, sem mock residual. O detalhe do projeto mostra
+  Tarefas reais (ver seção 4d) e Conteúdos ainda mock (sinalizado).
+- **Tarefas** (Fase 2 visual + Fase 5.4 backend): **REAL/SUPABASE** —
+  terceiro módulo com CRUD real (`src/lib/data/tasks.ts`). Listagem,
+  Kanban, detalhe, criar, editar, status, prioridade, prazo, cliente,
+  projeto, responsável, conclusão e comentários — tudo real. "Conteúdo
+  relacionado" e "Histórico" no detalhe mostram avisos de "ainda não
+  disponível" em vez de mock (ver seção 4d).
+- **Conteúdos, Calendário** (Fase 3): UI e navegação completas, mas dados
+  ainda mockados (`src/lib/mock-data/*`, `src/lib/services/*-service.ts`,
   `src/lib/store/*-store.ts`).
 
 ## 8. Módulos ainda mockados / não iniciados
 
-- Tarefas, Conteúdos, Calendário: UI pronta, sem ligação ao Supabase (é a
-  Fase 5.4–5.6).
+- Conteúdos, Calendário: UI pronta, sem ligação ao Supabase (é a
+  Fase 5.5–5.6).
 - Financeiro, Equipe, Relatórios: só placeholders de tela
   (`src/app/(app)/financeiro`, `/equipe`, `/relatorios`) — nenhuma lógica.
 - Upload de arquivos (Storage): infraestrutura pronta, sem UI (Fase 5.7).
@@ -202,7 +282,7 @@ FASE 5 — Conectar frontend ao Supabase real    🔶 em andamento
   5.1 Auth + sessão + organização              ✅ concluída (esta sessão)
   5.2 Clientes                                 ✅ concluída (esta sessão) — REAL/SUPABASE
   5.3 Projetos                                 ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.4 Tarefas + Kanban                         ⏳ pendente
+  5.4 Tarefas + Kanban                         ✅ concluída (esta sessão) — REAL/SUPABASE
   5.5 Conteúdos                                ⏳ pendente
   5.6 Calendário                               ⏳ pendente
   5.7 Arquivos / Supabase Storage              ⏳ pendente
@@ -264,6 +344,7 @@ Server).
 | Login | `src/app/login/page.tsx` |
 | Data Layer real (Clientes) | `src/lib/data/clients.ts`, `client-schema.ts`, `organization.ts` |
 | Data Layer real (Projetos) | `src/lib/data/projects.ts`, `project-schema.ts` |
+| Data Layer real (Tarefas) | `src/lib/data/tasks.ts`, `task-schema.ts` |
 | Migrations | `supabase/migrations/*.sql` |
 | Seed hospedado | `supabase/manual/seed-hosted.sql` |
 | Testes de RLS | `supabase/manual/rls-tests.sql` |
