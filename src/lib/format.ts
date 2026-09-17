@@ -6,6 +6,16 @@ export function formatCurrencyBRL(value: number): string {
   }).format(value);
 }
 
+/**
+ * Postgres `time` columns round-trip through PostgREST as "HH:MM:SS" —
+ * every `<input type="time">` in this app (and every mock value it
+ * replaced) works in "HH:MM". Trims the seconds so a real row displays
+ * exactly like the mock one did, instead of leaking ":00" into the UI.
+ */
+export function toHoursMinutes(value: string | null): string | undefined {
+  return value ? value.slice(0, 5) : undefined;
+}
+
 export function formatDateLong(date: Date): string {
   const formatted = new Intl.DateTimeFormat("pt-BR", {
     weekday: "long",

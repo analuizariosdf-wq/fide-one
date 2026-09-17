@@ -291,6 +291,100 @@ Estava 100% mockado. Agora Conteúdos é o quarto módulo **REAL/SUPABASE**:
 - **Dashboard**: não tocado — continua usando `contents`/`ContentItem[]`
   (mock leve da Etapa 1), documentado aqui como dependência restante.
 
+## 4f. Calendário — Fase 5.6 (feita nesta sessão)
+
+Estava 100% mockado. Agora Calendário é o quinto módulo **REAL/SUPABASE**
+— último do grupo Clientes/Projetos/Tarefas/Conteúdos/Calendário.
+
+**Arquitetura: projeção, não cópia.** O Calendário nunca teve (e continua
+sem ter) sua própria tabela de "itens do calendário" para Conteúdos/
+Tarefas. Ele é uma agregação em tempo real de 3 fontes:
+
+```
+CONTENTS (scheduled_date/scheduled_time)
+   +
+TASKS (due_date)
+   +
+CALENDAR_EVENTS (event_date/event_time — só para reunião/evento/prazo manual)
+   =
+useCalendarItems() → CalendarItem[]
+```
+
+- `src/lib/services/calendar-service.ts` (mantido, só reescrito por dentro):
+  continua expondo `useCalendarItems(filters)`, mas agora compõe
+  `useContents()` + `useTasks()` + a nova `useCalendarEvents()` em vez de
+  `useSyncExternalStore` sobre os stores mock. Um conteúdo/tarefa nunca é
+  copiado para `calendar_events` — mudar a data de publicação do Conteúdo
+  ou o prazo da Tarefa já muda o Calendário automaticamente, porque é a
+  mesma linha sendo lida, não uma cópia sincronizada.
+- Novo Data Layer real só para `calendar_events`:
+  `src/lib/data/calendar.ts` + `calendar-schema.ts`. CRUD completo (criar/
+  editar/excluir), sempre com `organization_id` via
+  `getCurrentOrganizationId()`, e as mesmas validações server-side (sob
+  RLS) de cliente/projeto pertencerem à organização e o projeto pertencer
+  ao cliente — mesmo padrão de Tarefas/Conteúdos.
+- **Tipos de `calendar_events`**: o `CHECK` da tabela tem 5 valores
+  (`publication, meeting, task, event, deadline`), mas o app só cria 3 daqui
+  em diante (`meeting/event/deadline` → "Reunião"/"Evento"/"Deadline" na
+  UI). `publication`/`task` são legado: a coluna `content_id`/`task_id`
+  permitia um evento "apontar" para um conteúdo/tarefa existente em vez de
+  duplicá-lo, mas agora que Contents/Tasks são fontes reais agregadas
+  diretamente, criar um evento desses seria exatamente a duplicação que
+  este módulo evita. Nenhuma mudança de schema — a leitura ainda mapeia os
+  5 valores (para nunca quebrar se uma linha legada existir), só a escrita
+  fica restrita a 3.
+- **CRUD de eventos**: não existia NENHUMA UI de criar/editar/excluir
+  evento antes desta fase (só havia um diálogo somente-leitura). Criado
+  `src/components/calendar/event-form-drawer.tsx` (novo) e adicionados
+  botões Editar/Excluir em `event-detail-dialog.tsx` — só aparecem quando
+  o item é um evento manual (`item.sourceEvent` presente), nunca para
+  Conteúdo/Tarefa (que abrem via `href`, navegando para a tela real —
+  clicar num Conteúdo/Tarefa no Calendário nunca abre um formulário
+  genérico de edição aqui, evitando editar 3 entidades no mesmo lugar).
+- **Datas/horário**: sem UTC em nenhum ponto. `event_date`/`scheduled_date`/
+  `due_date` continuam strings `YYYY-MM-DD` locais, comparadas por string
+  (`toISODate`, `startOfDay` com `Date(y,m,d)`, nunca `toISOString()`).
+  `event_time`/`scheduled_time` voltam do Postgres como `"HH:MM:SS"` — nova
+  função `toHoursMinutes()` (`src/lib/format.ts`) corta para `"HH:MM"` (o
+  formato que todo `<input type="time">` e todo mock sempre usaram);
+  aplicada tanto em `calendar.ts` quanto retroativamente em
+  `contents.ts` (mesma lacuna existia desde a Fase 5.5, só ficou visível
+  agora com Conteúdos e Eventos lado a lado no mesmo Calendário). Itens
+  sem horário (`time` ausente) nunca ganham um horário inventado — nem no
+  agregador, nem na Week view, nem no chip.
+- **Semântica de agregação**: `buildItems()` filtra fora qualquer Conteúdo/
+  Tarefa cuja data real seja nula (`scheduled_date`/`due_date` nulos no
+  banco) antes de agrupar por dia — evita colidir tudo isso sob uma chave
+  de data vazia.
+- **Views Month/Week/List**: não precisaram de nenhuma mudança —
+  `month-view.tsx`/`week-view.tsx`/`list-view.tsx` sempre foram puramente
+  apresentacionais sobre `CalendarItem[]`, sem nenhum import de mock.
+  Continuam recebendo exatamente a mesma forma de dado.
+- **Filtro de Projeto** (novo, seção 10/12 da fase): `CalendarItem` e
+  `CalendarEvent` ganharam `projectId?: string | null` (campo aditivo);
+  `CalendarFiltersBar` ganhou o filtro "Projeto", com clientes/projetos/
+  responsáveis agora vindos de dados reais (nunca mais de
+  `mock-data/clients`/`mock-data/team`).
+- Removidos (sem consumidores restantes após esta fase):
+  `mock-data/calendar.ts`, `store/tasks-store.ts`, `store/contents-store.ts`
+  e `store/create-entity-store.ts` (a factory genérica só era usada pelos
+  dois stores acima). `mock-data/index.ts` teve o `export * from "./calendar"`
+  removido (módulo apagado).
+- **Mantidos**: `mock-data/tasks.ts` e `mock-data/contents.ts` continuam
+  necessários — `getTask`/`getContent` (via os bridges das Fases 5.4/5.5)
+  ainda resolvem o breadcrumb, e o Dashboard (`myTasks`,
+  `contents: ContentItem[]`) continua usando os dois, sem nenhuma mudança
+  nesta fase.
+- **Testes de datas/agregação**: como o projeto não tem nenhum test
+  runner configurado (`package.json` sem `test` script, sem
+  Jest/Vitest), rodei um script Node avulso (`npx tsx`, fora do repo)
+  exercitando as funções reais de `calendar-utils.ts`/`format.ts` — 15
+  verificações (grade de 42 dias Monday-first, `toISODate` sem shift de
+  UTC, `addDays`/`addMonths` cruzando mês/ano, `isSameDay`/`isSameMonth`,
+  ausência de horário inventado, `isOverdue` sem off-by-one, ordenação
+  data+horário, agrupamento por dia cruzando mês, exclusão de item sem
+  data) — todas passaram. Não foi necessário Supabase hospedado para isso.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -334,18 +428,21 @@ projeto hospedado — permissão negada; ver commit `529e6a6`). Caminho:
   agendamento, legenda, CTA e Conteúdo ↔ Tarefas (`content_tasks`) — tudo
   real. `content_comments` não tem UI (nunca teve, mesmo mockado) — ver
   seção 4e. Mídia segue "ainda não implementado" (Storage).
-- **Calendário** (Fase 3): UI e navegação completas, mas dados ainda
-  mockados (`src/lib/mock-data/*`, `src/lib/services/calendar-service.ts`,
-  `src/lib/store/*-store.ts`).
+- **Calendário** (Fase 3 visual + Fase 5.6 backend): **REAL/SUPABASE** —
+  Month/Week/List agregam Conteúdos + Tarefas + `calendar_events` reais
+  (ver seção 4f), sem nenhuma cópia de dados. CRUD completo de eventos
+  manuais (reunião/evento/prazo) novo nesta fase.
 
 ## 8. Módulos ainda mockados / não iniciados
 
-- Calendário: UI pronta, sem ligação ao Supabase (é a Fase 5.6).
 - Financeiro, Equipe, Relatórios: só placeholders de tela
   (`src/app/(app)/financeiro`, `/equipe`, `/relatorios`) — nenhuma lógica.
 - Upload de arquivos (Storage): infraestrutura pronta, sem UI (Fase 5.7).
 - Dashboard: continua com os widgets leves da Etapa 1 (`myTasks`,
   `contents: ContentItem[]`), deliberadamente não migrados nesta fase.
+- Breadcrumb de Clientes/Projetos (`getClient`/`getProject` do mock, sem
+  bridge para UUID real) — falha pré-existente, documentada desde a Fase
+  5.4, não corrigida por estar fora do escopo de cada fase específica.
 
 ## 9. Roadmap
 
@@ -360,7 +457,7 @@ FASE 5 — Conectar frontend ao Supabase real    🔶 em andamento
   5.3 Projetos                                 ✅ concluída (esta sessão) — REAL/SUPABASE
   5.4 Tarefas + Kanban                         ✅ concluída (esta sessão) — REAL/SUPABASE
   5.5 Conteúdos                                ✅ concluída (esta sessão) — REAL/SUPABASE
-  5.6 Calendário                               ⏳ pendente
+  5.6 Calendário                               ✅ concluída (esta sessão) — REAL/SUPABASE
   5.7 Arquivos / Supabase Storage              ⏳ pendente
   5.8 Remoção final dos mocks + validação      ⏳ pendente
 FASE 6 — Financeiro                            ⏳ não iniciada
@@ -422,6 +519,7 @@ Server).
 | Data Layer real (Projetos) | `src/lib/data/projects.ts`, `project-schema.ts` |
 | Data Layer real (Tarefas) | `src/lib/data/tasks.ts`, `task-schema.ts` |
 | Data Layer real (Conteúdos) | `src/lib/data/contents.ts`, `content-schema.ts` |
+| Data Layer real (Calendário) | `src/lib/data/calendar.ts`, `calendar-schema.ts`, `src/lib/services/calendar-service.ts` (agregador) |
 | Migrations | `supabase/migrations/*.sql` |
 | Seed hospedado | `supabase/manual/seed-hosted.sql` |
 | Testes de RLS | `supabase/manual/rls-tests.sql` |

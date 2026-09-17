@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 import type { CalendarItem } from "@/lib/types";
 import { useCalendarItems, type CalendarFilters } from "@/lib/services/calendar-service";
@@ -14,12 +14,15 @@ import {
 import { MOCK_TODAY } from "@/lib/format";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ui/error-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CalendarFiltersBar } from "@/components/calendar/calendar-filters";
 import { MonthView } from "@/components/calendar/month-view";
 import { WeekView } from "@/components/calendar/week-view";
 import { ListView } from "@/components/calendar/list-view";
 import { EventDetailDialog } from "@/components/calendar/event-detail-dialog";
+import { EventFormDrawer } from "@/components/calendar/event-form-drawer";
 
 type CalendarView = "mes" | "semana" | "lista";
 
@@ -28,8 +31,9 @@ export default function CalendarPage() {
   const [referenceDate, setReferenceDate] = useState<Date>(MOCK_TODAY);
   const [filters, setFilters] = useState<CalendarFilters>({});
   const [openEvent, setOpenEvent] = useState<CalendarItem | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
-  const items = useCalendarItems(filters);
+  const { items, clients, projects, profiles, loading, error, refetch } = useCalendarItems(filters);
 
   const periodLabel = useMemo(() => {
     if (view === "semana") return formatWeekRangeLabel(referenceDate);
@@ -53,56 +57,86 @@ export default function CalendarPage() {
       <PageHeader
         title="Calendário"
         description="Visualize publicações, tarefas, reuniões e prazos da operação."
+        action={
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus className="size-4" />
+            Novo evento
+          </Button>
+        }
       />
 
-      <CalendarFiltersBar filters={filters} onChange={setFilters} />
+      <CalendarFiltersBar filters={filters} onChange={setFilters} clients={clients} projects={projects} profiles={profiles} />
 
-      <Tabs value={view} onValueChange={(value) => setView(value as CalendarView)}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <TabsList>
-            <TabsTrigger value="mes">Mês</TabsTrigger>
-            <TabsTrigger value="semana">Semana</TabsTrigger>
-            <TabsTrigger value="lista">Lista</TabsTrigger>
-          </TabsList>
+      {error ? (
+        <ErrorState description={error} onRetry={refetch} />
+      ) : (
+        <Tabs value={view} onValueChange={(value) => setView(value as CalendarView)}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <TabsList>
+              <TabsTrigger value="mes">Mês</TabsTrigger>
+              <TabsTrigger value="semana">Semana</TabsTrigger>
+              <TabsTrigger value="lista">Lista</TabsTrigger>
+            </TabsList>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={goPrev} aria-label="Período anterior">
-              <ChevronLeft className="size-4" />
-            </Button>
-            <span className="min-w-36 text-center text-[13px] font-medium text-foreground">
-              {periodLabel}
-            </span>
-            <Button variant="outline" size="icon" onClick={goNext} aria-label="Próximo período">
-              <ChevronRight className="size-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setReferenceDate(MOCK_TODAY)}>
-              Hoje
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon" onClick={goPrev} aria-label="Período anterior">
+                <ChevronLeft className="size-4" />
+              </Button>
+              <span className="min-w-36 text-center text-[13px] font-medium text-foreground">
+                {periodLabel}
+              </span>
+              <Button variant="outline" size="icon" onClick={goNext} aria-label="Próximo período">
+                <ChevronRight className="size-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setReferenceDate(MOCK_TODAY)}>
+                Hoje
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <TabsContent value="mes" className="pt-4">
-          <MonthView
-            referenceDate={referenceDate}
-            items={items}
-            onOpenEvent={setOpenEvent}
-            onShowMore={(day) => {
-              setReferenceDate(day);
-              setView("lista");
-            }}
-          />
-        </TabsContent>
+          {loading ? (
+            <Skeleton className="mt-4 h-96 w-full" />
+          ) : (
+            <>
+              <TabsContent value="mes" className="pt-4">
+                <MonthView
+                  referenceDate={referenceDate}
+                  items={items}
+                  onOpenEvent={setOpenEvent}
+                  onShowMore={(day) => {
+                    setReferenceDate(day);
+                    setView("lista");
+                  }}
+                />
+              </TabsContent>
 
-        <TabsContent value="semana" className="pt-4">
-          <WeekView referenceDate={referenceDate} items={items} onOpenEvent={setOpenEvent} />
-        </TabsContent>
+              <TabsContent value="semana" className="pt-4">
+                <WeekView referenceDate={referenceDate} items={items} onOpenEvent={setOpenEvent} />
+              </TabsContent>
 
-        <TabsContent value="lista" className="pt-4">
-          <ListView referenceDate={referenceDate} items={items} onOpenEvent={setOpenEvent} />
-        </TabsContent>
-      </Tabs>
+              <TabsContent value="lista" className="pt-4">
+                <ListView referenceDate={referenceDate} items={items} onOpenEvent={setOpenEvent} />
+              </TabsContent>
+            </>
+          )}
+        </Tabs>
+      )}
 
-      <EventDetailDialog item={openEvent} onOpenChange={(open) => !open && setOpenEvent(null)} />
+      <EventDetailDialog
+        item={openEvent}
+        onOpenChange={(open) => !open && setOpenEvent(null)}
+        clients={clients}
+        projects={projects}
+        onChanged={refetch}
+      />
+
+      <EventFormDrawer
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        clients={clients}
+        projects={projects}
+        onSaved={refetch}
+      />
     </div>
   );
 }

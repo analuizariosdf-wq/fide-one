@@ -6,6 +6,7 @@ import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { registerSupabaseProfile } from "@/lib/mock-data/team";
 import { registerSupabaseContent } from "@/lib/mock-data/contents";
 import { toInitials } from "@/lib/utils";
+import { toHoursMinutes } from "@/lib/format";
 import type {
   Content,
   ContentChannel,
@@ -100,7 +101,7 @@ function mapContent(row: Tables<"contents">, taskIdsByContentId: Map<string, str
     status: row.status,
     responsibleId: row.responsible_id ?? "",
     publishDate: row.scheduled_date ?? "",
-    publishTime: row.scheduled_time ?? undefined,
+    publishTime: toHoursMinutes(row.scheduled_time),
     description: row.description ?? undefined,
     caption: row.caption ?? undefined,
     cta: row.cta ?? undefined,

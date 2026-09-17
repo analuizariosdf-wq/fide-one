@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useCallback, useMemo } from "react";
 
 import type {
   CalendarItem,
@@ -9,12 +9,13 @@ import type {
   ContentType,
 } from "@/lib/types";
 import type { Content, Task } from "@/lib/types";
-import { calendarEvents } from "@/lib/mock-data/calendar";
-import { contentsStore } from "@/lib/store/contents-store";
-import { tasksStore } from "@/lib/store/tasks-store";
+import { useContents } from "@/lib/data/contents";
+import { useTasks } from "@/lib/data/tasks";
+import { useCalendarEvents } from "@/lib/data/calendar";
 
 export interface CalendarFilters {
   clientId?: string | "todos";
+  projectId?: string | "todos";
   channel?: ContentChannel | "todos";
   contentType?: ContentType | "todos";
   responsibleId?: string | "todos";
@@ -22,37 +23,42 @@ export interface CalendarFilters {
   kind?: CalendarItemKind | "todos";
 }
 
-function buildItems(contents: Content[], tasks: Task[]): CalendarItem[] {
-  const contentItems: CalendarItem[] = contents.map((content) => ({
-    id: `content-item-${content.id}`,
-    kind: "publicacao",
-    title: content.title,
-    date: content.publishDate,
-    time: content.publishTime,
-    clientId: content.clientId,
-    href: `/contents/${content.id}`,
-  }));
+/**
+ * The calendar is a projection over 3 real sources, never a copy: a
+ * content with scheduled_date/scheduled_time IS a calendar item (no
+ * calendar_events row is ever created for it), same for a task's
+ * due_date. Only genuinely standalone entries (reunião, evento, prazo
+ * manual) live in calendar_events. Editing the content/task elsewhere
+ * updates what the calendar shows automatically — there is nothing to
+ * keep in sync.
+ */
+function buildItems(contents: Content[], tasks: Task[], events: CalendarItem[]): CalendarItem[] {
+  const contentItems: CalendarItem[] = contents
+    .filter((content) => content.publishDate)
+    .map((content) => ({
+      id: `content-item-${content.id}`,
+      kind: "publicacao",
+      title: content.title,
+      date: content.publishDate,
+      time: content.publishTime,
+      clientId: content.clientId,
+      projectId: content.projectId,
+      href: `/contents/${content.id}`,
+    }));
 
-  const taskItems: CalendarItem[] = tasks.map((task) => ({
-    id: `task-item-${task.id}`,
-    kind: "tarefa",
-    title: task.title,
-    date: task.dueDate,
-    clientId: task.clientId,
-    href: `/tasks/${task.id}`,
-  }));
+  const taskItems: CalendarItem[] = tasks
+    .filter((task) => task.dueDate)
+    .map((task) => ({
+      id: `task-item-${task.id}`,
+      kind: "tarefa",
+      title: task.title,
+      date: task.dueDate,
+      clientId: task.clientId,
+      projectId: task.projectId,
+      href: `/tasks/${task.id}`,
+    }));
 
-  const eventItems: CalendarItem[] = calendarEvents.map((event) => ({
-    id: `event-item-${event.id}`,
-    kind: event.type,
-    title: event.title,
-    date: event.date,
-    time: event.time,
-    clientId: event.clientId,
-    sourceEvent: event,
-  }));
-
-  return [...contentItems, ...taskItems, ...eventItems];
+  return [...contentItems, ...taskItems, ...events];
 }
 
 function matchesFilters(
@@ -62,6 +68,9 @@ function matchesFilters(
 ): boolean {
   if (filters.kind && filters.kind !== "todos" && item.kind !== filters.kind) return false;
   if (filters.clientId && filters.clientId !== "todos" && item.clientId !== filters.clientId) {
+    return false;
+  }
+  if (filters.projectId && filters.projectId !== "todos" && item.projectId !== filters.projectId) {
     return false;
   }
 
@@ -101,22 +110,39 @@ function matchesFilters(
   return true;
 }
 
-export function useCalendarItems(filters: CalendarFilters = {}): CalendarItem[] {
-  const contents = useSyncExternalStore(
-    contentsStore.subscribe,
-    contentsStore.getSnapshot,
-    contentsStore.getSnapshot,
-  );
-  const tasks = useSyncExternalStore(
-    tasksStore.subscribe,
-    tasksStore.getSnapshot,
-    tasksStore.getSnapshot,
-  );
+export function useCalendarItems(filters: CalendarFilters = {}) {
+  const {
+    contents,
+    clients,
+    projects,
+    profiles,
+    loading: contentsLoading,
+    error: contentsError,
+    refetch: refetchContents,
+  } = useContents();
+  const { tasks, loading: tasksLoading, error: tasksError, refetch: refetchTasks } = useTasks();
+  const {
+    events,
+    loading: eventsLoading,
+    error: eventsError,
+    refetch: refetchEvents,
+  } = useCalendarEvents();
 
-  return useMemo(() => {
+  const loading = contentsLoading || tasksLoading || eventsLoading;
+  const error = contentsError ?? tasksError ?? eventsError;
+
+  const refetch = useCallback(() => {
+    refetchContents();
+    refetchTasks();
+    refetchEvents();
+  }, [refetchContents, refetchTasks, refetchEvents]);
+
+  const items = useMemo(() => {
     const contentById = new Map(contents.map((content) => [content.id, content]));
-    return buildItems(contents, tasks).filter((item) =>
+    return buildItems(contents, tasks, events).filter((item) =>
       matchesFilters(item, filters, contentById),
     );
-  }, [contents, tasks, filters]);
+  }, [contents, tasks, events, filters]);
+
+  return { items, clients, projects, profiles, loading, error, refetch };
 }

@@ -234,6 +234,7 @@ export interface CalendarEvent {
   date: string;
   time?: string;
   clientId?: string | null;
+  projectId?: string | null;
   description?: string;
 }
 
@@ -247,6 +248,7 @@ export interface CalendarItem {
   date: string;
   time?: string;
   clientId?: string | null;
+  projectId?: string | null;
   href?: string;
   sourceEvent?: CalendarEvent;
 }

@@ -7,4 +7,3 @@ export * from "./activity";
 export * from "./attention";
 export * from "./stats";
 export * from "./projects";
-export * from "./calendar";

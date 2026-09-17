@@ -1,8 +1,7 @@
 "use client";
 
 import { CHANNEL_OPTIONS, CONTENT_TYPE_OPTIONS } from "@/lib/mock-data/contents";
-import { clients } from "@/lib/mock-data/clients";
-import { team } from "@/lib/mock-data/users";
+import type { ClientOption, ProfileOption, ProjectOption } from "@/lib/data/tasks";
 import { calendarItemKindConfig, contentEditorialConfig } from "@/lib/status";
 import type { CalendarFilters } from "@/lib/services/calendar-service";
 import {
@@ -17,13 +16,16 @@ import { FilterBar } from "@/components/shared/filter-bar";
 interface CalendarFiltersBarProps {
   filters: CalendarFilters;
   onChange: (next: CalendarFilters) => void;
+  clients: ClientOption[];
+  projects: ProjectOption[];
+  profiles: ProfileOption[];
 }
 
 function countActive(filters: CalendarFilters) {
   return Object.values(filters).filter((value) => value && value !== "todos").length;
 }
 
-export function CalendarFiltersBar({ filters, onChange }: CalendarFiltersBarProps) {
+export function CalendarFiltersBar({ filters, onChange, clients, projects, profiles }: CalendarFiltersBarProps) {
   const filterControls = (
     <>
       <Select
@@ -38,6 +40,23 @@ export function CalendarFiltersBar({ filters, onChange }: CalendarFiltersBarProp
           {clients.map((client) => (
             <SelectItem key={client.id} value={client.id}>
               {client.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={filters.projectId ?? "todos"}
+        onValueChange={(value) => onChange({ ...filters, projectId: value as CalendarFilters["projectId"] })}
+      >
+        <SelectTrigger className="w-full md:w-40">
+          <SelectValue placeholder="Projeto" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="todos">Todos os projetos</SelectItem>
+          {projects.map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -90,9 +109,9 @@ export function CalendarFiltersBar({ filters, onChange }: CalendarFiltersBarProp
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="todos">Todos os responsáveis</SelectItem>
-          {team.map((member) => (
-            <SelectItem key={member.id} value={member.id}>
-              {member.name}
+          {profiles.map((profile) => (
+            <SelectItem key={profile.id} value={profile.id}>
+              {profile.name}
             </SelectItem>
           ))}
         </SelectContent>
