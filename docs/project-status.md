@@ -1148,3 +1148,5 @@ não coberta por testes automatizados.
 | Testes de RLS | `supabase/manual/rls-tests.sql` |
 | Deploy automatizado | `.github/workflows/deploy-supabase.yml`, `scripts/deploy/create-users.mjs` |
 | Runbook de deploy | `docs/supabase-deployment.md` |
+
+Deployment V2 production trigger — 2026-09-18
