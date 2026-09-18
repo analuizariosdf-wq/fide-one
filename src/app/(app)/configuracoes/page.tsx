@@ -1,28 +1,74 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react";
+import { Pencil, Upload } from "lucide-react";
+import { toast } from "sonner";
 
-import { useCurrentActor } from "@/lib/auth/current-actor-context";
+import { useCurrentActor, useHasPermission } from "@/lib/auth/current-actor-context";
 import { toInitials } from "@/lib/utils";
+import { updateOrganizationBranding, uploadOrganizationImage } from "@/lib/data/branding";
+import { getErrorMessage } from "@/lib/error-message";
 import { PageHeader } from "@/components/shared/page-header";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { EditProfileDialog } from "@/components/equipe/edit-profile-dialog";
 
 /**
- * Only what's real and simple: organization info (read-only — editing it
- * is admin-only per RLS and not part of this MVP) and the user's own
- * profile (reusing the same edit flow as Equipe). No preferences exist in
- * the schema yet, so none are fabricated here.
+ * Organization info is read-only display + the "Personalização" form
+ * (settings.manage only); the user's own profile reuses the same edit
+ * flow as Equipe. No preferences beyond branding exist in the schema, so
+ * none are fabricated here.
  */
 export default function ConfiguracoesPage() {
   const router = useRouter();
   const { organization, profile, role } = useCurrentActor();
+  const canManageSettings = useHasPermission("settings.manage");
   const [editOpen, setEditOpen] = useState(false);
+
+  const [displayName, setDisplayName] = useState(organization?.displayName ?? "");
+  const [accentColor, setAccentColor] = useState(organization?.accentColor ?? "#5b3cc4");
+  const [savingBranding, setSavingBranding] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingFavicon, setUploadingFavicon] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleSaveBranding() {
+    if (!organization) return;
+    setSavingBranding(true);
+    try {
+      await updateOrganizationBranding(organization.id, { displayName: displayName.trim() || null, accentColor });
+      toast.success("Personalização atualizada.");
+      router.refresh();
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Não foi possível salvar a personalização."));
+    } finally {
+      setSavingBranding(false);
+    }
+  }
+
+  async function handleImageUpload(kind: "logo" | "favicon", event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    const setUploading = kind === "logo" ? setUploadingLogo : setUploadingFavicon;
+    setUploading(true);
+    try {
+      await uploadOrganizationImage(kind, file);
+      toast.success(kind === "logo" ? "Logo atualizado." : "Favicon atualizado.");
+      router.refresh();
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Não foi possível enviar a imagem."));
+    } finally {
+      setUploading(false);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -43,6 +89,116 @@ export default function ConfiguracoesPage() {
           </div>
         </CardContent>
       </Card>
+
+      {canManageSettings && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Personalização</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <p className="text-[13px] text-muted-foreground">
+              Identidade visual exibida na sidebar, no cabeçalho e nos títulos do sistema. Deixe em
+              branco para usar o padrão do FIDE ONE.
+            </p>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="displayName">Nome exibido do sistema</Label>
+                <Input
+                  id="displayName"
+                  placeholder="FIDE ONE"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="accentColor">Cor principal</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="accentColor"
+                    type="color"
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
+                    className="h-9 w-12 cursor-pointer rounded-md border border-input bg-surface p-1"
+                  />
+                  <Input value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="flex-1" />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <Label>Logo</Label>
+                <div className="flex items-center gap-3">
+                  <Avatar className="size-10 rounded-md">
+                    {organization?.logoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={organization.logoUrl} alt="Logo" className="size-full rounded-md object-cover" />
+                    ) : (
+                      <AvatarFallback className="rounded-md">
+                        {(organization?.displayName || organization?.name || "F").charAt(0)}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={uploadingLogo}
+                    onClick={() => logoInputRef.current?.click()}
+                  >
+                    <Upload className="size-3.5" />
+                    {uploadingLogo ? "Enviando..." : "Enviar logo"}
+                  </Button>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleImageUpload("logo", e)}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>Favicon</Label>
+                <div className="flex items-center gap-3">
+                  <Avatar className="size-10 rounded-md">
+                    {organization?.faviconUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={organization.faviconUrl} alt="Favicon" className="size-full rounded-md object-cover" />
+                    ) : (
+                      <AvatarFallback className="rounded-md">—</AvatarFallback>
+                    )}
+                  </Avatar>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={uploadingFavicon}
+                    onClick={() => faviconInputRef.current?.click()}
+                  >
+                    <Upload className="size-3.5" />
+                    {uploadingFavicon ? "Enviando..." : "Enviar favicon"}
+                  </Button>
+                  <input
+                    ref={faviconInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleImageUpload("favicon", e)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <Button onClick={handleSaveBranding} disabled={savingBranding}>
+                {savingBranding ? "Salvando..." : "Salvar personalização"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

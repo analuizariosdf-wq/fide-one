@@ -25,6 +25,9 @@ export interface Database {
           name: string;
           slug: string;
           logo_url: string | null;
+          display_name: string | null;
+          accent_color: string | null;
+          favicon_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -33,6 +36,9 @@ export interface Database {
           name: string;
           slug: string;
           logo_url?: string | null;
+          display_name?: string | null;
+          accent_color?: string | null;
+          favicon_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -53,6 +59,7 @@ export interface Database {
           email: string;
           avatar_url: string | null;
           role_id: string | null;
+          deactivated_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -63,6 +70,7 @@ export interface Database {
           email: string;
           avatar_url?: string | null;
           role_id?: string | null;
+          deactivated_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -73,8 +81,30 @@ export interface Database {
           ];
       };
       services: {
-        Row: { id: string; organization_id: string; name: string; created_at: string };
-        Insert: { id?: string; organization_id: string; name: string; created_at?: string };
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          description: string | null;
+          default_price: number | null;
+          billing_type: "recorrente" | "pontual" | null;
+          billing_period: string | null;
+          category: string | null;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          description?: string | null;
+          default_price?: number | null;
+          billing_type?: "recorrente" | "pontual" | null;
+          billing_period?: string | null;
+          category?: string | null;
+          active?: boolean;
+          created_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["services"]["Insert"]>;
         Relationships: [
             { foreignKeyName: "services_organization_id_fkey"; columns: ["organization_id"]; referencedRelation: "organizations"; referencedColumns: ["id"] },
@@ -614,12 +644,407 @@ export interface Database {
             { foreignKeyName: "activity_logs_actor_id_fkey"; columns: ["actor_id"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
           ];
       };
+      permissions: {
+        Row: { key: string; description: string };
+        Insert: { key: string; description: string };
+        Update: Partial<Database["public"]["Tables"]["permissions"]["Insert"]>;
+        Relationships: [];
+      };
+      role_permissions: {
+        Row: { id: string; role_id: string; permission_key: string; created_at: string };
+        Insert: { id?: string; role_id: string; permission_key: string; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["role_permissions"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "role_permissions_role_id_fkey"; columns: ["role_id"]; referencedRelation: "roles"; referencedColumns: ["id"] },
+            { foreignKeyName: "role_permissions_permission_key_fkey"; columns: ["permission_key"]; referencedRelation: "permissions"; referencedColumns: ["key"] },
+          ];
+      };
+      contracts: {
+        Row: {
+          id: string;
+          organization_id: string;
+          client_id: string;
+          service_id: string | null;
+          start_date: string;
+          end_date: string | null;
+          monthly_value: number | null;
+          billing_period: "unico" | "mensal" | "trimestral" | "semestral" | "anual";
+          status: "ativo" | "suspenso" | "encerrado";
+          auto_renew: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          client_id: string;
+          service_id?: string | null;
+          start_date: string;
+          end_date?: string | null;
+          monthly_value?: number | null;
+          billing_period?: "unico" | "mensal" | "trimestral" | "semestral" | "anual";
+          status?: "ativo" | "suspenso" | "encerrado";
+          auto_renew?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["contracts"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "contracts_client_id_fkey"; columns: ["client_id"]; referencedRelation: "clients"; referencedColumns: ["id"] },
+            { foreignKeyName: "contracts_service_id_fkey"; columns: ["service_id"]; referencedRelation: "services"; referencedColumns: ["id"] },
+          ];
+      };
+      revenue_targets: {
+        Row: {
+          id: string;
+          organization_id: string;
+          period: string;
+          target_amount: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          period: string;
+          target_amount: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["revenue_targets"]["Insert"]>;
+        Relationships: [];
+      };
+      revenue_target_items: {
+        Row: {
+          id: string;
+          organization_id: string;
+          revenue_target_id: string;
+          service_id: string;
+          planned_quantity: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          revenue_target_id: string;
+          service_id: string;
+          planned_quantity?: number;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["revenue_target_items"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "revenue_target_items_revenue_target_id_fkey"; columns: ["revenue_target_id"]; referencedRelation: "revenue_targets"; referencedColumns: ["id"] },
+            { foreignKeyName: "revenue_target_items_service_id_fkey"; columns: ["service_id"]; referencedRelation: "services"; referencedColumns: ["id"] },
+          ];
+      };
+      crm_pipelines: {
+        Row: { id: string; organization_id: string; name: string; position: number; created_at: string };
+        Insert: { id?: string; organization_id: string; name: string; position?: number; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["crm_pipelines"]["Insert"]>;
+        Relationships: [];
+      };
+      crm_stages: {
+        Row: {
+          id: string;
+          organization_id: string;
+          pipeline_id: string;
+          name: string;
+          color: string;
+          position: number;
+          is_won: boolean;
+          is_lost: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          pipeline_id: string;
+          name: string;
+          color?: string;
+          position?: number;
+          is_won?: boolean;
+          is_lost?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crm_stages"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "crm_stages_pipeline_id_fkey"; columns: ["pipeline_id"]; referencedRelation: "crm_pipelines"; referencedColumns: ["id"] },
+          ];
+      };
+      crm_leads: {
+        Row: {
+          id: string;
+          organization_id: string;
+          pipeline_id: string;
+          stage_id: string;
+          name: string;
+          company: string | null;
+          phone: string | null;
+          whatsapp: string | null;
+          email: string | null;
+          responsible_id: string | null;
+          source: string | null;
+          service_id: string | null;
+          expected_value: number | null;
+          entry_date: string;
+          expected_close_date: string | null;
+          notes: string | null;
+          status: "aberto" | "ganho" | "perdido";
+          lost_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          pipeline_id: string;
+          stage_id: string;
+          name: string;
+          company?: string | null;
+          phone?: string | null;
+          whatsapp?: string | null;
+          email?: string | null;
+          responsible_id?: string | null;
+          source?: string | null;
+          service_id?: string | null;
+          expected_value?: number | null;
+          entry_date?: string;
+          expected_close_date?: string | null;
+          notes?: string | null;
+          status?: "aberto" | "ganho" | "perdido";
+          lost_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crm_leads"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "crm_leads_pipeline_id_fkey"; columns: ["pipeline_id"]; referencedRelation: "crm_pipelines"; referencedColumns: ["id"] },
+            { foreignKeyName: "crm_leads_stage_id_fkey"; columns: ["stage_id"]; referencedRelation: "crm_stages"; referencedColumns: ["id"] },
+            { foreignKeyName: "crm_leads_responsible_id_fkey"; columns: ["responsible_id"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+            { foreignKeyName: "crm_leads_service_id_fkey"; columns: ["service_id"]; referencedRelation: "services"; referencedColumns: ["id"] },
+          ];
+      };
+      crm_lead_stage_history: {
+        Row: {
+          id: string;
+          organization_id: string;
+          lead_id: string;
+          from_stage_id: string | null;
+          to_stage_id: string;
+          moved_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          lead_id: string;
+          from_stage_id?: string | null;
+          to_stage_id: string;
+          moved_by?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["crm_lead_stage_history"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "crm_lead_stage_history_lead_id_fkey"; columns: ["lead_id"]; referencedRelation: "crm_leads"; referencedColumns: ["id"] },
+          ];
+      };
+      labels: {
+        Row: { id: string; organization_id: string; name: string; color: string; created_at: string };
+        Insert: { id?: string; organization_id: string; name: string; color?: string; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["labels"]["Insert"]>;
+        Relationships: [];
+      };
+      content_labels: {
+        Row: { content_id: string; label_id: string; organization_id: string };
+        Insert: { content_id: string; label_id: string; organization_id: string };
+        Update: Partial<Database["public"]["Tables"]["content_labels"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "content_labels_content_id_fkey"; columns: ["content_id"]; referencedRelation: "contents"; referencedColumns: ["id"] },
+            { foreignKeyName: "content_labels_label_id_fkey"; columns: ["label_id"]; referencedRelation: "labels"; referencedColumns: ["id"] },
+          ];
+      };
+      calendar_event_labels: {
+        Row: { calendar_event_id: string; label_id: string; organization_id: string };
+        Insert: { calendar_event_id: string; label_id: string; organization_id: string };
+        Update: Partial<Database["public"]["Tables"]["calendar_event_labels"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "calendar_event_labels_calendar_event_id_fkey"; columns: ["calendar_event_id"]; referencedRelation: "calendar_events"; referencedColumns: ["id"] },
+            { foreignKeyName: "calendar_event_labels_label_id_fkey"; columns: ["label_id"]; referencedRelation: "labels"; referencedColumns: ["id"] },
+          ];
+      };
+      task_reminders: {
+        Row: {
+          id: string;
+          organization_id: string;
+          task_id: string;
+          offset_days: number;
+          remind_time: string | null;
+          channel: "email" | "whatsapp";
+          sent_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          task_id: string;
+          offset_days?: number;
+          remind_time?: string | null;
+          channel?: "email" | "whatsapp";
+          sent_at?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["task_reminders"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "task_reminders_task_id_fkey"; columns: ["task_id"]; referencedRelation: "tasks"; referencedColumns: ["id"] },
+          ];
+      };
+      deliverables: {
+        Row: {
+          id: string;
+          organization_id: string;
+          client_id: string;
+          contract_id: string | null;
+          service_id: string | null;
+          name: string;
+          quantity: number;
+          billing_period: "unico" | "semanal" | "mensal" | "trimestral" | "anual";
+          start_date: string | null;
+          end_date: string | null;
+          status: "ativo" | "pausado" | "encerrado";
+          delivered_count: number;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          client_id: string;
+          contract_id?: string | null;
+          service_id?: string | null;
+          name: string;
+          quantity?: number;
+          billing_period?: "unico" | "semanal" | "mensal" | "trimestral" | "anual";
+          start_date?: string | null;
+          end_date?: string | null;
+          status?: "ativo" | "pausado" | "encerrado";
+          delivered_count?: number;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["deliverables"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "deliverables_client_id_fkey"; columns: ["client_id"]; referencedRelation: "clients"; referencedColumns: ["id"] },
+            { foreignKeyName: "deliverables_contract_id_fkey"; columns: ["contract_id"]; referencedRelation: "contracts"; referencedColumns: ["id"] },
+            { foreignKeyName: "deliverables_service_id_fkey"; columns: ["service_id"]; referencedRelation: "services"; referencedColumns: ["id"] },
+          ];
+      };
+      service_extras: {
+        Row: {
+          id: string;
+          organization_id: string;
+          client_id: string;
+          service_id: string | null;
+          task_id: string | null;
+          content_id: string | null;
+          description: string;
+          occurred_on: string;
+          status: "registrado" | "cobrado" | "cortesia";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          client_id: string;
+          service_id?: string | null;
+          task_id?: string | null;
+          content_id?: string | null;
+          description: string;
+          occurred_on?: string;
+          status?: "registrado" | "cobrado" | "cortesia";
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["service_extras"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "service_extras_client_id_fkey"; columns: ["client_id"]; referencedRelation: "clients"; referencedColumns: ["id"] },
+          ];
+      };
+      tickets: {
+        Row: {
+          id: string;
+          organization_id: string;
+          title: string;
+          description: string | null;
+          requester_id: string | null;
+          assignee_id: string | null;
+          client_id: string | null;
+          project_id: string | null;
+          category: string | null;
+          priority: "baixa" | "normal" | "alta" | "urgente";
+          status: "aberto" | "em_andamento" | "aguardando" | "resolvido" | "fechado";
+          due_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          title: string;
+          description?: string | null;
+          requester_id?: string | null;
+          assignee_id?: string | null;
+          client_id?: string | null;
+          project_id?: string | null;
+          category?: string | null;
+          priority?: "baixa" | "normal" | "alta" | "urgente";
+          status?: "aberto" | "em_andamento" | "aguardando" | "resolvido" | "fechado";
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["tickets"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "tickets_requester_id_fkey"; columns: ["requester_id"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+            { foreignKeyName: "tickets_assignee_id_fkey"; columns: ["assignee_id"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+            { foreignKeyName: "tickets_client_id_fkey"; columns: ["client_id"]; referencedRelation: "clients"; referencedColumns: ["id"] },
+            { foreignKeyName: "tickets_project_id_fkey"; columns: ["project_id"]; referencedRelation: "projects"; referencedColumns: ["id"] },
+          ];
+      };
+      ticket_comments: {
+        Row: {
+          id: string;
+          organization_id: string;
+          ticket_id: string;
+          author_id: string | null;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          ticket_id: string;
+          author_id?: string | null;
+          message: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["ticket_comments"]["Insert"]>;
+        Relationships: [
+            { foreignKeyName: "ticket_comments_ticket_id_fkey"; columns: ["ticket_id"]; referencedRelation: "tickets"; referencedColumns: ["id"] },
+          ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
       current_organization_id: {
         Args: Record<string, never>;
         Returns: string;
+      };
+      has_permission: {
+        Args: { perm: string };
+        Returns: boolean;
       };
     };
     Enums: Record<string, never>;

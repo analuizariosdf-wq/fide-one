@@ -18,6 +18,7 @@ export interface TeamProfile {
   initials: string;
   avatarUrl: string | null;
   role: RoleOption | null;
+  deactivatedAt: string | null;
 }
 
 /**
@@ -27,12 +28,12 @@ export interface TeamProfile {
  * caller's own organization. Flat queries joined in JS, same pattern as
  * every other real Data Layer.
  */
-async function loadTeamData(): Promise<TeamProfile[]> {
+async function loadTeamData(): Promise<{ team: TeamProfile[]; roles: RoleOption[] }> {
   const supabase = createSupabaseClient();
 
   const [profilesRes, rolesRes] = await Promise.all([
-    supabase.from("profiles").select("id, name, email, avatar_url, role_id").order("name"),
-    supabase.from("roles").select("id, slug, name"),
+    supabase.from("profiles").select("id, name, email, avatar_url, role_id, deactivated_at").order("name"),
+    supabase.from("roles").select("id, slug, name").order("name"),
   ]);
 
   if (profilesRes.error) throw profilesRes.error;
@@ -40,18 +41,22 @@ async function loadTeamData(): Promise<TeamProfile[]> {
 
   const roleById = new Map((rolesRes.data ?? []).map((role) => [role.id, role]));
 
-  return (profilesRes.data ?? []).map((profile) => ({
+  const team = (profilesRes.data ?? []).map((profile) => ({
     id: profile.id,
     name: profile.name,
     email: profile.email,
     initials: toInitials(profile.name),
     avatarUrl: profile.avatar_url,
     role: profile.role_id ? (roleById.get(profile.role_id) ?? null) : null,
+    deactivatedAt: profile.deactivated_at,
   }));
+
+  return { team, roles: rolesRes.data ?? [] };
 }
 
 export function useTeam() {
   const [team, setTeam] = useState<TeamProfile[]>([]);
+  const [roles, setRoles] = useState<RoleOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,7 +64,9 @@ export function useTeam() {
     setLoading(true);
     setError(null);
     try {
-      setTeam(await loadTeamData());
+      const data = await loadTeamData();
+      setTeam(data.team);
+      setRoles(data.roles);
     } catch {
       setError("Não foi possível carregar a equipe. Tente novamente.");
     } finally {
@@ -72,7 +79,9 @@ export function useTeam() {
 
     loadTeamData()
       .then((data) => {
-        if (active) setTeam(data);
+        if (!active) return;
+        setTeam(data.team);
+        setRoles(data.roles);
       })
       .catch(() => {
         if (active) setError("Não foi possível carregar a equipe. Tente novamente.");
@@ -86,18 +95,10 @@ export function useTeam() {
     };
   }, []);
 
-  return { team, loading, error, refetch };
+  return { team, roles, loading, error, refetch };
 }
 
-/**
- * RLS ("profiles_update_self") only allows a row to be updated when
- * `id = auth.uid()` — there is no policy letting anyone edit a colleague's
- * profile, so this can only ever update the caller's own row. `role_id` is
- * intentionally not editable here: changing your own role is not something
- * the UI offers, even though nothing in the RLS check clause itself
- * distinguishes columns — see docs/project-status.md for why role
- * management stays out of this MVP.
- */
+/** Self-service only: name is the one field any user can change on their own profile. */
 export async function updateOwnProfile(id: string, name: string): Promise<void> {
   const trimmed = name.trim();
   if (!trimmed) throw new Error("Informe um nome.");
@@ -105,4 +106,39 @@ export async function updateOwnProfile(id: string, name: string): Promise<void> 
   const supabase = createSupabaseClient();
   const { error } = await supabase.from("profiles").update({ name: trimmed }).eq("id", id);
   if (error) throw error;
+}
+
+/** Requires team.manage — enforced by the profiles_update_team_manager RLS policy, not just the UI. */
+export async function updateMemberRole(id: string, roleId: string): Promise<void> {
+  const supabase = createSupabaseClient();
+  const { error } = await supabase.from("profiles").update({ role_id: roleId }).eq("id", id);
+  if (error) throw error;
+}
+
+async function callTeamApi(path: string, body: unknown): Promise<void> {
+  const response = await fetch(path, {
+    method: path.endsWith("/invite") ? "POST" : "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    throw new Error(data?.error ?? "Não foi possível concluir a ação.");
+  }
+}
+
+export interface InviteMemberInput {
+  name: string;
+  email: string;
+  roleSlug: string;
+}
+
+/** Hits the server-only /api/team/invite route — never calls the Admin API from the browser. */
+export async function inviteTeamMember(input: InviteMemberInput): Promise<void> {
+  await callTeamApi("/api/team/invite", input);
+}
+
+/** Hits the server-only /api/team/[id] route — banning a user requires the Admin API. */
+export async function setMemberAccess(id: string, action: "deactivate" | "reactivate"): Promise<void> {
+  await callTeamApi(`/api/team/${id}`, { action });
 }

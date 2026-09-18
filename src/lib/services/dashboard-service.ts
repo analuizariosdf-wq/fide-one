@@ -5,22 +5,15 @@ import { useCallback, useMemo } from "react";
 import { useCurrentActor } from "@/lib/auth/current-actor-context";
 import { useTasks } from "@/lib/data/tasks";
 import { useContents } from "@/lib/data/contents";
-import { useFinancialData, useCashFlowSummary } from "@/lib/data/financial";
 import { MOCK_TODAY, toISODate } from "@/lib/format";
 import type { AttentionItem, Content, Task } from "@/lib/types";
 
 /**
- * Fase 5.8: the Dashboard used to read from static Etapa-1 mock arrays
- * (dashboardStats, attentionItems, myTasks, upcomingContents,
- * recentActivity — see docs/project-status.md's mock inventory). Every
- * card that represents an already-migrated module (Tarefas, Conteúdos)
- * now reads the same real data layers those modules use. "Atividade
- * recente" has no real source either — nothing writes activity_logs yet
- * — so it stays an honest empty state, not mock activity.
- *
- * Fase 6: Financeiro is real now, so "A receber" uses the same
- * useCashFlowSummary() the Financeiro module itself uses — pending
- * receivables only (not yet paid), never a fabricated number.
+ * Fase 10: the general Dashboard is operational only — no financial
+ * figure appears here at all (Financeiro has its own dashboard, gated by
+ * finance.view, inside /financeiro). Every card reads the same real data
+ * layers those modules use. "Atividade recente" has no real source yet
+ * (nothing writes activity_logs) so it stays an honest empty state.
  */
 export function useDashboardData() {
   const { profile } = useCurrentActor();
@@ -39,23 +32,14 @@ export function useDashboardData() {
     error: contentsError,
     refetch: refetchContents,
   } = useContents();
-  const {
-    transactions,
-    categories: financialCategories,
-    loading: financialLoading,
-    error: financialError,
-    refetch: refetchFinancial,
-  } = useFinancialData();
-  const cashFlow = useCashFlowSummary(transactions, financialCategories);
 
-  const loading = tasksLoading || contentsLoading || financialLoading;
-  const error = tasksError ?? contentsError ?? financialError;
+  const loading = tasksLoading || contentsLoading;
+  const error = tasksError ?? contentsError;
 
   const refetch = useCallback(() => {
     refetchTasks();
     refetchContents();
-    refetchFinancial();
-  }, [refetchTasks, refetchContents, refetchFinancial]);
+  }, [refetchTasks, refetchContents]);
 
   const todayISO = toISODate(MOCK_TODAY);
   const weekEndDate = new Date(MOCK_TODAY);
@@ -118,16 +102,8 @@ export function useDashboardData() {
         href: "/contents",
       });
     }
-    if (cashFlow.vencidasCount > 0) {
-      items.push({
-        id: "attention-overdue-transactions",
-        label: `${cashFlow.vencidasCount} lançamento${cashFlow.vencidasCount > 1 ? "s" : ""} financeiro${cashFlow.vencidasCount > 1 ? "s" : ""} vencido${cashFlow.vencidasCount > 1 ? "s" : ""}`,
-        severity: "danger",
-        href: "/financeiro",
-      });
-    }
     return items;
-  }, [overdueTasks, awaitingApproval, cashFlow.vencidasCount]);
+  }, [overdueTasks, awaitingApproval]);
 
   return {
     userName: profile?.name ?? "Você",
@@ -140,9 +116,7 @@ export function useDashboardData() {
       tasksOverdue: overdueTasks.length > 0,
       contentsValue: contents.length,
       contentsHelper: `${contentsThisWeek.length} nesta semana`,
-      receivableValue: cashFlow.aReceber,
-      payableValue: cashFlow.aPagar,
-      overdueTransactionsCount: cashFlow.vencidasCount,
+      awaitingApprovalValue: awaitingApproval.length,
     },
     attentionItems,
     myTasks,

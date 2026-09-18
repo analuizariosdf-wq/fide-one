@@ -3,6 +3,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 
 import type { CurrentActor } from "@/lib/auth/get-current-actor";
+import { hasPermission, type PermissionKey } from "@/lib/auth/permissions";
 
 const CurrentActorContext = createContext<CurrentActor | null>(null);
 
@@ -29,4 +30,16 @@ export function useCurrentActor(): CurrentActor {
     throw new Error("useCurrentActor must be used within a CurrentActorProvider.");
   }
   return actor;
+}
+
+/**
+ * UI-level gate only — never the real enforcement. RLS (and, for
+ * privileged server actions, an explicit server-side check) is what
+ * actually protects the data; this just avoids showing a control the
+ * user couldn't use anyway. See permissions.ts and the finance.* RLS
+ * policies for the real gate.
+ */
+export function useHasPermission(key: PermissionKey): boolean {
+  const actor = useCurrentActor();
+  return hasPermission(actor.permissions, key);
 }

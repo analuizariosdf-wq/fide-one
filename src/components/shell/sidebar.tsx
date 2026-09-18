@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
+import { useCurrentActor } from "@/lib/auth/current-actor-context";
 import { NavContent } from "@/components/shell/nav-content";
 
 interface SidebarProps {
@@ -10,6 +12,9 @@ interface SidebarProps {
 }
 
 export function Sidebar({ collapsed }: SidebarProps) {
+  const { organization } = useCurrentActor();
+  const brandName = organization?.displayName || organization?.name || "FIDE ONE";
+
   return (
     <aside
       className={cn(
@@ -24,12 +29,23 @@ export function Sidebar({ collapsed }: SidebarProps) {
         )}
       >
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-[13px] font-bold text-primary-foreground">
-            F
-          </span>
+          {organization?.logoUrl ? (
+            <Image
+              src={organization.logoUrl}
+              alt={brandName}
+              width={28}
+              height={28}
+              unoptimized
+              className="size-7 shrink-0 rounded-md object-cover"
+            />
+          ) : (
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-[13px] font-bold text-primary-foreground">
+              {brandName.charAt(0).toUpperCase()}
+            </span>
+          )}
           {!collapsed && (
-            <span className="text-[14px] font-semibold tracking-tight text-sidebar-foreground">
-              FIDE ONE
+            <span className="truncate text-[14px] font-semibold tracking-tight text-sidebar-foreground">
+              {brandName}
             </span>
           )}
         </Link>

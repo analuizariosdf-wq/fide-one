@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 
 import { navGroups } from "@/lib/nav-config";
 import { cn } from "@/lib/utils";
+import { useCurrentActor } from "@/lib/auth/current-actor-context";
+import { hasPermission } from "@/lib/auth/permissions";
 import {
   Tooltip,
   TooltipContent,
@@ -23,10 +25,18 @@ function isActive(pathname: string, href: string) {
 
 export function NavContent({ collapsed, onNavigate }: NavContentProps) {
   const pathname = usePathname();
+  const { permissions } = useCurrentActor();
+
+  const visibleGroups = navGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !item.permission || hasPermission(permissions, item.permission)),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 py-4">
-      {navGroups.map((group) => (
+      {visibleGroups.map((group) => (
         <div key={group.label} className="flex flex-col gap-1">
           {!collapsed && (
             <p className="px-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">

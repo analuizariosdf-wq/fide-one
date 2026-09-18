@@ -32,7 +32,8 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
   const router = useRouter();
   const breadcrumb = useBreadcrumb(pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { profile, role } = useCurrentActor();
+  const { profile, role, organization } = useCurrentActor();
+  const brandName = organization?.displayName || organization?.name || "FIDE ONE";
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -65,7 +66,7 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
         </Button>
         <SheetContent side="left" className="w-[248px] p-0">
           <SheetHeader className="border-b border-border px-4 py-3.5">
-            <SheetTitle>FIDE ONE</SheetTitle>
+            <SheetTitle>{brandName}</SheetTitle>
           </SheetHeader>
           <NavContent onNavigate={() => setMobileNavOpen(false)} />
         </SheetContent>

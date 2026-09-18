@@ -1,6 +1,5 @@
-import { Images, ListChecks, Wallet } from "lucide-react";
+import { CheckCircle2, Images, ListChecks } from "lucide-react";
 
-import { formatCurrencyBRL } from "@/lib/format";
 import { StatCard } from "@/components/ui/stat-card";
 
 interface KpiCardsProps {
@@ -9,20 +8,17 @@ interface KpiCardsProps {
   tasksOverdue: boolean;
   contentsValue: number;
   contentsHelper: string;
-  receivableValue: number;
-  payableValue: number;
-  overdueTransactionsCount: number;
+  awaitingApprovalValue: number;
 }
 
+/** Operational only, on purpose — no financial figure belongs on the general Dashboard. See Financeiro's own dashboard for money. */
 export function KpiCards({
   tasksValue,
   tasksHelper,
   tasksOverdue,
   contentsValue,
   contentsHelper,
-  receivableValue,
-  payableValue,
-  overdueTransactionsCount,
+  awaitingApprovalValue,
 }: KpiCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -41,15 +37,11 @@ export function KpiCards({
         icon={Images}
       />
       <StatCard
-        label="A receber"
-        value={formatCurrencyBRL(receivableValue)}
-        helperText={
-          overdueTransactionsCount > 0
-            ? `${overdueTransactionsCount} vencido${overdueTransactionsCount > 1 ? "s" : ""}`
-            : `${formatCurrencyBRL(payableValue)} a pagar`
-        }
-        helperTone={overdueTransactionsCount > 0 ? "danger" : "neutral"}
-        icon={Wallet}
+        label="Aguardando aprovação"
+        value={String(awaitingApprovalValue)}
+        helperText={awaitingApprovalValue > 0 ? "Requer revisão" : "Nada pendente"}
+        helperTone={awaitingApprovalValue > 0 ? "warning" : "neutral"}
+        icon={CheckCircle2}
       />
     </div>
   );
