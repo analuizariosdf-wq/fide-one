@@ -28,12 +28,16 @@
 -- em branco até alguém atribuir manualmente — não é necessário rodar
 -- este seed de novo depois que mais convites forem aceitos.
 --
--- Seguro rodar mais de uma vez? Não — os INSERTs abaixo não têm
--- "on conflict", de propósito, para que uma segunda execução acidental
--- pare no primeiro conflito de chave em vez de duplicar silenciosamente
--- todos os clientes/projetos/tarefas. Se precisar re-rodar do zero,
--- apague as linhas destas tabelas primeiro (nunca as de auth.users/
--- profiles/organizations).
+-- Seguro rodar mais de uma vez? Sim — todo INSERT com id fixo usa
+-- "on conflict (id) do nothing" (mesmo padrão para as duas tabelas de
+-- junção, no conflict das colunas do "unique" composto delas). Uma
+-- segunda execução (ex.: workflow de deploy rodado de novo depois que
+-- os clientes/projetos/tarefas de exemplo já foram inseridos) apenas
+-- pula quem já existe — nunca duplica, nunca sobrescreve um registro já
+-- presente (nenhum "do update"), então uma edição manual feita depois do
+-- primeiro seed nesses registros de exemplo não é perdida. Se precisar
+-- re-seedar do zero, apague as linhas destas tabelas primeiro (nunca as
+-- de auth.users/profiles/organizations).
 -- ============================================================
 
 do $$
@@ -110,7 +114,8 @@ begin
      'Grupo Almeida', 'Grupo Almeida', '78.901.234/0001-66', 'Varejo',
      'https://grupoalmeida.com.br', '@grupoalmeida', 'marketing@grupoalmeida.com.br', '(11) 3444-5500',
      v_fernanda, '2024-02-10', 'pausado', 5500, 12, 'Boleto',
-     'Contrato pausado enquanto o cliente revisa o orçamento anual.');
+     'Contrato pausado enquanto o cliente revisa o orçamento anual.')
+  on conflict (id) do nothing;
 
   -- ---------- Serviços ----------
   insert into public.services (id, organization_id, name) values
@@ -120,7 +125,8 @@ begin
     ('a0000000-0000-0000-0000-000000000304', v_org, 'Consultoria de Marca'),
     ('a0000000-0000-0000-0000-000000000305', v_org, 'Assessoria de Imprensa'),
     ('a0000000-0000-0000-0000-000000000306', v_org, 'SEO'),
-    ('a0000000-0000-0000-0000-000000000307', v_org, 'Branding');
+    ('a0000000-0000-0000-0000-000000000307', v_org, 'Branding')
+  on conflict (id) do nothing;
 
   insert into public.client_services (organization_id, client_id, service_id) values
     (v_org, 'a0000000-0000-0000-0000-000000000201', 'a0000000-0000-0000-0000-000000000301'),
@@ -135,7 +141,8 @@ begin
     (v_org, 'a0000000-0000-0000-0000-000000000206', 'a0000000-0000-0000-0000-000000000301'),
     (v_org, 'a0000000-0000-0000-0000-000000000206', 'a0000000-0000-0000-0000-000000000306'),
     (v_org, 'a0000000-0000-0000-0000-000000000207', 'a0000000-0000-0000-0000-000000000301'),
-    (v_org, 'a0000000-0000-0000-0000-000000000207', 'a0000000-0000-0000-0000-000000000307');
+    (v_org, 'a0000000-0000-0000-0000-000000000207', 'a0000000-0000-0000-0000-000000000307')
+  on conflict (client_id, service_id) do nothing;
 
   -- ---------- Campanhas + Projetos ----------
   insert into public.campaigns (id, organization_id, client_id, name) values
@@ -147,7 +154,8 @@ begin
     ('a0000000-0000-0000-0000-000000000406', v_org, 'a0000000-0000-0000-0000-000000000202', 'Verão 2026'),
     ('a0000000-0000-0000-0000-000000000407', v_org, 'a0000000-0000-0000-0000-000000000204', 'Q4 2026'),
     ('a0000000-0000-0000-0000-000000000408', v_org, 'a0000000-0000-0000-0000-000000000205', 'Outubro Rosa'),
-    ('a0000000-0000-0000-0000-000000000409', v_org, 'a0000000-0000-0000-0000-000000000207', 'Branding');
+    ('a0000000-0000-0000-0000-000000000409', v_org, 'a0000000-0000-0000-0000-000000000207', 'Branding')
+  on conflict (id) do nothing;
 
   insert into public.projects (
     id, organization_id, client_id, campaign_id, name, description,
@@ -188,7 +196,8 @@ begin
     ('a0000000-0000-0000-0000-000000000509', v_org, 'a0000000-0000-0000-0000-000000000207',
      'a0000000-0000-0000-0000-000000000409', 'Rebranding Institucional',
      'Projeto pausado enquanto o Grupo Almeida revisa o orçamento anual.',
-     v_fernanda, '2026-04-01', '2026-11-30', 'em_pausa', 40);
+     v_fernanda, '2026-04-01', '2026-11-30', 'em_pausa', 40)
+  on conflict (id) do nothing;
 
   -- ---------- Tarefas ----------
   insert into public.tasks (
@@ -257,7 +266,8 @@ begin
      v_camila, v_fernanda, 'alta', 'em_producao', '2026-09-14'),
     ('a0000000-0000-0000-0000-000000000620', v_org, 'a0000000-0000-0000-0000-000000000201',
      'a0000000-0000-0000-0000-000000000501', 'Aprovar Reel — Gestão', null,
-     v_daniel, v_fernanda, 'alta', 'backlog', '2026-09-15');
+     v_daniel, v_fernanda, 'alta', 'backlog', '2026-09-15')
+  on conflict (id) do nothing;
 
   update public.tasks set completed_at = due_date::timestamptz
     where status = 'concluido' and organization_id = v_org;
@@ -311,7 +321,8 @@ begin
     ('a0000000-0000-0000-0000-000000000710', v_org, 'a0000000-0000-0000-0000-000000000207',
      'a0000000-0000-0000-0000-000000000509', 'Anúncio — Campanha institucional', 'Anúncio', 'Google', 'briefing',
      v_fernanda, v_fernanda, '2026-09-30', null,
-     null, null, null);
+     null, null, null)
+  on conflict (id) do nothing;
 
   update public.contents set published_at = scheduled_date::timestamptz
     where status = 'publicado' and organization_id = v_org;
@@ -329,7 +340,8 @@ begin
     (v_org, 'a0000000-0000-0000-0000-000000000705', 'a0000000-0000-0000-0000-000000000604'),
     (v_org, 'a0000000-0000-0000-0000-000000000706', 'a0000000-0000-0000-0000-000000000605'),
     (v_org, 'a0000000-0000-0000-0000-000000000707', 'a0000000-0000-0000-0000-000000000608'),
-    (v_org, 'a0000000-0000-0000-0000-000000000707', 'a0000000-0000-0000-0000-000000000609');
+    (v_org, 'a0000000-0000-0000-0000-000000000707', 'a0000000-0000-0000-0000-000000000609')
+  on conflict (content_id, task_id) do nothing;
 
   -- ---------- Eventos de calendário ----------
   insert into public.calendar_events (id, organization_id, title, type, event_date, event_time, client_id, description) values
@@ -350,7 +362,8 @@ begin
     ('a0000000-0000-0000-0000-000000000805', v_org,
      'Deadline — Renovação de contrato Pleno', 'deadline', '2026-09-30', null,
      'a0000000-0000-0000-0000-000000000203',
-     'Prazo para envio da proposta de renovação do contrato do Pleno Hospital Dia.');
+     'Prazo para envio da proposta de renovação do contrato do Pleno Hospital Dia.')
+  on conflict (id) do nothing;
 
-  raise notice 'Seed hospedado concluído: 7 clientes, 7 serviços, 9 projetos, 20 tarefas, 10 conteúdos, 5 eventos.';
+  raise notice 'Seed hospedado processado (idempotente): garante até 7 clientes, 7 serviços, 9 projetos, 20 tarefas, 10 conteúdos, 5 eventos — registros já existentes (mesmo id) foram mantidos como estavam.';
 end $$;
