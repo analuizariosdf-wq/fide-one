@@ -1040,6 +1040,93 @@ cadastrando `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 nas variáveis de ambiente do projeto na Vercel (ver instruções já
 fornecidas anteriormente nesta sessão de trabalho).
 
+## 13. Fase 10 — Grande evolução do FIDE ONE (feita nesta sessão)
+
+Expansão completa: permissões/RBAC extensível, branding white-label,
+convites reais, Crescimento/Comercial, Calendário redesenhado + Etiquetas,
+Tarefas com Calendário + lembretes por e-mail, Financeiro com Contratos/
+Previsibilidade, Workspace do Cliente + Entregáveis/Extras, Tickets, e
+arquitetura (não implementação) de IA futura. Commits (nesta ordem):
+"bloco A+D parcial", "bloco B", "bloco C" (x2), "bloco E".
+
+**Migrations novas** (`supabase/migrations/2026091800000{1..6}_*.sql`,
+ainda não aplicadas no Supabase hospedado — rede bloqueada neste sandbox,
+aplicar via `deploy-supabase.yml`):
+`permissions, role_permissions, has_permission()` (função RLS-friendly);
+`organizations.display_name/accent_color/favicon_url`; `services`
+estendida (description/default_price/billing_type/billing_period/
+category/active) + `contracts` + `revenue_targets` +
+`revenue_target_items`; `crm_pipelines/crm_stages/crm_leads/
+crm_lead_stage_history`; `labels/content_labels/calendar_event_labels/
+task_reminders`; `deliverables/service_extras/tickets/ticket_comments`.
+`profiles.deactivated_at` (mirror do ban do Admin API, só a rota
+server-side escreve nele).
+
+**Permissões**: `PermissionKey` (24 chaves, `src/lib/auth/permissions.ts`)
+— nada no app checa slug de role diretamente, sempre `has_permission()`
+(SQL, usado em RLS) ou `useHasPermission()`/`RequirePermission` (UI).
+Roles: `administrador` renomeada para "Diretor" (slug mantido, todas as
+permissões); nova role `head_operacao` ("Head de Operação") + todas as
+roles operacionais existentes ganham o mesmo conjunto (tudo exceto
+`finance.*`, `settings.manage`, `team.manage`); `financeiro` ganha
+`finance.view`+`finance.manage`. `financial_transactions`/
+`financial_categories` tiveram as policies recriadas para exigir
+`has_permission('finance.view'|'finance.manage')`, não só
+`organization_id`.
+
+**Módulos novos**: `/growth` (Crescimento — meta mensal + esteira +
+produtos, produtos reaproveitam `services`), `/crm` (pipelines/etapas
+editáveis, Kanban leads, histórico de movimentação), `/tickets` (+
+`/tickets/[id]` com thread de comentários), `/assistente-ia` (stub
+honesto — ver `src/lib/ai/types.ts`, zero integração real).
+
+**Módulos estendidos**: Calendário (grade mais densa, "+" para criar
+Conteúdo direto no dia, Etiquetas CRUD via "Gerenciar etiquetas"); Tarefas
+(aba Calendário por `due_date`, lembretes configuráveis com envio por
+e-mail); Financeiro (aba Contratos + aba Dashboard com Previsibilidade
+3/6/12 meses, `src/lib/data/predictability.ts` — só dados reais de
+`contracts`+`financial_transactions`, sem IA/estimativa); Dashboard geral
+(zero dado financeiro — 3º KPI virou "Aguardando aprovação"); Cliente
+(aba Workspace = Kanban de Contents por status, aba Escopo = Entregáveis
++ Serviço Extra); Equipe (convite real via Admin API, ativar/desativar
+acesso, trocar role de colega); Configurações (branding: nome/cor/logo/
+favicon, aplicado globalmente via CSS custom properties).
+
+**Lembretes de tarefa**: `src/lib/notifications/` (abstração por canal;
+`whatsapp` resolve para sender `null` de propósito — UI mostra
+"WhatsApp — integração futura", nunca um botão que finge funcionar).
+Cron em `/api/cron/task-reminders` (`vercel.json`, hora em hora),
+autenticado por `CRON_SECRET` (Vercel injeta o header automaticamente
+quando a env var existe no projeto), roda como `service_role`.
+
+**Variáveis de ambiente novas** (nomes apenas — configurar na Vercel,
+nunca commitar valor):
+- `CRON_SECRET` — autentica o cron de lembretes.
+- `RESEND_API_KEY` — envio de e-mail via Resend (chamada HTTP direta,
+  sem novo pacote). Sem ela, lembretes não são enviados (e não marcam
+  `sent_at`) — falha visível, não silenciosa.
+- `RESEND_FROM_EMAIL` (opcional) — remetente; precisa de domínio
+  verificado no Resend.
+- `NEXT_PUBLIC_SITE_URL` (opcional) — base para os links nos e-mails de
+  lembrete; sem ela usa `VERCEL_URL` ou a URL de produção conhecida.
+- `SUPABASE_SERVICE_ROLE_KEY` já existia (Fase 5.1) mas passou a ser
+  **usada de fato** pela primeira vez, pelas duas Route Handlers de
+  Equipe (`/api/team/invite`, `/api/team/[id]`) e pelo cron — confirmar
+  que está configurada na Vercel antes do deploy.
+
+**Pendências conhecidas / não implementado nesta fase** (nenhuma
+omitida — ver relatório final desta sessão para detalhe item a item):
+Meta Leads/formulário do site/WhatsApp como origem real de Lead no CRM
+(arquitetura pronta — `crm_leads.source`/`service_id` — sem integração);
+WhatsApp como canal real de lembrete (schema e abstração prontos, sem
+provedor); assistente de IA (só o limite arquitetural, zero integração);
+`deliverables.delivered_count` é contador manual, não calculado
+automaticamente a partir de Contents/Tasks (decisão documentada na
+própria migration — não existe hoje um vínculo confiável para isso);
+sem framework de testes no projeto — a lógica pura nova
+(`reminder-schedule.ts`, `predictability.ts`) foi revisada manualmente,
+não coberta por testes automatizados.
+
 ## Arquivos-chave para orientação rápida
 
 | Área | Arquivo |
