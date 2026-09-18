@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ListChecks } from "lucide-react";
 
 import type { Task } from "@/lib/types";
@@ -12,6 +13,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 
 interface MyTasksProps {
@@ -26,6 +28,9 @@ export function MyTasks({ tasks, clients }: MyTasksProps) {
     <Card>
       <CardHeader>
         <CardTitle>Minhas tarefas</CardTitle>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/tasks">Ver todas</Link>
+        </Button>
       </CardHeader>
       <CardContent className="flex flex-col gap-1">
         {tasks.length === 0 ? (
@@ -38,8 +43,9 @@ export function MyTasks({ tasks, clients }: MyTasksProps) {
             const overdue = task.status !== "concluido" && isOverdue(task.dueDate);
 
             return (
-              <div
+              <Link
                 key={task.id}
+                href={`/tasks/${task.id}`}
                 className="flex items-center justify-between gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-muted"
               >
                 <div className="flex min-w-0 items-center gap-2.5">
@@ -65,7 +71,7 @@ export function MyTasks({ tasks, clients }: MyTasksProps) {
                 <Badge variant={status.variant} className="shrink-0">
                   {status.label}
                 </Badge>
-              </div>
+              </Link>
             );
           })
         )}

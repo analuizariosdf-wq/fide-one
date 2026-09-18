@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { getErrorMessage } from "@/lib/error-message";
 import {
   removeEntityFile,
   uploadEntityFile,
@@ -36,7 +37,7 @@ export function EntityFilesPanel({ entityType, entityId }: EntityFilesPanelProps
       toast.success("Arquivo enviado com sucesso.");
       refetch();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Não foi possível enviar o arquivo.");
+      toast.error(getErrorMessage(err, "Não foi possível enviar o arquivo."));
     } finally {
       setUploading(false);
     }
@@ -49,7 +50,7 @@ export function EntityFilesPanel({ entityType, entityId }: EntityFilesPanelProps
       toast.success("Arquivo excluído.");
       refetch();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Não foi possível excluir o arquivo.");
+      toast.error(getErrorMessage(err, "Não foi possível excluir o arquivo."));
     } finally {
       setDeletingFile(null);
     }

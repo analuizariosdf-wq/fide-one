@@ -30,11 +30,6 @@ import { EntityFilesPanel } from "@/components/files/entity-files-panel";
 import { useFinancialData, filterTransactions } from "@/lib/data/financial";
 import { TransactionTable } from "@/components/financeiro/transaction-table";
 
-const PLACEHOLDER_TABS = [
-  { value: "calendario", label: "Calendário", description: "O calendário integrado será conectado em uma próxima etapa." },
-  { value: "aprovacoes", label: "Aprovações", description: "O fluxo de aprovações será implementado em uma próxima etapa." },
-];
-
 export default function ClientDetailPage({
   params,
 }: {
@@ -164,11 +159,6 @@ export default function ClientDetailPage({
           <TabsTrigger value="conteudos">Conteúdos</TabsTrigger>
           <TabsTrigger value="arquivos">Arquivos</TabsTrigger>
           <TabsTrigger value="financeiro">Financeiro</TabsTrigger>
-          {PLACEHOLDER_TABS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
         </TabsList>
 
         <TabsContent value="visao-geral" className="pt-4">
@@ -366,12 +356,6 @@ export default function ClientDetailPage({
             </CardContent>
           </Card>
         </TabsContent>
-
-        {PLACEHOLDER_TABS.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value} className="pt-4">
-            <EmptyState title="Em construção" description={tab.description} />
-          </TabsContent>
-        ))}
       </Tabs>
 
       <ClientFormDrawer

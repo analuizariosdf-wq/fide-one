@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Images } from "lucide-react";
 
 import type { Content } from "@/lib/types";
@@ -7,6 +9,7 @@ import { formatDateShort } from "@/lib/format";
 import { toInitials } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   Card,
@@ -31,6 +34,7 @@ interface UpcomingContentsProps {
 }
 
 export function UpcomingContents({ contents, clients, profiles }: UpcomingContentsProps) {
+  const router = useRouter();
   const clientById = new Map(clients.map((c) => [c.id, c]));
   const profileById = new Map(profiles.map((p) => [p.id, p]));
 
@@ -41,6 +45,9 @@ export function UpcomingContents({ contents, clients, profiles }: UpcomingConten
           <CardTitle>Próximas publicações</CardTitle>
           <CardDescription>Conteúdos com entrega nos próximos dias</CardDescription>
         </div>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/contents">Ver todos</Link>
+        </Button>
       </CardHeader>
       <CardContent>
         {contents.length === 0 ? (
@@ -63,7 +70,11 @@ export function UpcomingContents({ contents, clients, profiles }: UpcomingConten
                 const status = contentEditorialConfig[content.status];
 
                 return (
-                  <TableRow key={content.id}>
+                  <TableRow
+                    key={content.id}
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/contents/${content.id}`)}
+                  >
                     <TableCell className="font-medium text-foreground">
                       {client?.name ?? "—"}
                     </TableCell>

@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { updateOwnProfile } from "@/lib/data/team";
+import { getErrorMessage } from "@/lib/error-message";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +43,7 @@ export function EditProfileDialog({ open, onOpenChange, profileId, currentName, 
       onSaved?.();
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Não foi possível atualizar o perfil.");
+      toast.error(getErrorMessage(error, "Não foi possível atualizar o perfil."));
     } finally {
       setSubmitting(false);
     }

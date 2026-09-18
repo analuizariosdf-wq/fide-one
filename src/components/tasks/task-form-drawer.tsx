@@ -2,8 +2,8 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ZodError } from "zod";
 
+import { getErrorMessage } from "@/lib/error-message";
 import type { Task, TaskUrgency, TaskWorkflowStatus } from "@/lib/types";
 import {
   createTask,
@@ -156,13 +156,7 @@ export function TaskFormDrawer({
       onOpenChange(false);
       toast.success(isEditing ? "Tarefa atualizada com sucesso." : "Tarefa criada com sucesso.");
     } catch (error) {
-      if (error instanceof ZodError) {
-        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Não foi possível salvar a tarefa. Tente novamente.");
-      }
+      toast.error(getErrorMessage(error, "Não foi possível salvar a tarefa. Tente novamente."));
     } finally {
       setSubmitting(false);
     }

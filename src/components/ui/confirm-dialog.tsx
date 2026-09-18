@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import {
   Dialog,
@@ -20,9 +20,14 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   cancelLabel?: string;
   destructive?: boolean;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
 }
 
+/**
+ * Awaits `onConfirm` and disables both buttons meanwhile — without this, a
+ * fast double-click (or a slow network) could fire the destructive action
+ * twice before the dialog had a chance to close.
+ */
 function ConfirmDialog({
   open,
   onOpenChange,
@@ -33,25 +38,35 @@ function ConfirmDialog({
   destructive = true,
   onConfirm,
 }: ConfirmDialogProps) {
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleConfirm() {
+    setSubmitting(true);
+    try {
+      await onConfirm();
+      onOpenChange(false);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(next) => !submitting && onOpenChange(next)}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
             {cancelLabel}
           </Button>
           <Button
             variant={destructive ? "destructive" : "default"}
-            onClick={() => {
-              onConfirm();
-              onOpenChange(false);
-            }}
+            onClick={handleConfirm}
+            disabled={submitting}
           >
-            {confirmLabel}
+            {submitting ? "Aguarde..." : confirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

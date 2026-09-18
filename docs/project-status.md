@@ -734,6 +734,63 @@ diretamente, sem estado assíncrono próprio.
 `financial_transactions` — migration futura, não feita aqui), timesheet/
 horas, exportação/PDF de relatórios, envio agendado, insights com IA.
 
+## 4k. Acabamento do produto — Fase 8 (feita nesta sessão)
+
+Fase de polimento — sem módulo novo, sem migration. Ajustes concretos
+encontrados numa revisão prática das telas reais (não uma auditoria
+completa):
+
+- **Header**: removidas notificações fictícias hardcoded (texto fixo tipo
+  "Mariana comentou no projeto..." desde a Etapa 1, nunca migrado — um
+  placeholder-como-real que a Fase 5.8 não pegou por não estar em
+  `mock-data/`) — agora mostra "Central de notificações ainda não
+  disponível", honesto. Removida a busca global decorativa (`<input
+  type="search">` sem `onChange`/ação nenhuma — parecia funcionar e não
+  fazia nada). Os itens "Meu perfil"/"Configurações" do menu do avatar não
+  tinham `onClick` (links mortos) — agora navegam para `/equipe` e
+  `/configuracoes`.
+- **Configurações**: deixou de ser `PlaceholderPage`. Mostra organização
+  (nome/identificador, somente leitura — editar exige a policy
+  `organizations_update_admin`, fora de escopo) e o próprio perfil
+  (reaproveita `EditProfileDialog` da Equipe). Sem preferências — nada
+  disso existe no schema.
+- **Cliente → abas**: removidas as duas abas placeholder residuais
+  ("Calendário", "Aprovações") que só mostravam "Em construção" — Fide já
+  tem Calendário real (com filtro de cliente) e o conceito de aprovação já
+  vive no status de Conteúdo; manter uma aba vazia ao lado das reais
+  passava a impressão de produto incompleto.
+- **Erros amigáveis**: novo `src/lib/error-message.ts` (`getErrorMessage`)
+  centraliza a distinção entre um erro nosso (mensagem curta em português,
+  sempre segura de mostrar) e um erro do Postgrest/Supabase (tem `code`,
+  nunca deve aparecer cru pro usuário) — aplicado nos 9 pontos que
+  faziam `toast.error(error.message)` sem essa checagem (formulários de
+  Cliente/Projeto/Tarefa/Conteúdo/Evento/Transação/Categoria/Perfil,
+  upload/exclusão de arquivo).
+- **Duplo submit em exclusões**: `ConfirmDialog` (usado por toda exclusão
+  do app) agora aguarda `onConfirm`, desabilita os botões e mostra
+  "Aguarde..." enquanto a chamada está em andamento — antes fechava e
+  disparava a ação sem nenhuma proteção contra clique duplo.
+- **Dashboard**: "Minhas tarefas" e "Próximas publicações" não tinham
+  nenhum link — clicar num item não fazia nada. Agora cada linha navega
+  para a tarefa/conteúdo real, e cada card ganhou um link "Ver
+  todas"/"Ver todos" para o módulo completo. Nenhum widget novo.
+- **Confirmado, sem mudança necessária**: tabelas já têm
+  `overflow-x-auto` (`src/components/ui/table.tsx`), Kanban e o grid do
+  Calendário já tratam overflow horizontal, sidebar já colapsa para menu
+  mobile abaixo de `md`, labels de formulário já usam `FormField`
+  (associação `id`/`htmlFor` correta) ou `aria-label` nos Selects, `Table`
+  → responsivo por padrão.
+
+**Teste visual**: `next dev` local + `curl` na página de `/login`
+confirmou HTML renderizado corretamente com o design system (cores,
+Inter, componentes) — não foi possível (nem necessário) testar páginas
+autenticadas, já que o Supabase hospedado não é alcançável neste sandbox
+(limitação de rede conhecida desde a Fase 4).
+
+**Pendências pós-MVP**: dark mode, customização de dashboard, busca
+global real, central de notificações real (schema `notifications` já
+existe, sem UI), edição de organização (RBAC admin), avatar upload.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -838,16 +895,21 @@ FASE 5 — Conectar frontend ao Supabase real    ✅ concluída (ver seção 4h 
   5.7 Arquivos / Supabase Storage              ✅ concluída — REAL/SUPABASE (Conteúdo/Cliente/Projeto)
   5.8 Remoção final dos mocks + validação      ✅ concluída (esta sessão) — ver seção 4h
 FASE 6 — Financeiro + Equipe (MVP essencial)   ✅ concluída — ver seção 4i — REAL/SUPABASE
-FASE 7 — Relatórios/Rentabilidade/Workload     ✅ concluída (esta sessão) — ver seção 4j — REAL/SUPABASE
-FASE 8 — Auditoria UX/UI                       ⏳ não iniciada
+FASE 7 — Relatórios/Rentabilidade/Workload     ✅ concluída — ver seção 4j — REAL/SUPABASE
+FASE 8 — Acabamento do produto                 ✅ concluída (esta sessão) — ver seção 4k
 ```
+
+Próxima etapa sugerida: validação final end-to-end contra o Supabase
+hospedado (fora deste sandbox) e/ou deploy — ver seção 11 e o preview da
+Vercel já orientado anteriormente.
 
 Pendências pós-MVP acumuladas (não bloqueiam a conclusão de nenhuma fase):
 projeto relacionado e observações em lançamentos financeiros, rentabilidade
 financeira por projeto, recorrência financeira, conciliação/boleto/Pix/
 nota fiscal, timesheet/horas, gestão de outros usuários e troca de role
 (exige `service_role`, fora do frontend), exportação/PDF/agendamento de
-relatórios, insights com IA.
+relatórios, insights com IA, busca global real, central de notificações
+real, edição de organização (RBAC admin), avatar upload, dark mode.
 
 ## 10. Decisões técnicas importantes
 

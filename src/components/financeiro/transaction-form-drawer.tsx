@@ -3,8 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { ZodError } from "zod";
 
+import { getErrorMessage } from "@/lib/error-message";
 import type { FinancialCategory, FinancialTransaction, FinancialTransactionStatus } from "@/lib/types";
 import {
   createTransaction,
@@ -148,13 +148,7 @@ export function TransactionFormDrawer({
       onOpenChange(false);
       toast.success(isEditing ? "Lançamento atualizado com sucesso." : "Lançamento criado com sucesso.");
     } catch (error) {
-      if (error instanceof ZodError) {
-        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Não foi possível salvar o lançamento. Tente novamente.");
-      }
+      toast.error(getErrorMessage(error, "Não foi possível salvar o lançamento. Tente novamente."));
     } finally {
       setSubmitting(false);
     }

@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ZodError } from "zod";
 
+import { getErrorMessage } from "@/lib/error-message";
 import type { FinancialCategory, FinancialCategoryType } from "@/lib/types";
 import { createFinancialCategory } from "@/lib/data/financial";
 import {
@@ -50,13 +50,7 @@ export function CategoryQuickCreateDialog({ open, onOpenChange, onCreated }: Cat
       setName("");
       onOpenChange(false);
     } catch (error) {
-      if (error instanceof ZodError) {
-        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Não foi possível criar a categoria. Tente novamente.");
-      }
+      toast.error(getErrorMessage(error, "Não foi possível criar a categoria. Tente novamente."));
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Pencil, UsersRound } from "lucide-react";
 
 import { useCurrentActor } from "@/lib/auth/current-actor-context";
@@ -16,9 +17,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EditProfileDialog } from "@/components/equipe/edit-profile-dialog";
 
 export default function EquipePage() {
+  const router = useRouter();
   const { profile: currentProfile } = useCurrentActor();
   const { team, loading, error, refetch } = useTeam();
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  function handleProfileSaved() {
+    refetch();
+    router.refresh();
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -88,7 +95,7 @@ export default function EquipePage() {
           onOpenChange={(open) => !open && setEditingId(null)}
           profileId={currentProfile.id}
           currentName={currentProfile.name}
-          onSaved={refetch}
+          onSaved={handleProfileSaved}
         />
       )}
     </div>

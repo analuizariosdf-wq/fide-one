@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ZodError } from "zod";
 
+import { getErrorMessage } from "@/lib/error-message";
 import type { Client, ClientStatus } from "@/lib/types";
 import { clientStatusConfig } from "@/lib/status";
 import {
@@ -164,11 +164,7 @@ export function ClientFormDrawer({
       onOpenChange(false);
       toast.success(isEditing ? "Cliente atualizado com sucesso." : "Cliente criado com sucesso.");
     } catch (error) {
-      if (error instanceof ZodError) {
-        toast.error(error.issues[0]?.message ?? "Verifique os dados informados.");
-      } else {
-        toast.error("Não foi possível salvar o cliente. Tente novamente.");
-      }
+      toast.error(getErrorMessage(error, "Não foi possível salvar o cliente. Tente novamente."));
     } finally {
       setSubmitting(false);
     }

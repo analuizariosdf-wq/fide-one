@@ -3,14 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, ChevronRight, Menu, PanelLeft, Search } from "lucide-react";
+import { Bell, ChevronRight, Menu, PanelLeft } from "lucide-react";
 
 import { useBreadcrumb } from "@/lib/breadcrumb";
 import { createClient } from "@/lib/supabase/client";
 import { useCurrentActor } from "@/lib/auth/current-actor-context";
 import { toInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -72,7 +71,7 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
         </SheetContent>
       </Sheet>
 
-      <h1 className="hidden min-w-0 shrink items-center gap-1.5 text-[15px] font-semibold text-foreground sm:flex">
+      <h1 className="hidden min-w-0 flex-1 items-center gap-1.5 text-[15px] font-semibold text-foreground sm:flex">
         {breadcrumb.map((segment, index) => (
           <span key={index} className="flex min-w-0 items-center gap-1.5">
             {index > 0 && (
@@ -92,52 +91,19 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
         ))}
       </h1>
 
-      <div className="mx-auto w-full max-w-md flex-1">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Buscar clientes, tarefas, conteúdos..."
-            className="h-9 rounded-full pl-9"
-            aria-label="Busca global"
-          />
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-1.5">
+      <div className="ml-auto flex shrink-0 items-center gap-1.5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              aria-label="Notificações"
-            >
+            <Button variant="ghost" size="icon" aria-label="Notificações">
               <Bell className="size-4" />
-              <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-primary" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72">
             <DropdownMenuLabel>Notificações</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex flex-col items-start gap-0.5 py-2">
-              <span className="text-[13px] text-foreground">
-                Mariana comentou no projeto &quot;Pleno&quot;
-              </span>
-              <span className="text-[12px] text-muted-foreground">há 1 hora</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start gap-0.5 py-2">
-              <span className="text-[13px] text-foreground">
-                3 conteúdos aguardando aprovação
-              </span>
-              <span className="text-[12px] text-muted-foreground">há 3 horas</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start gap-0.5 py-2">
-              <span className="text-[13px] text-foreground">
-                Novo pagamento registrado
-              </span>
-              <span className="text-[12px] text-muted-foreground">há 3 horas</span>
-            </DropdownMenuItem>
+            <div className="px-2 py-3 text-[13px] text-muted-foreground">
+              Central de notificações ainda não disponível.
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -162,8 +128,8 @@ export function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Meu perfil</DropdownMenuItem>
-            <DropdownMenuItem>Configurações</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/equipe")}>Meu perfil</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/configuracoes")}>Configurações</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
               Sair
