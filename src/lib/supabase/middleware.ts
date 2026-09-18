@@ -2,7 +2,17 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { User } from "@supabase/supabase-js";
 
-const PUBLIC_PATHS = ["/login"];
+// Reachable without a session — a password-recovery link only establishes
+// the (temporary) session client-side, after this request already landed,
+// so /reset-password must be let through unauthenticated too or the user
+// bounces straight to /login before that session ever exists.
+const PUBLIC_PATHS = ["/login", "/reset-password"];
+
+// Of those, only /login makes sense to redirect *away* from once a real
+// session exists — an already-authenticated visitor should still be able
+// to reach /reset-password (e.g. the recovery link opened in a browser
+// that already had a session).
+const AUTH_REDIRECT_PATHS = ["/login"];
 
 /**
  * Refreshes the Supabase session on every request and gates the private
@@ -56,6 +66,9 @@ export async function updateSession(request: NextRequest) {
   const isPublicPath = PUBLIC_PATHS.some((path) =>
     request.nextUrl.pathname.startsWith(path),
   );
+  const isAuthRedirectPath = AUTH_REDIRECT_PATHS.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  );
 
   if (!user && !isPublicPath) {
     const loginUrl = request.nextUrl.clone();
@@ -64,7 +77,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (user && isPublicPath) {
+  if (user && isAuthRedirectPath) {
     const homeUrl = request.nextUrl.clone();
     homeUrl.pathname = "/";
     homeUrl.search = "";
