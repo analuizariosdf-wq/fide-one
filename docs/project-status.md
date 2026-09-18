@@ -791,6 +791,36 @@ autenticadas, já que o Supabase hospedado não é alcançável neste sandbox
 global real, central de notificações real (schema `notifications` já
 existe, sem UI), edição de organização (RBAC admin), avatar upload.
 
+## 4l. Validação final e preparação para publicação — Fase 9 (feita nesta sessão)
+
+Fase de validação — sem feature nova, sem migration. `lint`/`tsc`/`build`
+já estavam limpos no início; um bug real encontrado e corrigido:
+
+- `src/components/shell/placeholder-page.tsx` (o componente
+  `PlaceholderPage`) ficou órfão depois que Financeiro/Equipe/Relatórios
+  (Fases 6/7) e Configurações (Fase 8) pararam de usá-lo — confirmado
+  zero consumidores por busca antes de remover. Removido.
+
+Checagem final de segurança (busca em todo `src/`, sem imprimir valores):
+`service_role`/`SUPABASE_SERVICE_ROLE_KEY` só em `server.ts`
+(`createServiceRoleClient`, nunca chamada), nenhum `sb_secret_`, nenhum
+`organization_id` vindo do cliente, `createSignedUrl` sempre com
+expiração, nenhum `getPublicUrl` (bucket privado nunca virou público),
+`.env.local` fora do tracking. Nenhuma regressão da Fase 8.
+
+Teste local: `next dev` + `curl` em `/login` e `/` — ambos respondem 200,
+HTML renderiza o design system corretamente, sem erro de runtime no log
+do servidor. Como o Supabase configurado neste sandbox não é alcançável,
+o middleware degrada para um "ator vazio" em vez de travar (mesmo
+comportamento documentado desde a Fase 5.1) — o redirecionamento real
+para `/login` só é validável com um Supabase hospedado alcançável, o que
+este ambiente não permite; isso não é um bug novo, é a mesma limitação de
+rede conhecida desde a Fase 4.
+
+Vercel: `next.config.ts` padrão, scripts `build`/`start` padrão, sem
+`vercel.json` necessário, sem dependência de filesystem — projeto
+compatível com deploy serverless padrão sem nenhuma mudança de código.
+
 ## 5. RLS / multi-tenancy
 
 Toda tabela de negócio isolada por `organization_id = current_organization_id()`
@@ -896,12 +926,13 @@ FASE 5 — Conectar frontend ao Supabase real    ✅ concluída (ver seção 4h 
   5.8 Remoção final dos mocks + validação      ✅ concluída (esta sessão) — ver seção 4h
 FASE 6 — Financeiro + Equipe (MVP essencial)   ✅ concluída — ver seção 4i — REAL/SUPABASE
 FASE 7 — Relatórios/Rentabilidade/Workload     ✅ concluída — ver seção 4j — REAL/SUPABASE
-FASE 8 — Acabamento do produto                 ✅ concluída (esta sessão) — ver seção 4k
+FASE 8 — Acabamento do produto                 ✅ concluída — ver seção 4k
+FASE 9 — Validação final / preparação p/ deploy ✅ concluída (esta sessão) — ver seções 4l e 12 — PRONTO PARA PREVIEW
 ```
 
-Próxima etapa sugerida: validação final end-to-end contra o Supabase
-hospedado (fora deste sandbox) e/ou deploy — ver seção 11 e o preview da
-Vercel já orientado anteriormente.
+Próxima etapa: gerar o Vercel Preview Deployment (ver seção 12) e, quando
+possível, validar end-to-end contra o Supabase hospedado fora deste
+sandbox.
 
 Pendências pós-MVP acumuladas (não bloqueiam a conclusão de nenhuma fase):
 projeto relacionado e observações em lançamentos financeiros, rentabilidade
@@ -954,6 +985,60 @@ preenchido). Sem a URL real, o login não pode ser testado de ponta a ponta
 dentro deste ambiente — ver `docs/supabase-deployment.md` para onde
 encontrar os valores reais (Supabase Dashboard → Settings → API / Connect →
 Server).
+
+**Para deploy (Vercel ou qualquer host)**: confirmado por busca em todo o
+`src/` (Fase 9) que só 2 variáveis são efetivamente necessárias para o
+app funcionar —
+`NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ambas
+seguras para o navegador — todo acesso é protegido por RLS). A terceira,
+`SUPABASE_SERVICE_ROLE_KEY`, só é lida por `createServiceRoleClient()`
+(`src/lib/supabase/server.ts`), uma função reservada que nenhum código do
+app chama hoje — pode ficar de fora do ambiente de deploy sem quebrar
+nada; só é necessária se/quando essa função passar a ser usada.
+
+## 12. MVP / Versão inicial — pronta para preview
+
+Critérios de "pronto para preview" (Fase 9) — todos atendidos:
+
+- ✅ `npm run lint`, `npx tsc --noEmit` e `npm run build` limpos (14 rotas).
+- ✅ Rotas coerentes: `/login`, `/`, `/clients(+[id])`, `/projects(+[id])`,
+  `/tasks(+[id])`, `/contents(+[id])`, `/calendar`, `/financeiro`,
+  `/equipe`, `/relatorios`, `/configuracoes` — todas existem, sem import
+  quebrado, `/_not-found` cobre rota inválida.
+- ✅ Auth coerente: middleware redireciona não-autenticado → `/login` e
+  autenticado em `/login` → `/`; nenhum bypass. Falha do Supabase nunca
+  vira tela branca (degrada para estado tratado — comportamento
+  documentado desde a Fase 5.1).
+- ✅ Nenhum módulo principal usa mock como fonte real — confirmado de novo
+  nesta fase (busca por `TODO`, ID mock hardcoded, `localStorage`); os
+  únicos arquivos em `mock-data/` que restam são bridges de nome e
+  vocabulário de domínio (Fase 5.8).
+- ✅ Sem secret no frontend: `SUPABASE_SERVICE_ROLE_KEY` só em
+  `server.ts`, nunca chamada; `.env.local` fora do tracking.
+- ✅ Sem quebra estrutural conhecida.
+- ✅ Deploy Vercel padrão compatível: Next.js App Router puro,
+  `next build`/`next start`, sem `vercel.json` necessário, sem
+  dependência de filesystem local, sem `output: "export"`.
+
+**Módulos concluídos (REAL/SUPABASE)**: Auth/Organização, Dashboard,
+Clientes, Projetos, Tarefas, Conteúdos, Calendário, Arquivos, Financeiro,
+Equipe, Relatórios, Configurações (org read-only + próprio perfil).
+
+**Limitações conhecidas** (documentadas nas fases 5.7/6/7, reconfirmadas
+aqui): arquivos de Tarefa sem bucket dedicado; rentabilidade financeira
+por projeto não suportada (`financial_transactions` sem `project_id`);
+workload por volume de tarefas, não por horas (sem timesheet);
+`content_comments` e histórico de Tarefa sem UI (sem `activity_logs`);
+gestão de outros usuários/roles fica pelo admin do Supabase (RLS só
+permite `profiles_update_self`); validação E2E contra o Supabase
+hospedado não é possível neste sandbox (rede bloqueada) — validado por
+código, build e teste local (`next dev` + `curl` em `/login` e `/`, sem
+erro de runtime, sem tela branca).
+
+**Próxima ação**: gerar um Vercel Preview Deployment desta branch,
+cadastrando `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+nas variáveis de ambiente do projeto na Vercel (ver instruções já
+fornecidas anteriormente nesta sessão de trabalho).
 
 ## Arquivos-chave para orientação rápida
 
