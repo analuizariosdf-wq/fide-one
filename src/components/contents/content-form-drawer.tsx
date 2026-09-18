@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { getErrorMessage } from "@/lib/error-message";
@@ -13,6 +13,7 @@ import {
   type ProfileOption,
   type ProjectOption,
 } from "@/lib/data/contents";
+import { useLabels, loadContentLabelIds, syncContentLabels } from "@/lib/data/labels";
 import { contentEditorialConfig } from "@/lib/status";
 import {
   Sheet,
@@ -53,7 +54,12 @@ interface FormState {
   taskIds: string[];
 }
 
-function emptyForm(clients: ClientOption[], defaultClientId?: string, defaultProjectId?: string): FormState {
+function emptyForm(
+  clients: ClientOption[],
+  defaultClientId?: string,
+  defaultProjectId?: string,
+  defaultPublishDate?: string,
+): FormState {
   return {
     title: "",
     clientId: defaultClientId ?? clients[0]?.id ?? "",
@@ -62,7 +68,7 @@ function emptyForm(clients: ClientOption[], defaultClientId?: string, defaultPro
     channel: CHANNEL_OPTIONS[0],
     status: "ideia",
     responsibleId: NO_ASSIGNEE,
-    publishDate: "",
+    publishDate: defaultPublishDate ?? "",
     publishTime: "",
     description: "",
     caption: "",
@@ -99,6 +105,7 @@ interface ContentFormDrawerProps {
   tasks: Task[];
   defaultClientId?: string;
   defaultProjectId?: string;
+  defaultPublishDate?: string;
   onSaved?: (content: Content) => void;
 }
 
@@ -112,13 +119,36 @@ export function ContentFormDrawer({
   tasks,
   defaultClientId,
   defaultProjectId,
+  defaultPublishDate,
   onSaved,
 }: ContentFormDrawerProps) {
   const [form, setForm] = useState<FormState>(() =>
-    content ? toFormState(content) : emptyForm(clients, defaultClientId, defaultProjectId),
+    content ? toFormState(content) : emptyForm(clients, defaultClientId, defaultProjectId, defaultPublishDate),
   );
   const [submitting, setSubmitting] = useState(false);
   const isEditing = Boolean(content);
+
+  const { labels } = useLabels();
+  const [labelIds, setLabelIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!content) return;
+    let active = true;
+    loadContentLabelIds(content.id)
+      .then((ids) => {
+        if (active) setLabelIds(ids);
+      })
+      .catch(() => {
+        // Non-critical — the form still works without labels pre-selected.
+      });
+    return () => {
+      active = false;
+    };
+  }, [content]);
+
+  function toggleLabel(labelId: string) {
+    setLabelIds((prev) => (prev.includes(labelId) ? prev.filter((id) => id !== labelId) : [...prev, labelId]));
+  }
 
   const availableProjects = useMemo(
     () => projects.filter((project) => project.clientId === form.clientId),
@@ -182,6 +212,7 @@ export function ContentFormDrawer({
     try {
       const saved =
         isEditing && content ? await updateContent(content.id, payload) : await createContent(payload);
+      await syncContentLabels(saved.id, labelIds);
 
       onSaved?.(saved);
       onOpenChange(false);
@@ -380,6 +411,36 @@ export function ContentFormDrawer({
                           }
                         >
                           {task.title}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </FormField>
+
+              <FormField label="Etiquetas">
+                {labels.length === 0 ? (
+                  <p className="text-[13px] text-muted-foreground">
+                    Nenhuma etiqueta cadastrada — gerencie em Calendário → Gerenciar etiquetas.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {labels.map((label) => {
+                      const selected = labelIds.includes(label.id);
+                      return (
+                        <button
+                          key={label.id}
+                          type="button"
+                          onClick={() => toggleLabel(label.id)}
+                          aria-pressed={selected}
+                          style={selected ? { borderColor: label.color, backgroundColor: `${label.color}1a`, color: label.color } : undefined}
+                          className={
+                            selected
+                              ? "rounded-full border px-3 py-1 text-[12px] font-medium"
+                              : "rounded-full border border-border bg-surface px-3 py-1 text-[12px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                          }
+                        >
+                          {label.name}
                         </button>
                       );
                     })}

@@ -1,19 +1,28 @@
+import { Plus } from "lucide-react";
+
 import type { CalendarItem } from "@/lib/types";
 import { toISODate } from "@/lib/format";
 import { getMonthGridDays, isSameDay, isSameMonth, WEEKDAY_LABELS } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
 import { EventChip } from "@/components/calendar/event-chip";
 
-const MAX_VISIBLE_PER_DAY = 3;
+const MAX_VISIBLE_PER_DAY = 4;
 
 interface MonthViewProps {
   referenceDate: Date;
   items: CalendarItem[];
   onOpenEvent: (item: CalendarItem) => void;
   onShowMore: (day: Date) => void;
+  onQuickAdd?: (day: Date) => void;
 }
 
-export function MonthView({ referenceDate, items, onOpenEvent, onShowMore }: MonthViewProps) {
+/**
+ * Denser, ClickUp-inspired grid: taller rows, more items visible per day,
+ * a hover-revealed "+" to launch a publication straight from the cell,
+ * and a clearer today/out-of-month distinction — same underlying data
+ * (CalendarItem[]) and EventChip, only the layout changed.
+ */
+export function MonthView({ referenceDate, items, onOpenEvent, onShowMore, onQuickAdd }: MonthViewProps) {
   const days = getMonthGridDays(referenceDate);
   const today = new Date();
 
@@ -29,7 +38,7 @@ export function MonthView({ referenceDate, items, onOpenEvent, onShowMore }: Mon
 
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
-      <div className="min-w-[720px]">
+      <div className="min-w-[840px]">
         <div className="grid grid-cols-7 border-b border-border bg-muted/40">
           {WEEKDAY_LABELS.map((label) => (
             <div
@@ -52,24 +61,37 @@ export function MonthView({ referenceDate, items, onOpenEvent, onShowMore }: Mon
             <div
               key={toISODate(day)}
               className={cn(
-                "flex min-h-24 flex-col gap-1 border-b border-r border-border p-1.5 last:border-r-0",
+                "group/day flex min-h-32 flex-col gap-1 border-b border-r border-border p-1.5 last:border-r-0",
                 !inMonth && "bg-muted/20",
+                isToday && "bg-accent/40",
               )}
             >
-              <button
-                type="button"
-                onClick={() => onShowMore(day)}
-                className={cn(
-                  "flex size-5 items-center justify-center rounded-full text-[12px] font-medium transition-colors hover:bg-muted",
-                  isToday
-                    ? "bg-primary text-primary-foreground hover:bg-primary"
-                    : inMonth
-                      ? "text-foreground"
-                      : "text-muted-foreground/60",
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => onShowMore(day)}
+                  className={cn(
+                    "flex size-6 items-center justify-center rounded-full text-[12px] font-medium transition-colors hover:bg-muted",
+                    isToday
+                      ? "bg-primary text-primary-foreground hover:bg-primary"
+                      : inMonth
+                        ? "text-foreground"
+                        : "text-muted-foreground/60",
+                  )}
+                >
+                  {day.getDate()}
+                </button>
+                {onQuickAdd && (
+                  <button
+                    type="button"
+                    onClick={() => onQuickAdd(day)}
+                    aria-label={`Nova publicação em ${toISODate(day)}`}
+                    className="flex size-6 items-center justify-center rounded-full text-muted-foreground opacity-0 transition-opacity hover:bg-muted hover:text-foreground group-hover/day:opacity-100"
+                  >
+                    <Plus className="size-3.5" />
+                  </button>
                 )}
-              >
-                {day.getDate()}
-              </button>
+              </div>
               <div className="flex flex-col gap-0.5">
                 {visible.map((item) => (
                   <EventChip key={item.id} item={item} onOpenEvent={onOpenEvent} />

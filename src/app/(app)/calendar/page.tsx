@@ -1,17 +1,21 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Tags } from "lucide-react";
 
-import type { CalendarItem } from "@/lib/types";
+import type { CalendarItem, Content } from "@/lib/types";
 import { useCalendarItems, type CalendarFilters } from "@/lib/services/calendar-service";
+import { useTasks } from "@/lib/data/tasks";
+import { useLabels } from "@/lib/data/labels";
 import {
   addDays,
   addMonths,
   formatMonthLabel,
   formatWeekRangeLabel,
 } from "@/lib/calendar-utils";
-import { MOCK_TODAY } from "@/lib/format";
+import { MOCK_TODAY, toISODate } from "@/lib/format";
+import { useHasPermission } from "@/lib/auth/current-actor-context";
+import { RequirePermission } from "@/components/shared/require-permission";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/ui/error-state";
@@ -23,17 +27,33 @@ import { WeekView } from "@/components/calendar/week-view";
 import { ListView } from "@/components/calendar/list-view";
 import { EventDetailDialog } from "@/components/calendar/event-detail-dialog";
 import { EventFormDrawer } from "@/components/calendar/event-form-drawer";
+import { ManageLabelsDialog } from "@/components/calendar/manage-labels-dialog";
+import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
 
 type CalendarView = "mes" | "semana" | "lista";
 
 export default function CalendarPage() {
+  return (
+    <RequirePermission permission="calendar.view">
+      <CalendarContent />
+    </RequirePermission>
+  );
+}
+
+function CalendarContent() {
+  const canManage = useHasPermission("calendar.manage");
   const [view, setView] = useState<CalendarView>("mes");
   const [referenceDate, setReferenceDate] = useState<Date>(MOCK_TODAY);
   const [filters, setFilters] = useState<CalendarFilters>({});
   const [openEvent, setOpenEvent] = useState<CalendarItem | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [labelsOpen, setLabelsOpen] = useState(false);
+  const [contentDrawerOpen, setContentDrawerOpen] = useState(false);
+  const [quickAddDate, setQuickAddDate] = useState<string | undefined>(undefined);
 
   const { items, clients, projects, profiles, loading, error, refetch } = useCalendarItems(filters);
+  const { tasks } = useTasks();
+  const { labels, refetch: refetchLabels } = useLabels();
 
   const periodLabel = useMemo(() => {
     if (view === "semana") return formatWeekRangeLabel(referenceDate);
@@ -52,16 +72,35 @@ export default function CalendarPage() {
     );
   }
 
+  function handleQuickAdd(day: Date) {
+    setQuickAddDate(toISODate(day));
+    setContentDrawerOpen(true);
+  }
+
+  function handleContentSaved(content: Content) {
+    refetch();
+    // Jump straight to the new publication's day so the user sees it land.
+    setReferenceDate(new Date(`${content.publishDate}T00:00:00`));
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Calendário"
         description="Visualize publicações, tarefas, reuniões e prazos da operação."
         action={
-          <Button onClick={() => setCreateOpen(true)}>
-            <Plus className="size-4" />
-            Novo evento
-          </Button>
+          canManage && (
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => setLabelsOpen(true)}>
+                <Tags className="size-4" />
+                Gerenciar etiquetas
+              </Button>
+              <Button onClick={() => setCreateOpen(true)}>
+                <Plus className="size-4" />
+                Novo evento
+              </Button>
+            </div>
+          )
         }
       />
 
@@ -107,6 +146,7 @@ export default function CalendarPage() {
                     setReferenceDate(day);
                     setView("lista");
                   }}
+                  onQuickAdd={canManage ? handleQuickAdd : undefined}
                 />
               </TabsContent>
 
@@ -137,6 +177,21 @@ export default function CalendarPage() {
         projects={projects}
         onSaved={refetch}
       />
+
+      <ManageLabelsDialog open={labelsOpen} onOpenChange={setLabelsOpen} labels={labels} onChanged={refetchLabels} />
+
+      {contentDrawerOpen && (
+        <ContentFormDrawer
+          open={contentDrawerOpen}
+          onOpenChange={setContentDrawerOpen}
+          clients={clients}
+          projects={projects}
+          profiles={profiles}
+          tasks={tasks}
+          defaultPublishDate={quickAddDate}
+          onSaved={handleContentSaved}
+        />
+      )}
     </div>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import type { Task } from "@/lib/types";
 import { useTasks, filterTasks, removeTask, type TaskFilters } from "@/lib/data/tasks";
+import { addMonths, formatMonthLabel } from "@/lib/calendar-utils";
+import { MOCK_TODAY } from "@/lib/format";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +18,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TaskFiltersBar } from "@/components/tasks/task-filters";
 import { TaskListView } from "@/components/tasks/task-list-view";
 import { TaskKanbanView } from "@/components/tasks/task-kanban-view";
+import { TaskCalendarView } from "@/components/tasks/task-calendar-view";
 import { TaskFormDrawer } from "@/components/tasks/task-form-drawer";
 
 export default function TasksPage() {
@@ -26,6 +29,7 @@ export default function TasksPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+  const [calendarMonth, setCalendarMonth] = useState<Date>(MOCK_TODAY);
 
   async function handleConfirmDelete() {
     if (!deletingTask) return;
@@ -65,6 +69,7 @@ export default function TasksPage() {
           <TabsList>
             <TabsTrigger value="lista">Lista</TabsTrigger>
             <TabsTrigger value="kanban">Kanban</TabsTrigger>
+            <TabsTrigger value="calendario">Calendário</TabsTrigger>
           </TabsList>
 
           <TabsContent value="lista">
@@ -104,6 +109,28 @@ export default function TasksPage() {
                 profiles={profiles}
                 onChanged={refetch}
               />
+            )}
+          </TabsContent>
+
+          <TabsContent value="calendario" className="pt-4">
+            <div className="mb-3 flex items-center justify-end gap-2">
+              <Button variant="outline" size="icon" onClick={() => setCalendarMonth((d) => addMonths(d, -1))} aria-label="Mês anterior">
+                <ChevronLeft className="size-4" />
+              </Button>
+              <span className="min-w-36 text-center text-[13px] font-medium text-foreground">
+                {formatMonthLabel(calendarMonth)}
+              </span>
+              <Button variant="outline" size="icon" onClick={() => setCalendarMonth((d) => addMonths(d, 1))} aria-label="Próximo mês">
+                <ChevronRight className="size-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setCalendarMonth(MOCK_TODAY)}>
+                Hoje
+              </Button>
+            </div>
+            {loading ? (
+              <Skeleton className="h-96 w-full" />
+            ) : (
+              <TaskCalendarView referenceDate={calendarMonth} tasks={filteredTasks} />
             )}
           </TabsContent>
         </Tabs>
