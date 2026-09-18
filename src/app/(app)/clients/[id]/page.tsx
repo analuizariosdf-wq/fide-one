@@ -29,6 +29,11 @@ import { ContentFormDrawer } from "@/components/contents/content-form-drawer";
 import { EntityFilesPanel } from "@/components/files/entity-files-panel";
 import { useFinancialData, filterTransactions } from "@/lib/data/financial";
 import { TransactionTable } from "@/components/financeiro/transaction-table";
+import { ClientWorkspaceKanban } from "@/components/clients/client-workspace-kanban";
+import { DeliverablesPanel } from "@/components/clients/deliverables-panel";
+import { ServiceExtrasPanel } from "@/components/clients/service-extras-panel";
+import { useProducts } from "@/lib/data/products";
+import { useContracts } from "@/lib/data/contracts";
 
 export default function ClientDetailPage({
   params,
@@ -86,6 +91,8 @@ export default function ClientDetailPage({
     refetch: refetchFinancial,
   } = useFinancialData();
   const financialCategoryById = useMemo(() => new Map(financialCategories.map((c) => [c.id, c])), [financialCategories]);
+  const { products } = useProducts();
+  const { contracts: clientContracts } = useContracts(id);
   const clientTransactions = useMemo(
     () => filterTransactions(allTransactions, financialCategoryById, { clientId: id }),
     [allTransactions, financialCategoryById, id],
@@ -156,7 +163,9 @@ export default function ClientDetailPage({
           <TabsTrigger value="visao-geral">Visão geral</TabsTrigger>
           <TabsTrigger value="projetos">Projetos</TabsTrigger>
           <TabsTrigger value="tarefas">Tarefas</TabsTrigger>
+          <TabsTrigger value="workspace">Workspace</TabsTrigger>
           <TabsTrigger value="conteudos">Conteúdos</TabsTrigger>
+          <TabsTrigger value="escopo">Escopo</TabsTrigger>
           <TabsTrigger value="arquivos">Arquivos</TabsTrigger>
           <TabsTrigger value="financeiro">Financeiro</TabsTrigger>
         </TabsList>
@@ -269,6 +278,24 @@ export default function ClientDetailPage({
           </Card>
         </TabsContent>
 
+        <TabsContent value="workspace" className="pt-4">
+          {contentsError ? (
+            <ErrorState description={contentsError} onRetry={refetchContents} />
+          ) : contentsLoading ? (
+            <Skeleton className="h-72 w-full" />
+          ) : (
+            <ClientWorkspaceKanban
+              contents={clientContents}
+              profiles={contentProfiles}
+              onOpenContent={(content) => {
+                setEditingContent(content);
+                setContentDrawerOpen(true);
+              }}
+              onChanged={refetchContents}
+            />
+          )}
+        </TabsContent>
+
         <TabsContent value="conteudos" className="pt-4">
           <Card>
             <CardHeader>
@@ -312,6 +339,11 @@ export default function ClientDetailPage({
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="escopo" className="flex flex-col gap-4 pt-4">
+          <DeliverablesPanel clientId={client.id} services={products} contracts={clientContracts} />
+          <ServiceExtrasPanel clientId={client.id} services={products} tasks={clientTasks} contents={clientContents} />
         </TabsContent>
 
         <TabsContent value="arquivos" className="pt-4">

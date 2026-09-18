@@ -357,6 +357,36 @@ export async function createContent(rawInput: ContentInput): Promise<Content> {
   return mapContent(data, new Map([[data.id, input.taskIds]]));
 }
 
+/**
+ * Status-only move (Client Workspace Kanban drag-and-drop) — skips the
+ * full ContentInput validation updateContent requires, same reasoning as
+ * updateTaskStatus for Tasks.
+ */
+export async function updateContentStatus(id: string, status: ContentEditorialStatus): Promise<Content> {
+  const supabase = createSupabaseClient();
+
+  const { data: current, error: currentError } = await supabase
+    .from("contents")
+    .select("status, published_at")
+    .eq("id", id)
+    .maybeSingle();
+  if (currentError) throw currentError;
+  if (!current) throw new Error("Conteúdo não encontrado.");
+
+  const publishedAt = resolvePublishedAt(current.status, current.published_at, status);
+
+  const { data, error } = await supabase
+    .from("contents")
+    .update({ status, published_at: publishedAt })
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error || !data) throw error ?? new Error("Falha ao mover o conteúdo.");
+
+  return mapContent(data, new Map());
+}
+
 export async function updateContent(id: string, rawInput: ContentInput): Promise<Content> {
   const input = contentInputSchema.parse(rawInput);
   await assertRelationships(input);
