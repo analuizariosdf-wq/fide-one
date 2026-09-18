@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { getErrorMessage } from "@/lib/error-message";
@@ -12,6 +13,12 @@ import {
   type ProfileOption,
   type ProjectOption,
 } from "@/lib/data/tasks";
+import {
+  loadTaskReminders,
+  createTaskReminder,
+  removeTaskReminder,
+  type TaskReminder,
+} from "@/lib/data/task-reminders";
 import { taskUrgencyConfig, taskWorkflowConfig } from "@/lib/status";
 import {
   Sheet,
@@ -102,6 +109,60 @@ export function TaskFormDrawer({
   );
   const [submitting, setSubmitting] = useState(false);
   const isEditing = Boolean(task);
+
+  const [reminders, setReminders] = useState<TaskReminder[]>([]);
+  const [reminderOffset, setReminderOffset] = useState(0);
+  const [reminderTime, setReminderTime] = useState("");
+  const [addingReminder, setAddingReminder] = useState(false);
+
+  useEffect(() => {
+    if (!task) return;
+    let active = true;
+    loadTaskReminders(task.id)
+      .then((data) => {
+        if (active) setReminders(data);
+      })
+      .catch(() => {
+        // Non-critical — the task still works without reminders loaded.
+      });
+    return () => {
+      active = false;
+    };
+  }, [task]);
+
+  async function handleAddReminder() {
+    if (!task) return;
+    setAddingReminder(true);
+    try {
+      const created = await createTaskReminder(task.id, {
+        offsetDays: reminderOffset,
+        remindTime: reminderTime || null,
+        channel: "email",
+      });
+      setReminders((prev) => [created, ...prev]);
+      setReminderOffset(0);
+      setReminderTime("");
+    } catch {
+      toast.error("Não foi possível criar o lembrete.");
+    } finally {
+      setAddingReminder(false);
+    }
+  }
+
+  async function handleRemoveReminder(reminder: TaskReminder) {
+    try {
+      await removeTaskReminder(reminder.id);
+      setReminders((prev) => prev.filter((r) => r.id !== reminder.id));
+    } catch {
+      toast.error("Não foi possível remover o lembrete.");
+    }
+  }
+
+  function reminderLabel(offsetDays: number): string {
+    if (offsetDays === 0) return "No dia do prazo";
+    if (offsetDays === 1) return "1 dia antes";
+    return `${offsetDays} dias antes`;
+  }
 
   const availableProjects = useMemo(
     () =>
@@ -286,6 +347,63 @@ export function TaskFormDrawer({
                 </FormField>
               </div>
             </section>
+
+            {isEditing && task && (
+              <section className="flex flex-col gap-3 border-t border-border pt-5">
+                <h3 className="text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Lembretes
+                </h3>
+
+                {reminders.length > 0 && (
+                  <div className="flex flex-col gap-1.5">
+                    {reminders.map((reminder) => (
+                      <div
+                        key={reminder.id}
+                        className="flex items-center justify-between gap-2 rounded-md border border-border px-2.5 py-1.5 text-[13px]"
+                      >
+                        <span>
+                          {reminderLabel(reminder.offsetDays)}
+                          {reminder.remindTime && ` às ${reminder.remindTime.slice(0, 5)}`}
+                          {" · e-mail"}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label="Remover lembrete"
+                          onClick={() => handleRemoveReminder(reminder)}
+                          className="rounded-sm p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                  <FormField label="Dias antes do prazo">
+                    <Input
+                      type="number"
+                      min={0}
+                      value={reminderOffset}
+                      onChange={(e) => setReminderOffset(Math.max(0, Number(e.target.value) || 0))}
+                    />
+                  </FormField>
+                  <FormField label="Horário (opcional)">
+                    <Input type="time" value={reminderTime} onChange={(e) => setReminderTime(e.target.value)} />
+                  </FormField>
+                  <div className="flex items-end">
+                    <Button type="button" variant="outline" onClick={handleAddReminder} disabled={addingReminder}>
+                      Adicionar
+                    </Button>
+                  </div>
+                </div>
+
+                <p className="text-[12px] text-muted-foreground">
+                  Lembretes são enviados por e-mail ao responsável.{" "}
+                  <span className="italic">WhatsApp — integração futura.</span>
+                </p>
+              </section>
+            )}
           </div>
 
           <SheetFooter className="mt-6 flex-row justify-end gap-2 px-0 pb-0">
