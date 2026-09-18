@@ -399,7 +399,9 @@ export function TaskFormDrawer({
                 </div>
 
                 <p className="text-[12px] text-muted-foreground">
-                  Lembretes são enviados por e-mail ao responsável.{" "}
+                  Lembretes são enviados por e-mail ao responsável, uma vez por dia (09:00,
+                  horário de Brasília) — o horário acima é aproximado, não um envio exato àquele
+                  minuto.{" "}
                   <span className="italic">WhatsApp — integração futura.</span>
                 </p>
               </section>

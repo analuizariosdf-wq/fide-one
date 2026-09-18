@@ -5,9 +5,11 @@ import { getNotificationSender } from "@/lib/notifications";
 import { isReminderDueNow } from "@/lib/notifications/reminder-schedule";
 
 /**
- * Vercel Cron target (see vercel.json). Runs hourly, across every
- * organization at once via service_role — that's exactly the case
- * service_role bypassing RLS is for (see the migration's own comment).
+ * Vercel Cron target (see vercel.json). Runs once a day, at 12:00 UTC
+ * (09:00 America/Sao_Paulo) — Vercel's Hobby plan only allows daily cron
+ * schedules, so this can't run more often. Across every organization at
+ * once via service_role — that's exactly the case service_role bypassing
+ * RLS is for (see the migration's own comment).
  *
  * Auth: Vercel automatically sends `Authorization: Bearer $CRON_SECRET`
  * on requests it triggers when CRON_SECRET is set as an env var. Without
