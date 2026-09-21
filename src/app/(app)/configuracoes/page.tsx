@@ -1,13 +1,14 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Upload } from "lucide-react";
+import { Mail, Pencil, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { useCurrentActor, useHasPermission } from "@/lib/auth/current-actor-context";
 import { toInitials } from "@/lib/utils";
 import { updateOrganizationBranding, uploadOrganizationImage } from "@/lib/data/branding";
+import { sendTestEmail } from "@/lib/data/notifications-admin";
 import { getErrorMessage } from "@/lib/error-message";
 import { PageHeader } from "@/components/shared/page-header";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -38,6 +39,9 @@ export default function ConfiguracoesPage() {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
 
+  const [testEmail, setTestEmail] = useState("");
+  const [sendingTestEmail, setSendingTestEmail] = useState(false);
+
   async function handleSaveBranding() {
     if (!organization) return;
     setSavingBranding(true);
@@ -67,6 +71,20 @@ export default function ConfiguracoesPage() {
       toast.error(getErrorMessage(error, "Não foi possível enviar a imagem."));
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleSendTestEmail(event: FormEvent) {
+    event.preventDefault();
+    if (!testEmail.trim()) return;
+    setSendingTestEmail(true);
+    try {
+      await sendTestEmail(testEmail.trim());
+      toast.success(`E-mail de teste enviado para ${testEmail.trim()}.`);
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Não foi possível enviar o e-mail de teste."));
+    } finally {
+      setSendingTestEmail(false);
     }
   }
 
@@ -196,6 +214,37 @@ export default function ConfiguracoesPage() {
                 {savingBranding ? "Salvando..." : "Salvar personalização"}
               </Button>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {canManageSettings && (
+        <Card>
+          <CardHeader>
+            <CardTitle>E-mail / Notificações</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <p className="text-[13px] text-muted-foreground">
+              Envie um e-mail de teste para confirmar que a integração com o Resend (usada nos
+              lembretes de tarefa) está funcionando, sem precisar esperar o envio automático.
+            </p>
+            <form onSubmit={handleSendTestEmail} className="flex flex-col gap-2 sm:flex-row sm:items-end">
+              <div className="flex flex-1 flex-col gap-1.5">
+                <Label htmlFor="testEmail">E-mail de teste</Label>
+                <Input
+                  id="testEmail"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" disabled={sendingTestEmail}>
+                <Mail className="size-4" />
+                {sendingTestEmail ? "Enviando..." : "Enviar e-mail de teste"}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       )}
