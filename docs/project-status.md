@@ -1095,18 +1095,25 @@ favicon, aplicado globalmente via CSS custom properties).
 **Lembretes de tarefa**: `src/lib/notifications/` (abstração por canal;
 `whatsapp` resolve para sender `null` de propósito — UI mostra
 "WhatsApp — integração futura", nunca um botão que finge funcionar).
-Cron em `/api/cron/task-reminders` (`vercel.json`, hora em hora),
+Cron em `/api/cron/task-reminders` (`vercel.json`, 1x/dia às 12:00 UTC =
+09:00 horário de Brasília — plano Vercel Hobby só permite cron diário),
 autenticado por `CRON_SECRET` (Vercel injeta o header automaticamente
-quando a env var existe no projeto), roda como `service_role`.
+quando a env var existe no projeto), roda como `service_role`. Teste
+manual de envio (sem esperar o cron): `POST /api/cron/task-reminders/test`
+com o mesmo header `Authorization: Bearer $CRON_SECRET` e corpo
+`{"to": "seu@email.com"}` — reusa o mesmo `emailSender`, não linkado em
+nenhuma UI.
 
 **Variáveis de ambiente novas** (nomes apenas — configurar na Vercel,
 nunca commitar valor):
-- `CRON_SECRET` — autentica o cron de lembretes.
+- `CRON_SECRET` — autentica o cron de lembretes e a rota de teste acima.
 - `RESEND_API_KEY` — envio de e-mail via Resend (chamada HTTP direta,
   sem novo pacote). Sem ela, lembretes não são enviados (e não marcam
   `sent_at`) — falha visível, não silenciosa.
-- `RESEND_FROM_EMAIL` (opcional) — remetente; precisa de domínio
-  verificado no Resend.
+- `RESEND_FROM_EMAIL` — remetente (ex.:
+  `FIDE ONE <notificacoes@notificacoes.fidecomunicacao.com>`); precisa de
+  domínio verificado no Resend. Obrigatória — sem fallback hardcoded,
+  mesmo comportamento de falha visível de `RESEND_API_KEY`.
 - `NEXT_PUBLIC_SITE_URL` (opcional) — base para os links nos e-mails de
   lembrete; sem ela usa `VERCEL_URL` ou a URL de produção conhecida.
 - `SUPABASE_SERVICE_ROLE_KEY` já existia (Fase 5.1) mas passou a ser

@@ -68,6 +68,7 @@ export async function GET(request: Request) {
 
   let sent = 0;
   let skipped = 0;
+  const errors: string[] = [];
 
   for (const reminder of reminders) {
     const task = tasksById.get(reminder.task_id);
@@ -99,10 +100,14 @@ export async function GET(request: Request) {
       });
       await supabase.from("task_reminders").update({ sent_at: new Date().toISOString() }).eq("id", reminder.id);
       sent += 1;
-    } catch {
+    } catch (error) {
+      // Surfaced in the response (Vercel Cron logs every response body)
+      // instead of swallowed — a misconfigured RESEND_API_KEY/
+      // RESEND_FROM_EMAIL must be visible, not just an opaque "skipped".
       skipped += 1;
+      errors.push(`reminder ${reminder.id}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
-  return NextResponse.json({ sent, skipped });
+  return NextResponse.json({ sent, skipped, errors });
 }

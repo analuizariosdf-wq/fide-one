@@ -3,9 +3,11 @@ import type { NotificationSender, ReminderNotification } from "@/lib/notificatio
 /**
  * Calls the Resend API directly over fetch instead of adding the `resend`
  * package — one HTTP call, no new dependency. Server-only: reads
- * RESEND_API_KEY from process.env, never hardcoded, never sent to the
- * browser. Throws if the key is missing so a misconfigured deployment
- * fails loudly in the cron route rather than silently dropping reminders.
+ * RESEND_API_KEY/RESEND_FROM_EMAIL from process.env, never hardcoded,
+ * never sent to the browser. Throws if either is missing so a
+ * misconfigured deployment fails loudly (visible in the cron route's
+ * response/logs) rather than silently dropping reminders or falling back
+ * to a sender address nobody actually verified in Resend.
  */
 export const emailSender: NotificationSender = {
   channel: "email",
@@ -15,7 +17,10 @@ export const emailSender: NotificationSender = {
       throw new Error("RESEND_API_KEY não configurada — impossível enviar lembrete por e-mail.");
     }
 
-    const from = process.env.RESEND_FROM_EMAIL || "FIDE ONE <notificacoes@fideone.app>";
+    const from = process.env.RESEND_FROM_EMAIL;
+    if (!from) {
+      throw new Error("RESEND_FROM_EMAIL não configurada — impossível enviar lembrete por e-mail.");
+    }
 
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
