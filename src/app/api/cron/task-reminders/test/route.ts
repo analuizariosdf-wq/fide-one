@@ -13,30 +13,35 @@ import { getNotificationSender } from "@/lib/notifications";
  * just a manual trigger of the one that already exists.
  */
 export async function POST(request: Request) {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) {
-    return NextResponse.json({ error: "CRON_SECRET não configurado." }, { status: 503 });
-  }
-  if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-  }
-
-  const body = await request.json().catch(() => null);
-  const to = typeof body?.to === "string" ? body.to.trim() : "";
-  if (!to) {
-    return NextResponse.json({ error: 'Informe o destinatário em "to" no corpo da requisição.' }, { status: 400 });
-  }
-
-  const sender = getNotificationSender("email");
-  if (!sender) {
-    return NextResponse.json({ error: "Canal de e-mail indisponível." }, { status: 500 });
-  }
-
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://fide-one-ten.vercel.app");
-
+  // Every return in this handler goes through NextResponse.json — wrapped
+  // in one top-level try/catch so a genuinely unexpected throw still
+  // comes back as a JSON body instead of an empty/opaque response the
+  // caller can't r.json() (that's what the earlier middleware redirect
+  // looked like from the outside: a non-JSON body it choked on).
   try {
+    const cronSecret = process.env.CRON_SECRET;
+    if (!cronSecret) {
+      return NextResponse.json({ error: "CRON_SECRET não configurado." }, { status: 503 });
+    }
+    if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    }
+
+    const body = await request.json().catch(() => null);
+    const to = typeof body?.to === "string" ? body.to.trim() : "";
+    if (!to) {
+      return NextResponse.json({ error: 'Informe o destinatário em "to" no corpo da requisição.' }, { status: 400 });
+    }
+
+    const sender = getNotificationSender("email");
+    if (!sender) {
+      return NextResponse.json({ error: "Canal de e-mail indisponível." }, { status: 500 });
+    }
+
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://fide-one-ten.vercel.app");
+
     await sender.send({
       to,
       recipientName: "Teste FIDE ONE",
