@@ -26,6 +26,7 @@ For one stage, load the matching local skill:
 | Word-timed karaoke captions | `caption-animation` |
 | Countdown timers | `countdown-video` |
 | Animated lower thirds | `lower-thirds` |
+| Conversational edit of any footage with color grade and burned subtitles (browser-use/video-use; transcription needs ELEVENLABS_API_KEY) | `video-use` |
 | New motion-graphics video from a brief | `make-a-video` |
 | Website-inspired compositions | `website-to-hyperframes` |
 | Full raw-video edit | `edit-video` |

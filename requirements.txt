@@ -2,3 +2,9 @@ faster-whisper==1.2.1
 # av 19 removeu o argumento metadata_errors usado pelo faster-whisper 1.2.1
 av<19
 yt-dlp
+# video-use skill (.claude/skills/video-use)
+requests
+librosa
+matplotlib
+pillow
+numpy
