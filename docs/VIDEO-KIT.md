@@ -16,7 +16,7 @@ overrides the provider defaults further down (ElevenLabs is not the default here
 
 | Stage | Default | Alternatives / notes |
 | --- | --- | --- |
-| Get footage | Files the user uploads or points to | `yt-dlp` (YouTube blocks cloud IPs; works on the user's machine) |
+| Get footage | Files the user uploads, or a Google Drive link: `gdown --folder "<link>" -O video-projects/<slug>/raw/` (`gdown "<link>" -O <path>` for one file) | `yt-dlp` (YouTube blocks cloud IPs; works on the user's machine) |
 | Transcribe | `python3 scripts/transcribe-local.py <file> --language pt` (faster-whisper, free, Scribe-shaped JSON next to the source) | ElevenLabs (`npm run transcribe`, video-use `transcribe.py`) only if the user asks and has a key |
 | Cut silences / mistakes | `/cut-silences` then `/cut-mistakes` (kit) | video-use cuts from its EDL |
 | Full edit of a recording | `/edit-video` (long form) or `/short-form-edit` (reels/Shorts) | `/video-use` when the user asks for it, for multi-take montages, or color grading |
@@ -37,6 +37,14 @@ overrides the provider defaults further down (ElevenLabs is not the default here
 - Remotion renders in the cloud need
   `--browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`.
   Remotion requires a paid company license for companies with more than 3 people.
+- Google Drive: the folder or file must be shared as "Anyone with the link"
+  (viewer), and the environment's allowed domains need `drive.google.com`,
+  `*.googleusercontent.com` and `drive.usercontent.google.com`. A 403 from the
+  proxy means a domain is missing; a gdown permission error means the sharing
+  is not public. If a large folder comes back incomplete, download its
+  subfolders or single-file links. The user's Drive folders usually
+  hold the raw video(s), the cover photo and the script (roteiro): read the
+  script first and use it to plan the edit and captions.
 - Keep footage and renders under `video-projects/<slug>/` (gitignored).
 
 Turn a talking-head recording into an intentional edit using local HyperFrames
