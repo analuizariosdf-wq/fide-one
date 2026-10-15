@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+  CONSERVAR · tier1 · thesis (full-screen takeover)
+  Hook / statement in the feed-post voice: white headline on navy, one phrase
+  on an orange block, logo swoosh sweeping in from the corner.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; }
+      #t1-thesis {
+        position: absolute; inset: 0; width: 1920px; height: 1080px;
+        background: radial-gradient(120% 90% at 20% 30%, var(--navy) 0%, var(--navy-deep) 100%);
+        color: var(--fg); font-family: var(--font-display); overflow: hidden;
+      }
+      #t1-thesis .swoosh {
+        position: absolute; right: -420px; bottom: -640px; width: 1200px; height: 1200px;
+        border-radius: 50%; border: 90px solid var(--orange);
+        border-color: var(--orange) transparent transparent transparent;
+        transform: rotate(-20deg);
+      }
+      #t1-thesis .text { position: absolute; left: 160px; top: 260px; width: 1400px; }
+      #t1-thesis .kicker {
+        font-weight: 700; font-size: var(--size-label); letter-spacing: 0.18em;
+        text-transform: uppercase; color: var(--gray); margin-bottom: 36px;
+      }
+      #t1-thesis .line {
+        font-weight: var(--wt-black); font-size: 116px; line-height: 1.04; letter-spacing: -0.02em;
+      }
+      #t1-thesis .hl { position: relative; display: inline-block; padding: 0 22px; margin-top: 14px; }
+      #t1-thesis .hl-bg {
+        position: absolute; inset: 6px 0 0 0; background: var(--orange); border-radius: 12px;
+        transform-origin: left center;
+      }
+      #t1-thesis .hl-text { position: relative; }
+      #t1-thesis .logo { position: absolute; left: 160px; bottom: 90px; height: 92px; }
+    </style>
+  </head>
+  <body>
+    <div id="t1-thesis" data-composition-id="t1-thesis" data-start="0" data-width="1920" data-height="1080">
+      <div class="swoosh"></div>
+      <div class="text">
+        <div class="kicker" data-slot="kicker">Síndico, atenção</div>
+        <div class="line" data-slot="headline">O funcionário faltou.</div>
+        <div class="line hl"><div class="hl-bg"></div><span class="hl-text" data-slot="highlight">E agora?</span></div>
+      </div>
+      <img class="logo" src="../../assets/logo-conservar-branco.png" alt="Conservar" />
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.from("#t1-thesis .swoosh", { autoAlpha: 0, rotation: -80, duration: 0.9, ease: "power3.out" })
+        .from("#t1-thesis .kicker", { autoAlpha: 0, x: -30, duration: 0.4, ease: "power3.out" }, 0.15)
+        .from("#t1-thesis .line:not(.hl)", { autoAlpha: 0, y: 40, duration: 0.5, ease: "power3.out" }, 0.3)
+        .from("#t1-thesis .hl-bg", { scaleX: 0, duration: 0.45, ease: "power3.inOut" }, 0.75)
+        .from("#t1-thesis .hl-text", { autoAlpha: 0, duration: 0.3 }, 0.95)
+        .from("#t1-thesis .logo", { autoAlpha: 0, y: 20, duration: 0.4, ease: "power3.out" }, 1.0)
+        .set({}, {}, 4.5);
+      window.__timelines["t1-thesis"] = tl;
+    </script>
+  </body>
+</html>

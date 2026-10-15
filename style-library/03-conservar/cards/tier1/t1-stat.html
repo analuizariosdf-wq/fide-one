@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+  CONSERVAR · tier1 · stat (full-screen takeover)
+  One big orange number on navy, short white label, logo bottom-right.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; }
+      #t1-stat {
+        position: absolute; inset: 0; width: 1920px; height: 1080px;
+        background: radial-gradient(120% 90% at 50% 40%, var(--navy) 0%, var(--navy-deep) 100%);
+        color: var(--fg); font-family: var(--font-body);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; overflow: hidden;
+      }
+      #t1-stat .kicker {
+        font-weight: 700; font-size: var(--size-label); letter-spacing: 0.18em;
+        text-transform: uppercase; color: var(--gray); margin-bottom: 20px;
+      }
+      #t1-stat .stat {
+        font-family: var(--font-display); font-weight: var(--wt-black);
+        font-size: 260px; line-height: 0.95; letter-spacing: -0.03em; color: var(--orange);
+      }
+      #t1-stat .rule { width: 160px; height: 10px; border-radius: 5px; background: var(--white); margin: 34px 0; }
+      #t1-stat .label { font-weight: 700; font-size: var(--size-headline); max-width: 1300px; line-height: 1.15; }
+      #t1-stat .logo { position: absolute; right: 90px; bottom: 70px; height: 72px; }
+    </style>
+  </head>
+  <body>
+    <div id="t1-stat" data-composition-id="t1-stat" data-start="0" data-width="1920" data-height="1080">
+      <div class="kicker" data-slot="kicker">Na prática</div>
+      <div class="stat" data-slot="stat">24h</div>
+      <div class="rule"></div>
+      <div class="label" data-slot="label">para repor um colaborador que faltou</div>
+      <img class="logo" src="../../assets/logo-conservar-branco.png" alt="Conservar" />
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.from("#t1-stat .kicker", { autoAlpha: 0, y: 16, duration: 0.4, ease: "power3.out" })
+        .from("#t1-stat .stat", { autoAlpha: 0, scale: 0.9, duration: 0.55, ease: "power3.out" }, "-=0.15")
+        .from("#t1-stat .rule", { scaleX: 0, duration: 0.4, ease: "power3.inOut" }, "-=0.25")
+        .from("#t1-stat .label", { autoAlpha: 0, y: 20, duration: 0.45, ease: "power3.out" }, "-=0.2")
+        .from("#t1-stat .logo", { autoAlpha: 0, duration: 0.4 }, "-=0.2")
+        .set({}, {}, 5.5);
+      window.__timelines["t1-stat"] = tl;
+    </script>
+  </body>
+</html>

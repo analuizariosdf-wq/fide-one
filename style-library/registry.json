@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/style-library/build-registry.mjs",
-  "styleCount": 2,
-  "cardCount": 406,
+  "styleCount": 3,
+  "cardCount": 410,
   "tiers": [
     "tier1",
     "tier2",
@@ -8592,6 +8592,109 @@
           "preview": {
             "mp4": "02-kallaway/preview/kallaway.t2.label.warning.mp4",
             "poster": "02-kallaway/preview/kallaway.t2.label.warning.png"
+          }
+        }
+      ]
+    },
+    {
+      "id": "conservar",
+      "number": "03",
+      "name": "Conservar",
+      "status": "draft",
+      "folder": "03-conservar",
+      "inspiration": "Brand of Conservar Terceirização e Condomínios: official logo + palette sheet (references/marca-logo-paleta.jpg) and the @conservar_terceirizacao Instagram feed (bold white headlines on slate navy, key words in orange, orange swoosh).",
+      "palette": {
+        "bg": "#43506A",
+        "fg": "#FFFFFF",
+        "accent": "#F07C26",
+        "gray": "#C2C6CD",
+        "notes": "The four official brand colors. Orange is the single accent. Mirrored in tokens.css."
+      },
+      "fonts": {
+        "display": "Montserrat",
+        "body": "Montserrat",
+        "mono": "Montserrat",
+        "notes": "Montserrat 800-900 approximates the feed's headline sans; replace if official fonts arrive. Never re-type the wordmark; use assets/logo-*.png."
+      },
+      "cardCount": 4,
+      "cards": [
+        {
+          "id": "conservar.t1.thesis",
+          "style": "conservar",
+          "tier": "tier1",
+          "purpose": "thesis",
+          "file": "03-conservar/cards/tier1/t1-thesis.html",
+          "slots": [
+            "kicker",
+            "headline",
+            "highlight"
+          ],
+          "duration": {
+            "min": 3,
+            "max": 6
+          },
+          "preview": {
+            "mp4": "03-conservar/preview/conservar.t1.thesis.mp4",
+            "poster": "03-conservar/preview/conservar.t1.thesis.png"
+          }
+        },
+        {
+          "id": "conservar.t1.stat",
+          "style": "conservar",
+          "tier": "tier1",
+          "purpose": "stat",
+          "file": "03-conservar/cards/tier1/t1-stat.html",
+          "slots": [
+            "kicker",
+            "stat",
+            "label"
+          ],
+          "duration": {
+            "min": 4,
+            "max": 7
+          },
+          "preview": {
+            "mp4": "03-conservar/preview/conservar.t1.stat.mp4",
+            "poster": "03-conservar/preview/conservar.t1.stat.png"
+          }
+        },
+        {
+          "id": "conservar.t2.lower-third",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "lower-third",
+          "file": "03-conservar/cards/tier2/t2-lower-third.html",
+          "slots": [
+            "name",
+            "role"
+          ],
+          "duration": {
+            "min": 4,
+            "max": 6
+          },
+          "preview": {
+            "mp4": "03-conservar/preview/conservar.t2.lower-third.mp4",
+            "poster": "03-conservar/preview/conservar.t2.lower-third.png"
+          }
+        },
+        {
+          "id": "conservar.t2.list",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "list",
+          "file": "03-conservar/cards/tier2/t2-list.html",
+          "slots": [
+            "tag",
+            "headline",
+            "items"
+          ],
+          "duration": {
+            "min": 6,
+            "max": 15
+          },
+          "preview": {
+            "mp4": "03-conservar/preview/conservar.t2.list.mp4",
+            "poster": "03-conservar/preview/conservar.t2.list.png"
           }
         }
       ]

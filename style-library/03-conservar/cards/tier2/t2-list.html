@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+  CONSERVAR · tier2 · list (overlay, speaker stays visible)
+  Navy glass card on the right with orange check badges, like the feed's
+  checklist posts. Keep it opposite the speaker's face.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: transparent; }
+      #t2-list {
+        position: absolute; inset: 0; width: 1920px; height: 1080px;
+        background: transparent; color: var(--fg); font-family: var(--font-body);
+      }
+      #t2-list .card {
+        position: absolute; right: 100px; top: 50%; transform: translateY(-50%); width: 680px;
+        background: rgba(var(--navy-rgb), 0.92); border-radius: var(--radius);
+        border-top: 10px solid var(--orange); padding: 44px 48px 36px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      }
+      #t2-list .tag {
+        font-weight: 700; font-size: var(--size-label); letter-spacing: 0.16em;
+        text-transform: uppercase; color: var(--orange); margin-bottom: 12px;
+      }
+      #t2-list .headline {
+        font-family: var(--font-display); font-weight: var(--wt-black);
+        font-size: 52px; line-height: 1.08; margin-bottom: 26px;
+      }
+      #t2-list ul { margin: 0; padding: 0; list-style: none; }
+      #t2-list li { display: flex; align-items: center; font-weight: 600; font-size: var(--size-body); margin: 16px 0; }
+      #t2-list li::before {
+        content: "✓"; flex: none; width: 46px; height: 46px; margin-right: 20px; border-radius: 10px;
+        background: var(--orange); color: var(--white); font-weight: 900; font-size: 28px;
+        display: flex; align-items: center; justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="t2-list" data-composition-id="t2-list" data-start="0" data-width="1920" data-height="1080">
+      <div class="card">
+        <div class="tag" data-slot="tag">Nossos serviços</div>
+        <div class="headline" data-slot="headline">Tudo em um só contrato</div>
+        <ul data-slot="items">
+          <li>Portaria</li>
+          <li>Limpeza</li>
+          <li>Conservação</li>
+          <li>Zeladoria</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.from("#t2-list .card", { autoAlpha: 0, x: 60, duration: 0.5, ease: "power3.out" })
+        .from("#t2-list .tag", { autoAlpha: 0, y: 10, duration: 0.3 }, "-=0.2")
+        .from("#t2-list .headline", { autoAlpha: 0, y: 14, duration: 0.35, ease: "power3.out" }, "-=0.15")
+        .from("#t2-list li", { autoAlpha: 0, x: 24, duration: 0.3, stagger: 0.14, ease: "power3.out" }, "-=0.1")
+        .set({}, {}, 12);
+      window.__timelines["t2-list"] = tl;
+    </script>
+  </body>
+</html>
