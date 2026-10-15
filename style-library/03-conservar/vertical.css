@@ -1,0 +1,65 @@
+/* ============================================================================
+   CONSERVAR — vertical (9:16, 1080x1920) components for Reels/Shorts.
+   Shared by cards/vertical/*.html and by video projects. Colors, fonts and
+   easings come from tokens.css; this file only adds layout-free component
+   styles. Positions are set by the card or the project (safe area: keep text
+   in x 90..940, y 250..1540; the right ~140 px and bottom ~380 px are app UI).
+   ============================================================================ */
+
+@font-face { font-family: "Montserrat"; font-weight: 500; src: url("assets/fonts/Montserrat-500.ttf") format("truetype"); }
+@font-face { font-family: "Montserrat"; font-weight: 600; src: url("assets/fonts/Montserrat-600.ttf") format("truetype"); }
+@font-face { font-family: "Montserrat"; font-weight: 700; src: url("assets/fonts/Montserrat-700.ttf") format("truetype"); }
+@font-face { font-family: "Montserrat"; font-weight: 800; src: url("assets/fonts/Montserrat-800.ttf") format("truetype"); }
+@font-face { font-family: "Montserrat"; font-weight: 900; src: url("assets/fonts/Montserrat-900.ttf") format("truetype"); }
+
+.cv-stage { position: absolute; inset: 0; width: 1080px; height: 1920px; overflow: hidden;
+  font-family: var(--font-body); color: var(--white); }
+
+/* small spaced uppercase label (the feed's "OPORTUNIDADE • ABG" chip) */
+.cv-tag { position: absolute; display: inline-block; padding: 12px 22px; border-radius: 10px;
+  background: rgba(47, 58, 79, 0.86); color: var(--gray); font-weight: 700; font-size: 26px;
+  letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap; }
+
+/* big headline over footage */
+.cv-title { position: absolute; font-family: var(--font-display); font-weight: var(--wt-black);
+  line-height: 1.04; letter-spacing: -0.02em; text-shadow: 0 4px 18px rgba(20, 26, 38, 0.65); }
+.cv-title .line { display: block; }
+/* orange block that paints left→right behind the key phrase (animate .hl-bg scaleX 0→1) */
+.cv-hl { position: relative; display: inline-block; padding: 2px 22px 8px; margin-top: 10px; }
+.cv-hl .hl-bg { position: absolute; inset: 0; background: var(--orange); border-radius: 14px; transform-origin: left center; }
+.cv-hl .hl-text { position: relative; text-shadow: none; }
+.cv-accent { color: var(--orange); }
+
+/* task card (problems: gray icon, never a check) */
+.cv-task { display: flex; align-items: center; gap: 16px; height: 66px; padding: 0 24px 0 16px;
+  border-radius: 14px; background: rgba(47, 58, 79, 0.94); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+  font-weight: 700; font-size: 31px; white-space: nowrap; }
+.cv-task .ico { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--gray);
+  color: var(--gray); font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+
+/* checklist card (solutions: orange checks) */
+.cv-list { position: absolute; padding: 34px 40px 26px; border-radius: var(--radius);
+  background: rgba(var(--navy-rgb), 0.94); border-top: 10px solid var(--orange);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+.cv-list .tag { font-weight: 700; font-size: 24px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+.cv-list ul { margin: 0; padding: 0; list-style: none; }
+.cv-list li { display: flex; align-items: center; font-weight: 800; font-size: 42px; margin: 18px 0; }
+.cv-list li .chk { flex: none; width: 54px; height: 54px; margin-right: 22px; border-radius: 12px; background: var(--orange);
+  display: flex; align-items: center; justify-content: center; }
+.cv-list li .chk svg { width: 32px; height: 32px; }
+
+/* full-screen takeover background + swoosh arc (rotate/sweep it in) */
+.cv-full { position: absolute; inset: 0; background: radial-gradient(120% 80% at 30% 30%, var(--navy) 0%, var(--navy-deep) 100%); }
+.cv-swoosh { position: absolute; border-radius: 50%; border: 80px solid transparent; border-top-color: var(--orange); }
+
+/* word-by-word captions */
+.cv-cap { position: absolute; left: 90px; width: 850px; text-align: center; }
+.cv-cap .blk { position: absolute; left: 0; right: 0; bottom: 0; visibility: hidden; }
+.cv-cap .w { display: inline-block; font-weight: 800; font-size: 70px; line-height: 1.12; color: var(--white);
+  -webkit-text-stroke: 10px var(--navy-deep); paint-order: stroke fill;
+  text-shadow: 0 6px 16px rgba(20, 26, 38, 0.55); margin: 0 9px; transform-origin: 50% 70%; }
+.cv-cap .w.kw { color: var(--orange); }
+
+/* soft navy scrim under lower-third text so it reads over busy footage (shirts, prints) */
+.cv-scrim { position: absolute; left: 0; right: 0; top: 900px; height: 820px;
+  background: linear-gradient(180deg, rgba(47, 58, 79, 0) 0%, rgba(47, 58, 79, 0.78) 38%, rgba(47, 58, 79, 0.78) 72%, rgba(47, 58, 79, 0) 100%); }

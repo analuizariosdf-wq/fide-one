@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  CONSERVAR · vertical 9:16 · tier2 · stack (pile of problems, cleared by the swoosh)
+  Navy-deep task cards with a gray ! icon (problems never get a check) drop onto a pile; the orange curve sweeps them away.
+  Safe area (Reels): text in x 90..940, y 250..1540. Shared styles: ../../vertical.css
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <link rel="stylesheet" href="../../vertical.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: transparent; }
+      #pile { position: absolute; left: 70px; bottom: 630px; width: 440px; display: flex; flex-direction: column-reverse; gap: 12px; }
+      #pile .cv-task { align-self: flex-start; }
+      .cv-swoosh { width: 1500px; height: 1500px; left: -1700px; top: 640px; }
+    </style>
+  </head>
+  <body>
+    <div id="v-stack" class="cv-stage" data-composition-id="v-stack" data-start="0" data-width="1080" data-height="1920">
+      <div id="pile" data-slot="items">
+        <div class="cv-task"><span class="ico">!</span>Conferir faltas</div>
+        <div class="cv-task"><span class="ico">!</span>Cobrar substituição</div>
+        <div class="cv-task"><span class="ico">!</span>Fiscalizar uniforme</div>
+        <div class="cv-task"><span class="ico">!</span>Cobrar material</div>
+      </div>
+      <div class="cv-swoosh"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.set("#v-stack .cv-swoosh", { autoAlpha: 0, rotation: -30 }, 0);
+      document.querySelectorAll("#pile .cv-task").forEach((el, i) =>
+        tl.from(el, { autoAlpha: 0, x: -70, y: -24, rotation: -3, duration: 0.38 }, 0.2 + i * 0.9));
+      tl.to("#pile", { rotation: 0.8, x: 3, duration: 0.11, yoyo: true, repeat: 7, ease: "sine.inOut" }, 3.2)
+        .set("#v-stack .cv-swoosh", { autoAlpha: 1 }, 4.2)
+        .to("#v-stack .cv-swoosh", { x: 3300, rotation: 10, duration: 0.7, ease: "power2.inOut" }, 4.2)
+        .to("#pile .cv-task", { x: 900, y: -60, rotation: 8, autoAlpha: 0, duration: 0.4, stagger: 0.03, ease: "power2.in" }, 4.4)
+        .set({}, {}, 5.2);
+      window.__timelines["v-stack"] = tl;
+    </script>
+  </body>
+</html>

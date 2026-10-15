@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+  CONSERVAR · vertical 9:16 · tier2 · list (checklist with orange checks)
+  Solutions: navy card with orange top bar, gray tag, items revealed one per spoken word with an orange check.
+  Safe area (Reels): text in x 90..940, y 250..1540. Shared styles: ../../vertical.css
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <link rel="stylesheet" href="../../vertical.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: transparent; }
+      .cv-list { left: 90px; top: 860px; width: 520px; }
+    </style>
+  </head>
+  <body>
+    <div id="v-list" class="cv-stage" data-composition-id="v-list" data-start="0" data-width="1080" data-height="1920">
+      <div class="cv-list">
+        <div class="tag" data-slot="tag">Terceirização de verdade</div>
+        <ul data-slot="items">
+          <li><span class="chk"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Gestão</li><li><span class="chk"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Supervisão</li><li><span class="chk"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Cobertura</li><li><span class="chk"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Acompanhamento</li>
+        </ul>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.from("#v-list .cv-list", { autoAlpha: 0, x: -60, duration: 0.5 }, 0);
+      document.querySelectorAll("#v-list li").forEach((el, i) => {
+        tl.from(el, { autoAlpha: 0, x: 30, duration: 0.3 }, 0.4 + i * 0.6)
+          .from(el.querySelector(".chk"), { scale: 0.4, duration: 0.3, ease: "back.out(2)" }, 0.4 + i * 0.6);
+      });
+      tl.to("#v-list .cv-list", { autoAlpha: 0, x: -50, duration: 0.3, ease: "power2.in" }, 5.5).set({}, {}, 5.8);
+      window.__timelines["v-list"] = tl;
+    </script>
+  </body>
+</html>

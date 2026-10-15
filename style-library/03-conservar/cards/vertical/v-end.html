@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+  CONSERVAR · vertical 9:16 · tier1 · end card (logo + CTA)
+  Navy end card: circle reveal, swoosh sweep, white logo, CTA in white, site and @ in gray. 2.5–3 s.
+  Safe area (Reels): text in x 90..940, y 250..1540. Shared styles: ../../vertical.css
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <link rel="stylesheet" href="../../vertical.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: var(--navy); }
+      .cv-swoosh { width: 1300px; height: 1300px; right: -620px; bottom: -760px; transform: rotate(-24deg); }
+      .logo { position: absolute; left: 50%; top: 640px; width: 760px; margin-left: -380px; }
+      .cta { position: absolute; left: 0; right: 0; top: 1010px; text-align: center; font-family: var(--font-display); font-weight: var(--wt-black); font-size: 74px; }
+      .rule { position: absolute; left: 50%; top: 1130px; width: 140px; height: 8px; margin-left: -70px; border-radius: 4px; background: var(--orange); }
+      .lines { position: absolute; left: 0; right: 0; top: 1180px; text-align: center; color: var(--gray); font-weight: 600; font-size: 38px; line-height: 1.6; }
+    </style>
+  </head>
+  <body>
+    <div id="v-end" class="cv-stage" data-composition-id="v-end" data-start="0" data-width="1080" data-height="1920">
+      <div class="cv-full" style="background: var(--navy)"></div><div class="cv-swoosh"></div>
+      <img class="logo" src="../../assets/logo-conservar-branco.png" alt="Conservar" />
+      <div class="cta" data-slot="cta">Fale com a Conservar</div>
+      <div class="rule"></div>
+      <div class="lines" data-slot="lines">conservartc.com.br<br />@conservar_terceirizacao</div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.from("#v-end .cv-full", { clipPath: "circle(0% at 50% 60%)", duration: 0.4, ease: "power2.out" }, 0)
+        .from("#v-end .cv-swoosh", { rotation: -100, autoAlpha: 0, duration: 0.8 }, 0.15)
+        .from("#v-end .logo", { autoAlpha: 0, scale: 0.86, duration: 0.45 }, 0.45)
+        .from("#v-end .cta", { autoAlpha: 0, y: 30, duration: 0.4 }, 0.8)
+        .from("#v-end .rule", { scaleX: 0, duration: 0.35, ease: "power3.inOut" }, 1.0)
+        .from("#v-end .lines", { autoAlpha: 0, y: 20, duration: 0.4 }, 1.15)
+        .set({}, {}, 3.0);
+      window.__timelines["v-end"] = tl;
+    </script>
+  </body>
+</html>

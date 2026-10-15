@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  CONSERVAR · vertical 9:16 · tier1 · thesis (full-screen takeover)
+  Navy takeover: gray kicker, white headline, key phrase on the orange block, swoosh in the corner, white logo.
+  Safe area (Reels): text in x 90..940, y 250..1540. Shared styles: ../../vertical.css
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <link rel="stylesheet" href="../../vertical.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: var(--navy); }
+      .kicker { position: absolute; left: 90px; top: 560px; font-weight: 700; font-size: 28px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); }
+      .cv-title { left: 90px; top: 630px; width: 880px; font-size: 96px; text-shadow: none; }
+      .cv-hl { font-size: 92px; line-height: 1.1; }
+      .cv-swoosh { width: 1300px; height: 1300px; right: -620px; bottom: -760px; transform: rotate(-24deg); }
+      .logo { position: absolute; left: 90px; top: 1400px; height: 96px; }
+    </style>
+  </head>
+  <body>
+    <div id="v-thesis" class="cv-stage" data-composition-id="v-thesis" data-start="0" data-width="1080" data-height="1920">
+      <div class="cv-full"></div><div class="cv-swoosh"></div>
+      <div class="kicker" data-slot="kicker">Terceirização de verdade</div>
+      <div class="cv-title"><span class="line" data-slot="headline">Contratar deveria</span>
+        <span class="line"><span class="cv-hl"><span class="hl-bg"></span><span class="hl-text" data-slot="highlight">diminuir a<br />preocupação</span></span></span></div>
+      <img class="logo" src="../../assets/logo-conservar-branco.png" alt="Conservar" />
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.from("#v-thesis .cv-full", { yPercent: 100, duration: 0.3 }, 0)
+        .from("#v-thesis .cv-swoosh", { rotation: -100, autoAlpha: 0, duration: 0.7 }, 0.15)
+        .from("#v-thesis .kicker", { autoAlpha: 0, x: -30, duration: 0.35 }, 0.25)
+        .from("#v-thesis .cv-title .line:first-child", { autoAlpha: 0, y: 40, duration: 0.4 }, 0.3)
+        .from("#v-thesis .hl-bg", { scaleX: 0, duration: 0.4, ease: "power3.inOut" }, 0.7)
+        .from("#v-thesis .hl-text", { autoAlpha: 0, duration: 0.2 }, 0.85)
+        .from("#v-thesis .logo", { autoAlpha: 0, y: 20, duration: 0.4 }, 0.9)
+        .set({}, {}, 2.4);
+      window.__timelines["v-thesis"] = tl;
+    </script>
+  </body>
+</html>

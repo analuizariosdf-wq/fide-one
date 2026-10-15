@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+  CONSERVAR · vertical 9:16 · tier2 · title (hook headline over footage)
+  White Montserrat 900 headline with the key phrase on an orange block that paints left to right. Navy scrim for legibility.
+  Safe area (Reels): text in x 90..940, y 250..1540. Shared styles: ../../vertical.css
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <link rel="stylesheet" href="../../vertical.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: transparent; }
+      .cv-title { left: 90px; top: 1090px; width: 860px; font-size: 86px; }
+      .cv-hl { font-size: 100px; }
+    </style>
+  </head>
+  <body>
+    <div id="v-title" class="cv-stage" data-composition-id="v-title" data-start="0" data-width="1080" data-height="1920">
+      <div class="cv-scrim"></div>
+      <div class="cv-tag" style="left:90px;top:262px;background:var(--navy-deep);color:var(--white);font-size:28px" data-slot="tag">Terceirização • Gestão</div>
+      <div class="cv-title"><span class="line" data-slot="headline">Você não terceirizou</span>
+        <span class="line"><span class="cv-hl"><span class="hl-bg"></span><span class="hl-text" data-slot="highlight">o problema</span></span></span></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.from("#v-title .cv-scrim", { autoAlpha: 0, duration: 0.3 }, 0)
+        .from("#v-title .cv-title", { autoAlpha: 0, y: 40, duration: 0.45 }, 0)
+        .from("#v-title .hl-bg", { scaleX: 0, duration: 0.25, ease: "power3.inOut" }, 0.9)
+        .from("#v-title .hl-text", { autoAlpha: 0, duration: 0.15 }, 1.0)
+        .to("#v-title .cv-title, #v-title .cv-scrim", { autoAlpha: 0, y: 30, duration: 0.3, ease: "power2.in" }, 3.2)
+        .set({}, {}, 3.5);
+      window.__timelines["v-title"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/style-library/build-registry.mjs",
   "styleCount": 3,
-  "cardCount": 410,
+  "cardCount": 416,
   "tiers": [
     "tier1",
     "tier2",
@@ -8616,7 +8616,7 @@
         "mono": "Montserrat",
         "notes": "Montserrat 800-900 approximates the feed's headline sans; replace if official fonts arrive. Never re-type the wordmark; use assets/logo-*.png."
       },
-      "cardCount": 4,
+      "cardCount": 10,
       "cards": [
         {
           "id": "conservar.t1.thesis",
@@ -8695,6 +8695,121 @@
           "preview": {
             "mp4": "03-conservar/preview/conservar.t2.list.mp4",
             "poster": "03-conservar/preview/conservar.t2.list.png"
+          }
+        },
+        {
+          "id": "conservar.v.title",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "title",
+          "file": "03-conservar/cards/vertical/v-title.html",
+          "slots": [
+            "tag",
+            "headline",
+            "highlight"
+          ],
+          "duration": {
+            "min": 2,
+            "max": 4
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.title.png"
+          }
+        },
+        {
+          "id": "conservar.v.stack",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "stack",
+          "file": "03-conservar/cards/vertical/v-stack.html",
+          "slots": [
+            "items"
+          ],
+          "duration": {
+            "min": 4,
+            "max": 12
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.stack.png"
+          }
+        },
+        {
+          "id": "conservar.v.list",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "list",
+          "file": "03-conservar/cards/vertical/v-list.html",
+          "slots": [
+            "tag",
+            "items"
+          ],
+          "duration": {
+            "min": 4,
+            "max": 8
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.list.png"
+          }
+        },
+        {
+          "id": "conservar.v.highlight",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "highlight",
+          "file": "03-conservar/cards/vertical/v-highlight.html",
+          "slots": [
+            "lead",
+            "highlight"
+          ],
+          "duration": {
+            "min": 1.5,
+            "max": 3
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.highlight.png"
+          }
+        },
+        {
+          "id": "conservar.v.thesis",
+          "style": "conservar",
+          "tier": "tier1",
+          "purpose": "thesis",
+          "file": "03-conservar/cards/vertical/v-thesis.html",
+          "slots": [
+            "kicker",
+            "headline",
+            "highlight"
+          ],
+          "duration": {
+            "min": 2,
+            "max": 3
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.thesis.png"
+          }
+        },
+        {
+          "id": "conservar.v.end",
+          "style": "conservar",
+          "tier": "tier1",
+          "purpose": "end-card",
+          "file": "03-conservar/cards/vertical/v-end.html",
+          "slots": [
+            "cta",
+            "lines"
+          ],
+          "duration": {
+            "min": 2.5,
+            "max": 3
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.end.png"
           }
         }
       ]

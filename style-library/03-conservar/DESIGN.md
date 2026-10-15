@@ -72,3 +72,25 @@ per card.
 - Don't cover the speaker's face; tier2 cards live in the lower third or a side.
 - Don't distort, recolor or re-letter the logo.
 - Don't set long paragraphs in orange or on orange.
+
+## Vertical 9:16 (Reels / Shorts)
+
+`vertical.css` holds the shared components; `cards/vertical/` holds standalone
+1080x1920 cards (title, stack, list, highlight, thesis, end card). First used in
+Roteiro 01 (Oct 2026).
+
+- Safe area: text in x 90..940 and y 250..1540. The right ~140 px and bottom
+  ~380 px belong to the Instagram UI. Cover text stays inside the 1080x1350
+  grid crop (y 285..1635).
+- Captions: Montserrat 800, 70 px, white with a navy-deep stroke, active word
+  orange with a 1.06 micro-scale, bottom edge at y 1500. Hide them while an
+  on-screen title or list says the same words.
+- Lower-third text over the speaker gets the `.cv-scrim` navy gradient; orange
+  text on a blue shirt does not read without it.
+- Problems (pile of tasks) use a gray "!" icon; only solutions get orange checks.
+- One orange accent per screen: chips/tags stay navy when a block or orange
+  phrase is on screen.
+- Fonts are bundled in `assets/fonts/` (Montserrat, OFL) so renders don't need the network.
+- Rendering note: a frame that is fully opaque (takeover) is saved by Chromium
+  as RGB, not RGBA. Convert every overlay frame to RGBA before compositing, or
+  FFmpeg loses transparency for the rest of the sequence.
