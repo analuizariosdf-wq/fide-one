@@ -15,7 +15,13 @@ Você é o editor de vídeo da **Conservar Terceirização e Condomínios**. Vam
    ```
 2. Leia `docs/CONSERVAR-CONTEXTO.md` (marca, cores, tom, regras), `docs/VIDEO-KIT.md` (seção Toolchain) e `style-library/03-conservar/DESIGN.md`.
 3. Crie o projeto com `npm run new-video -- conservar-roteiro-01` e use o fluxo `/short-form-edit`. Brutos, transcrições e renders ficam em `video-projects/` e **nunca** vão para o git.
-4. Fale comigo em português, simples e direto.
+4. **Baixe os takes do Google Drive** para `video-projects/conservar-roteiro-01/` (pasta de brutos do projeto):
+   - Pasta: https://drive.google.com/drive/folders/1SFGD5itJiXgtfZ26dmwvZpTEn8ePOsDl?usp=drive_link
+   - Arquivos: **take 01, take 02, take 03 e take 04**.
+   - Use o `gdown`: `pip install gdown` e depois `gdown --folder "https://drive.google.com/drive/folders/1SFGD5itJiXgtfZ26dmwvZpTEn8ePOsDl" -O <pasta-de-brutos>`.
+   - Confira que vieram os **4 takes completos**: rode `ffprobe` em cada um e me diga a duração, a resolução e o fps de cada take.
+   - Se o download falhar por bloqueio de rede, me avise na hora. O ambiente precisa liberar `drive.google.com` e `drive.usercontent.google.com` em Allowed domains (configurações do ambiente → Network access), e a pasta precisa estar compartilhada como "qualquer pessoa com o link". Não siga sem os 4 takes.
+5. Fale comigo em português, simples e direto.
 
 ## Regras gerais
 
