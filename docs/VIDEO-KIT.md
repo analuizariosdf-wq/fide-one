@@ -16,6 +16,7 @@ overrides the provider defaults further down (ElevenLabs is not the default here
 
 | Stage | Default | Alternatives / notes |
 | --- | --- | --- |
+| Analyze a reference video (an edited Reel/TikTok the user wants to match) | Get the file (upload, Drive link, or `yt-dlp "<instagram link>"`), then `node .claude/skills/motion-showreel/scripts/analyze-reference.mjs <file> video-projects/<slug>/qa/reference --fps 4` (contact sheets, hard cuts, loudness, audio onsets), `python3 scripts/transcribe-local.py <file>`, and look at the sheets. Report hook (first 3s), cut rhythm, caption style, text/graphics, transitions, music and sound effects, then reuse that grammar | Instagram usually blocks downloads from cloud servers; if yt-dlp fails, ask the user to upload the file or put it in the Drive folder |
 | Get footage | Files the user uploads, or a Google Drive link: `gdown --folder "<link>" -O video-projects/<slug>/raw/` (`gdown "<link>" -O <path>` for one file) | `yt-dlp` (YouTube blocks cloud IPs; works on the user's machine) |
 | Transcribe | `python3 scripts/transcribe-local.py <file> --language pt` (faster-whisper, free, Scribe-shaped JSON next to the source) | ElevenLabs (`npm run transcribe`, video-use `transcribe.py`) only if the user asks and has a key |
 | Cut silences / mistakes | `/cut-silences` then `/cut-mistakes` (kit) | video-use cuts from its EDL |
@@ -37,6 +38,9 @@ overrides the provider defaults further down (ElevenLabs is not the default here
 - Remotion renders in the cloud need
   `--browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`.
   Remotion requires a paid company license for companies with more than 3 people.
+- Instagram: allowed domains need `instagram.com`, `*.instagram.com`,
+  `*.cdninstagram.com` and `*.fbcdn.net`. Do not ask the user for their
+  Instagram password or session cookies.
 - Google Drive: the folder or file must be shared as "Anyone with the link"
   (viewer), and the environment's allowed domains need `drive.google.com`,
   `*.googleusercontent.com` and `drive.usercontent.google.com`. A 403 from the
