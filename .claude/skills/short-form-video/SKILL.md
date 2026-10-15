@@ -1,330 +1,155 @@
 ---
 name: short-form-video
-description: Maintain the existing May Shorts teaching compositions using their legacy face-mode, scene-overlay, and karaoke-caption patterns. Use only when working on those examples or explicitly requesting this legacy scaffold. For new reels, Shorts, or short advertisements, use short-form-edit.
+description: This skill should be used when the user asks to "make a Reels/TikTok/YouTube Shorts video", "build a short-form video template", "write a hook for a short", "edit for retention", "add pattern interrupts", "make a video loop", "fix the first 3 seconds", "pace cuts for a vertical video", or "set up 9:16 safe areas". Covers the hook→retention→loop grammar of vertical short-form (distinct from a launch hype film).
+version: 0.1.0
 ---
 
-# Short-Form Vertical Video (Hyperframes)
+# Short-Form Video
 
-Short-form = 1080x1920 vertical, 10–30s, talking-head face + motion-graphic scene overlays + karaoke captions. Everything in this skill is distilled from the May Shorts 19 iteration autopsy (v1 → v4) and is preserved for maintenance of those examples. Use `short-form-edit` for new recordings.
+Engineer a 9:16 video that survives the swipe. Short-form is not a small launch film — it is a retention machine: a hook that earns the first second, pattern interrupts that reset attention every few seconds, and often a loop that buys watch-time past 100%. The craft is timing, not polish.
 
-**Always invoke `/hyperframes` first.** This skill sits on top of it — it does not replace the framework rules (`data-*` attributes, `window.__timelines`, composition structure). Those are non-negotiable regardless of the format.
+## When to use
 
-## When this skill fires
+- Reels / TikTok / YouTube Shorts (7–60s, vertical 9:16).
+- Retention editing: fixing drop-off, adding pattern interrupts, tightening pacing.
+- Hooks, seamless loops, repeatable short-form templates (one design, many topics).
 
-- Maintaining the existing May Shorts examples.
-- Explicitly requesting their legacy four-layer scaffold.
+## Story structure (the retention contract)
 
-## The playbook (high-level)
+Short-form storytelling is a contract with the viewer's thumb: every second must re-earn the next one. The narrative is shaped *backwards from the retention curve*, not forwards from an intro. Lock these before touching the timeline.
 
-1. **Audio is source of truth.** Edit audio FIRST (cut retakes, pauses). Save as `<name>-edit.mp4`. Measure exact duration with `ffprobe` — this is the composition's `data-duration`.
-2. **Transcribe the edited audio** with the root `scripts/transcribe-elevenlabs.mjs` helper (ElevenLabs Scribe), a student-selected alternative normalized per `docs/TOOLS-AND-API-KEYS.md`, or if retiming an existing build with a `shift()` function in captions, keep the existing captions and just shift scene starts.
-3. **Author scene boundaries in edited-time** — NEVER mix original-time and edited-time anchors in the same file. See "Audio-sync protocol" below.
-4. **Build the composition scaffold** (4 layers: ambient-bg, seam-treatment, captions, face) — see "Composition scaffold" below.
-5. **Author scenes with LOCAL offsets** relative to each scene's `data-start`. Each scene is its own sub-composition under `compositions/scene<N>-<label>.html`.
-6. **Lint → draft render → word-exact frame verification → final render.** This is the verification gate. Never skip step 3 (frame verification).
+- **One idea per video.** A short carries exactly one payoff. A second idea splits attention and the curve sags in the middle — make it a second video instead. If you can't name the single takeaway in a sentence, you don't have a short yet.
+- **Open a loop in the first ~3s, close it last.** The hook poses a question or gap (the open loop); the payoff answers it. The viewer stays because the loop is open — so never answer it early, and never bury the payoff under setup.
+- **No dead air.** Every beat either advances the idea or resets attention. Cut anything that does neither. Silence, slow ramps, throat-clearing intros ("hey guys, in this video…") are where viewers swipe.
+- **Why the curve, not the cut, is the unit of work.** The algorithm distributes whatever holds the per-second retention curve flat; a "good" edit that flattens the curve loses to an ugly one that keeps it up. You are editing the *curve*, and the hook gates everything after it — fix it first.
 
-## Composition scaffold (the 4 always-on layers)
+The narrative spine (the `Hook → Setup → Body → Payoff/loop` arc is budgeted in the table below):
 
-Every short-form vertical has these four sub-compositions under `compositions/`, loaded on shared tracks:
+| Move | Story job | Failure if missed |
+|---|---|---|
+| Hook | Open the loop; promise the payoff | Swipe in first 3s |
+| Tension hold | Keep the gap open through the body | Flat middle, mid-drop |
+| Payoff | Close the loop — the one idea, delivered | "Wasted my time," no share |
+| Loop / CTA | Feed back to frame 0, or one clear ask | No re-watch, no action |
 
-```
-index.html (root, 1080x1920, data-composition-id="main")
-├── ambient-bg.html        track-index="3" — radial gradient + drift grid + particles + vignette
-├── face-wrapper + <video> track-index="0" — talking head (see face-mode choreography)
-├── seam-treatment.html    track-index="5" — feathers y=960 edge (bottom-half scenes only)
-├── scene1-<label>.html    track-index="1" — scene overlays (back-to-back, no gaps)
-├── scene2-<label>.html    track-index="1"
-├── …
-└── captions.html          track-index="2" — karaoke captions, word-synced
-```
+(`The retention arc` table below assigns seconds to each move; this section is the narrative logic and ordering behind it. `Hook grammar` lists the hook archetypes.)
 
-- `data-duration` is identical across root, ambient-bg, seam-treatment, face-video, face-audio, captions. Only scene overlays change over time.
-- `<audio>` for the face is a SEPARATE element (mixer needs it), never use the video's own audio track.
-- `class="clip"` goes on timed divs — NEVER on `<video>` or `<audio>`.
+## The one metric that drives everything
 
-## Face-mode choreography (the signature move of short-form)
+**Retention, not production value.** The algorithm distributes whatever holds viewers; ~87% decide to stay or swipe inside 3 seconds, and the threshold for distribution sits near **70%+ average view-through** (Shorts ~73%, TikTok ~78%, Reels ~65%). Every decision below trades against that curve. A flawless shot that bores at 0:04 loses to an ugly one that holds.
 
-The face lives in a wrapper div sized at the source's native landscape (1920x1080). GSAP animates the WRAPPER (never the video element — animating `<video>` dimensions freezes frames).
+## The retention arc
 
-Two modes:
+| Beat | Job | Budget (of a 20s short) |
+|---|---|---|
+| Hook (0–1s) | One frame + one line that creates an open loop | 0–1s |
+| Setup | Pay off *why watch* — promise, stakes, or the gap | 1–4s |
+| Body | Deliver value in beats; one idea per beat | 4–17s |
+| Payoff / loop | Close the loop — or feed it back to frame 0 | 17–20s |
+
+Scale the *body*, never the hook. A 60s short has a longer body and more beats — the same 1-second hook.
+
+## Hook grammar (first ~1s)
+
+The hook is a sentence + a visual that opens a curiosity gap the brain needs closed. Pick one pattern and commit:
+
+| Hook type | Shape | Best for |
+|---|---|---|
+| Open loop | "The reason your X keeps Y…" (answer delayed) | most content |
+| Direct promise | "3 ways to ___ in 30 seconds" | educational / listicle |
+| Pattern interrupt | snap-zoom / whip-pan / visual mismatch in frame 1 | entertainment |
+| Negation | "Stop doing ___" / "You're ___ wrong" | strong opinions |
+
+Two rules: the hook line is **on-screen as text by frame 1** (85% watch muted), and the most striking *visual* is also the first frame — never a slow ramp-in. Hold a strong opening frame; do not fade up from black.
+
+## Pattern interrupts & cut rhythm
+
+A pattern interrupt is any change that resets attention: a hard cut, zoom punch, b-roll insert, sound effect, caption pop, or angle change. In short-form, density is high — a *visual change every ~2–4 seconds*; videos with an interrupt roughly every 4s hold ~58% vs ~41% for a static talking head. The killer is a flat middle: TikTok throttles distribution when the watch-through curve flattens, so never stitch the body from low-energy takes.
 
 ```js
-const BOTTOM     = { x: 0,       y: 1136, scale: 0.5625 }; // bottom-half, full landscape visible
-const FULLSCREEN = { x: -1166.5, y: 0,    scale: 1.7778 }; // cropped-cover, fills 1080x1920
-const MODE_DUR = 0.32;
+// Drive every interrupt off the FRAME, not wall-clock — renders deterministically.
+import { useCurrentFrame } from "remotion";
+const fps = 30;
+const cuts = [0, 1.2, 3.0, 5.4, 8.0, 11.2, 14.0]; // seconds — uneven on purpose
+const frame = useCurrentFrame();
+const shot = cuts.findIndex((t, i) => frame < (cuts[i + 1] ?? Infinity) * fps);
 ```
 
-`BOTTOM` renders the 1920x1080 source at 1080x607.5 centered in the bottom 960px. `FULLSCREEN` crops horizontally to fill the portrait frame.
+Vary the interval — a metronome reads as boredom; uneven cuts read as momentum. A punch-in zoom is the cheapest interrupt that needs no new footage:
 
-**Transition 0.15s BEFORE the new scene's content lands**, using `ease: "expo.inOut"`:
-
-```js
-[
-  { t: <scene-4-start>, mode: FULLSCREEN },
-  { t: <scene-5-start>, mode: BOTTOM },
-  …
-].forEach(({ t, mode }) => {
-  mainTl.to("#face-wrapper", { ...mode, duration: MODE_DUR, ease: "expo.inOut" }, t - 0.15);
-});
+```jsx
+import { useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
+const PunchIn = ({ at, children }) => {
+  const frame = useCurrentFrame(); const { fps } = useVideoConfig();
+  const s = spring({ frame: frame - at * fps, fps, config: { damping: 12, stiffness: 200 } });
+  const scale = interpolate(s, [0, 1], [1, 1.12]); // snap to 112% on the beat
+  return <div style={{ transform: `scale(${scale})`, transformOrigin: "50% 45%" }}>{children}</div>;
+};
 ```
 
-A face that snaps modes instantly is the single most jarring frame in a vertical video. Always interpolate.
+## Captions
 
-### Face grading (every short, no exceptions)
+Most viewers watch muted, so on-screen captions are not optional — they carry the content and double as a pattern interrupt when each phrase pops in. Keep 4–7 words per line, high contrast, inside the safe area. **Do not re-implement caption animation here** — use the `caption-animation` skill for word-by-word timing, karaoke highlight, and styling; this skill only places captions on the retention timeline and inside the 9:16 safe zone.
 
-```css
-#face-video {
-  filter: contrast(1.08) saturate(1.08) brightness(0.97);
-}
-```
+## Loops & re-watch
 
-Plus a subtle 1.00 → 1.025 Ken Burns zoom over the full duration (`ease: "none"`) and a side-vignette `::after` pseudo-element so the face sinks into the surrounding navy instead of butting against a razor edge.
+A seamless loop counts each re-watch as fresh watch-time — a clean 8s loop watched 3× is 300% view-through, the strongest possible signal. Two techniques: match the **last frame to the first** (same composition, position, color) so the cut is invisible, and write a **sentence loop** — phrase the hook so the payoff feeds back into frame 0 ("…and that's why I never — " → loops to the start). Best length for re-watch is ~7–15s.
 
-### Seam treatment (required for bottom-half scenes)
+## 9:16 safe areas
 
-A navy→transparent gradient band (60–100px) at y=960 plus a 2px accent scan line with soft glow. Draw it AFTER the face so it sits on top; full-screen scenes will cover it when they take over. Razor-sharp y=960 cuts are the #2 tell for AI-edited content (after background flatness).
+Compose inside the universal safe zone so platform UI never covers text or faces.
 
-## Audio-sync protocol (DO NOT skip)
+| Zone | Pixels (1080×1920) | Avoid |
+|---|---|---|
+| Universal safe (all platforms) | center **900×1400** | anything critical outside it |
+| Top | keep clear ~120px | profile / sound UI |
+| Bottom | keep clear ~320px | captions, CTA, hashtags, audio bar |
+| Right | keep clear ~120px | like / comment / share rail |
 
-**Problem:** if audio is edited (retakes/pauses removed), timestamps in the source transcript no longer match the edited video. Scene starts authored in original-time will fire late.
+Put the hook text and key subject in the center 900×1400 box. Reserve the bottom ~320px even if it looks empty in the editor — that is where the platform paints its own captions and buttons.
 
-**The rule:** ALL timing lives in edited-time. Never mix.
+## Output checklist
 
-**Verification procedure for any short-form retime:**
+- Hook line is on-screen text by frame 1; strongest visual is the first frame (no fade-up).
+- One open loop / promise set in the first ~4s.
+- A visual pattern interrupt every ~2–4s; intervals uneven; no flat middle.
+- Captions present (via `caption-animation`), 4–7 words, inside safe area.
+- Loop closed — matched first/last frame or a sentence that feeds frame 0.
+- Composed inside the 900×1400 center box; bottom 320px / top 120px / right 120px kept clear.
+- Every animated value derived from `useCurrentFrame()` — no CSS/library timers.
 
-1. Measure both audio files:
-   ```bash
-   ffprobe -v error -show_entries format=duration -of csv=p=0 assets/original.mp4
-   ffprobe -v error -show_entries format=duration -of csv=p=0 assets/<name>-edit.mp4
-   ```
-   Difference = total cut time.
-2. If using a `shift()` function in `captions.html` to map transcript words, treat that as the source of truth. The map `shift(originalTime) = editedTime` applies to EVERY scene `data-start` too.
-3. Scene internal offsets (inside `compositions/sceneN.html`) are LOCAL relative to the scene's `data-start`. If a scene's parent `data-start` is correct in edited-time, internal offsets stay correct WITHOUT modification — UNLESS a scene straddles a cut, in which case both the parent duration AND internal offsets shift.
-4. Face-mode transition array times MUST use edited-time. They are NOT automatically shifted.
+## Deliver & verify (rendered stills → MP4)
 
-**Plan format for retimes** (use this table structure every time):
+> **Packaged helper** (`scripts/`): tile your stills with `scripts/contact-sheet.sh sheet.png f-hook.png f-mid.png f-end.png`, then assert the encode with `scripts/probe-mp4.sh out.mp4 [WxH] [fps]`. See `scripts/README.md`.
 
-| Scene | Current start | Current dur | New start | New dur | Rationale |
-|-------|---------------|-------------|-----------|---------|-----------|
-| ...   | ...           | ...         | ...       | ...     | ...       |
+The short ships as a Remotion composition (`<Composition>` + zod `schema` + `defaultProps`) — every cut, punch-in, and interrupt driven by `useCurrentFrame()`, never `Date.now()` / `Math.random()` / timers. Deliverable = `out/*.mp4` + the project (re-render per topic). 9:16 vertical (1080×1920) is the default.
 
-Then the face-mode array, then any internal-offset changes, then frame-verification list.
-
-## Scene authoring
-
-One scene = one sub-composition file. Scenes sit on the same `data-track-index` back-to-back (no gaps). Inside each scene:
-
-- `data-duration` matches the parent's slot exactly
-- All GSAP anchors are LOCAL (0-based from scene start)
-- Use `tl.set({}, {}, <data-duration>)` to pad the timeline so GSAP `tl.duration()` matches `data-duration`
-
-### Scene pacing rules (from the 10 principles)
-
-- **No dead frames.** Every 100ms has ≥1 animating element. Offset first entrance 0.1–0.3s, not t=0.
-- **Payoff ≥ 1s hold.** The "big reveal" of the scene (stamp, number lock, punchline) must have ≥1s on screen, ideally 1.5s. Budget scenes by reveal time, not total time.
-- **Motion through full duration.** If entrance anims all land by local 2s on a 4s scene, add secondary motion: underline sweeps, checkmark pops, ambient drift on cards, small oscillating glows on pills. Dead pacing = swipe-away.
-- **Vary eases.** At least 3 different eases per scene across entrances.
-- **One jaw-dropper per 5s of runtime.** Typography slam, glitch/chromatic reveal, whip-pan, audio-sync slam. Without these, the video reads as "labeled talking head" — correct but forgettable.
-
-## Captions (karaoke style)
-
-- Montserrat 900, 46–58px (for 1080 width), 100% white base
-- Active word: scale-1.08 pop + color change to accent (`#37bdf8` for AIS, adapt to brand)
-- Stroke via layered `text-shadow`, NEVER `-webkit-text-stroke` (renders inconsistently in Chromium render)
-- Drop the rgba background pill — let the stroke hold readability. Captions should feel like graffiti on the frame, not a subtitle track.
-- For retimes, use a `shift()` function inside `captions.html` to map transcript word timestamps → edited-time. This keeps the transcript JSON untouched and makes retimes mechanical.
-
-See `references/captions.md` under `/hyperframes` for the full karaoke implementation. TL;DR: per-word `<span>` elements with `data-word-start`, GSAP tweens scoped to each span, tight 0.08–0.12s pop durations.
-
-## Ambient background (never ship flat navy)
-
-Minimum viable background stack:
-
-1. **Radial gradient base** (center lighter than edges by 15–20%)
-2. **Animated noise/grain overlay** at 8–12% opacity
-3. **4–8 drifting particle dots** or grid traces
-4. **Subtle vignette**
-
-`background: #07121c` alone is a placeholder, not a design. For techy/control-room aesthetic, use the 6-layer stack from `feedback_techy_background_layers.md` (HUD grid masked to vignette + circuit traces + pulse nodes + scan beam + telemetry ticker + corner mono labels).
-
-## Audio reactivity
-
-- Headlines pulse 3–6% on beat. Backgrounds can go 10–30% on bass.
-- Text reactivity kept subtle (3–6%) so captions stay readable; backgrounds can push harder.
-- Use a SEEDED offline analyser (pre-compute the audio feature track) so renders are deterministic. Do NOT use `AnalyserNode` in the render path — `Math.random()` and real-time audio nodes break determinism.
-
-## Transitions
-
-- **Rotate flavors.** No two consecutive transitions the same type. Six hard cuts in a row is the #1 tell for AI editing.
-- Face-mode transitions (`BOTTOM ↔ FULLSCREEN`) double as scene transitions when the mode changes between scenes.
-- For pure overlay scene-to-scene, install from registry: `push-up`, `flash-through-white`, `sdf-iris`, or the full shader-transitions pack. `npx hyperframes catalog --type block` to browse.
-
-## The verification gate (mandatory — DO NOT ship without)
-
-Lint passing ≠ design working. Never report a short-form render done until you have extracted frames at word-exact timestamps and READ every PNG.
-
-### Step 1 — draft render
+**Verify loop — render stills → inspect → encode.** Three frames test the three things that make or break retention: the hook, the pacing, and the loop seam.
 
 ```bash
-cd video-projects/<slug>
-npx hyperframes lint
-npx hyperframes render --quality draft --output renders/<slug>-vN-draft.mp4
+# Stills at hook / mid-body / last frame — WITH SHIPPED PROPS (the real topic, not defaults)
+npx remotion still Short out/f-hook.png --frame=10  --props='{"topic":"...","hook":"..."}'   # ~first 3s reads instantly
+npx remotion still Short out/f-mid.png  --frame=N   --props='{"topic":"...","hook":"..."}'
+npx remotion still Short out/f-end.png  --frame=L   --props='{"topic":"...","hook":"..."}'   # L = durationInFrames-1
+
+# Inspect each PNG:
+#  - HOOK frame (~frame 0-ish / first 3s): hook line is on-screen text and reads instantly; strongest visual already up (no fade-up)
+#  - LOOP seam: compare f-hook(frame 0) vs f-end(last frame) — same composition/position/color for an invisible loop cut
+#  - 9:16 safe area: hook + key subject inside the center 900x1400 box; clear of top ~12%, bottom ~20-35% (captions/CTA/audio), right action rail
+
+npx remotion render Short out/short.mp4 --props='{"topic":"...","hook":"..."}'   # encode once stills verify
+npx remotion render Short out/demo.gif --codec=gif                                # README proof clip
 ```
 
-### Step 2 — word-exact frame extraction
+**Per topic / batch**: verify ONE topic via stills *before* rendering all of them. Use `npx remotion compositions` for `durationInFrames`/`fps` to pick the mid + last frames.
 
-Pick 8–15 timestamps that each correspond to a SPOKEN WORD where a specific visual should be on-screen. Not round numbers. Not mid-scene. The exact word.
+**Before you finish:**
+1. Stills render cleanly at the hook, mid, and last frame — no errors.
+2. The hook frame reads instantly (on-screen text + strongest visual up front, no fade-up); first vs last frame match for a clean loop seam.
+3. Hook + subject + captions sit inside the 9:16 center 900×1400 safe box at every checked frame.
+4. Frame-driven only — no `Date.now()` / `Math.random()` / timers; cuts uneven, no flat middle.
+5. A real topic's shipped props (not `defaultProps`) render correctly; MP4 encoded, GIF optional.
 
-```bash
-mkdir -p renders/frames-vN
-for pair in "<t>:<label>" "<t>:<label>" ...; do
-  t="${pair%%:*}"; label="${pair##*:}"
-  ffmpeg -y -ss "$t" -i renders/<slug>-vN-draft.mp4 \
-    -frames:v 1 -q:v 2 "renders/frames-vN/t${t}-${label}.png"
-done
-```
+## Reference files
 
-### Step 3 — Read every PNG
-
-Call `Read` on every PNG so the image loads into context. Do NOT just list filenames. For each frame confirm:
-
-- The expected visual is on-screen at the expected moment (not 1s late, not early)
-- Speaker's face is not cropped in any bottom-half scene
-- Full-screen vs bottom-half face mode is correct for that scene
-- Captions are on-brand, readable, not overflowing
-- No blank frames, no unintentional overlap, no text-off-canvas
-
-### Step 4 — if anything fails, fix + re-verify. Never ship broken.
-
-### Step 5 — final render
-
-```bash
-npx hyperframes render --quality standard --output renders/<slug>-vN.mp4
-```
-
-Spot-check 3–4 frames from the final render (same timestamps, different folder `frames-vN-final/`) to confirm the standard-quality encode didn't change anything.
-
-## The 10 rules (quality checklist — run BEFORE first draft)
-
-Every short-form build. Run this list during authoring, not after.
-
-1. **No dead frames.** Every 100ms has an animating element.
-2. **Scene payoff ≥ 1s hold.** Budget by reveal time, not total time.
-3. **Face is a character.** Grade + Ken Burns + side vignette.
-4. **No hard seams.** Feather y=960 with gradient + scan line.
-5. **One jaw-dropper per 5s.** Typography slam, glitch, whip-pan, audio slam.
-6. **Audio reactivity non-negotiable.** 3–6% text, 10–30% background.
-7. **Rotate transition flavors.** No two consecutive the same.
-8. **Captions pop, don't politely label.** Stroke not pill. Scale + color on active word.
-9. **Motion through full scene duration.** Secondary motion if entrances land early.
-10. **Background is a layer, not a color.** Radial + noise + particles + vignette minimum.
-11. **Slam/stamp overlays land AFTER target text is fully visible.** Reveal logic > word-sync. Stamp `t` ≥ target-visible `t` + 0.10–0.25s. Otherwise the punchline lands before the setup.
-
-## Project structure (every short-form project)
-
-```
-video-projects/<slug>/
-├── hyperframes.json
-├── meta.json                    (id, name, dimensions 1080x1920, fps 30)
-├── index.html                   (root composition, the 4-layer scaffold)
-├── compositions/
-│   ├── ambient-bg.html
-│   ├── seam-treatment.html
-│   ├── captions.html            (with shift() function if retiming)
-│   ├── scene1-<label>.html
-│   ├── scene2-<label>.html
-│   └── ...
-├── assets/
-│   ├── <name>.mp4               (original recording)
-│   ├── <name>-edit.mp4          (edited — cuts removed — this is what the comp uses)
-│   ├── transcript.json          (whisper output)
-│   └── brand assets (logo, brand-tokens.css, background music)
-└── renders/
-    ├── <slug>-v1-draft.mp4
-    ├── frames-v1/
-    ├── <slug>-v1.mp4
-    └── ...
-```
-
-## Retime protocol (when audio is re-edited or timestamps drift)
-
-1. Measure old and new edited audio durations with `ffprobe`. Delta = total cut time.
-2. Identify cut window(s): which seconds were removed, from where.
-3. Write the Plan table: every scene `data-start`, `data-duration`, every face-mode transition `t`, any scene whose internal offsets straddle a cut.
-4. For each scene that straddles a cut, both its parent duration AND its internal offsets change. Scenes entirely on one side of the cut just need parent `data-start` shifted.
-5. Lint → draft render → word-exact frame verify → final render. No shortcuts.
-
-## What NOT to do in short-form
-
-- Don't animate `<video>` element dimensions — freezes frames. Animate wrapper div.
-- Don't use `repeat: -1` on any timeline — breaks the capture engine. Finite counts only.
-- Don't use `Math.random()` or `Date.now()` — breaks determinism. Seeded PRNG if pseudo-random needed.
-- Don't use `<br>` inside captions — natural wrapping + `<br>` produces extra unwanted breaks.
-- Don't skip the frame verification gate. Lint exit code is not visual truth.
-- Don't author in original-time if the audio is edited. Edited-time or nothing.
-- Don't leave `background: #07121c` flat. Layer it.
-- Don't hard-cut between scenes. Rotate transition flavors.
-- Don't polite-caption. Pop them.
-- Don't let the face sit still. Grade + Ken Burns always.
-
-## Lessons from may-shorts-18 (v1 → v2)
-
-Distilled from the 4 concrete problems the v1 render had and what fixed them in v2. Apply these on every new short.
-
-### 1. Slam/stamp timing — reveal logic beats word-sync
-
-A SLAM/STAMP overlay (KILLED, DEAD, STOP, etc.) lands AFTER its target text is fully visible, **not** during the spoken word. In may-shorts-18 v1 scene 1, CLAUDE and CHATGPT were pitched as opponents — KILLED fired at local 0.46s while CHATGPT didn't appear until 0.66s, so viewers saw "Claude … KILLED" with no visible target. The joke collapsed.
-
-**Rule:** `stamp_t ≥ target-text-visible_t + 0.10–0.25s`. The "visible" timestamp is the END of the target's entrance animation, not its start. Word-sync is a guideline; visual reveal order is the constraint.
-
-### 2. BOTTOM face-mode scale — don't ship the default
-
-Default `BOTTOM = { x: 0, y: 1136, scale: 0.5625 }` (exact horizontal fit for a 1920×1080 source) leaves empty studio background flanking the speaker if they occupy <70% of the source frame. This is the default in may-shorts-19 and was copied into may-shorts-18 v1 — both videos had visible dead space left and right of the speaker in every BOTTOM scene.
-
-**Rule:** prefer `BOTTOM = { x: -180, y: 1110, scale: 0.75 }` — crops 180px each side, bottom-anchors to y=1920. Preview ONE frame of BOTTOM mode against the actual source video before committing the constant. If the source speaker is tight-framed already, scale 0.65 may be enough; if the source is wide studio framing, push to scale 0.80 and re-tune x.
-
-Always keep HIDDEN's `x`, `y`, `scale` identical to BOTTOM — they only differ in `opacity` — so the opacity-fade scenes don't drift geometrically mid-fade.
-
-### 3. Face-mode transitions — three things at once, not one
-
-When the face changes mode between adjacent scenes, a bare 0.15s pre-roll + 0.32s duration `expo.inOut` on just the face wrapper reads as rigid — the outgoing scene's panels are still fully opaque behind the morphing face, so the eye sees two things fighting instead of a crossfade.
-
-**Rule:** for any "hero" scene-to-scene face-mode change (especially BOTTOM ↔ FULLSCREEN), do all three:
-1. Extend that specific transition's duration to 0.45–0.55s (not the default 0.32s)
-2. Start it 0.25–0.30s before the new scene's `data-start` (not the default 0.15s)
-3. Fade + blur the outgoing scene's panel wrapper to `opacity: 0, filter: blur(6px)` over 0.20–0.25s, starting 0.25s before scene end
-
-Implementation-wise, promote the face-mode transition array to per-entry `dur` so one transition can be longer than the others:
-```js
-[ { t: 2.06, mode: FULLSCREEN, dur: 0.50 }, { t: 3.71, mode: HIDDEN, dur: 0.32 }, ... ]
-  .forEach(({ t, mode, dur }) => mainTl.to("#face-wrapper", { ...mode, duration: dur, ease: "expo.inOut" }, t));
-```
-
-Three simultaneous changes = "a real editor edited this." Any one alone = rigid.
-
-### 4. Data-feel scenes beat decoration scenes mid-video
-
-For scenes 3–5 of a 15–20s short (the "middle grind" where attention drops the hardest), lean on visuals that read as information — bar races, stat grids with counting numbers, heatmaps, sparklines, flowcharts, dashboard chrome with telemetry ticking, pain-point grids that flash red in sequence. may-shorts-18 v1 scene 4 was a radar-rings + terminal-chip + sparks combo — functional but decorative, and Nate called it "bland." v2 replaced it with a 3×3 pain-point grid lighting up red-orange in sequence + a sparkline stroke-drawing with a YOU-ARE-HERE marker + the payoff slam — same time budget, much higher engagement.
-
-**Rule:** pure typography-plus-icon scenes feel like slides. Data-feel scenes feel like evidence. When a middle scene feels bland, replace the decoration with something that reads as *information*: a small number ticking up, a bar filling, a chart stroking in, a grid flashing in sequence.
-
-## Reference compositions
-
-- `video-projects/may-shorts-19/` — the canonical short-form example (18.84s, 1080x1920, 7 scenes, face-mode choreography, karaoke captions with shift(), ambient bg + seam treatment). Read `index.html` and any `compositions/scene*.html` before authoring a new short.
-- `video-projects/may-shorts-18/` — secondary reference with the 4 lessons above baked in: BOTTOM scale=0.75, KILLED stamp timed after CHATGPT reveal, scene-1→2 fluid fade, scene 4 data-dashboard "THE PATTERN" grid.
-
-## Related skills (invoke in addition)
-
-- `/hyperframes` — framework rules (always first)
-- `/hyperframes-cli` — CLI commands (init, lint, preview, render)
-- `/gsap` — animation library reference
-- `/hyperframes-registry` — installing transition blocks
-- `/seedance-loop-prompt` — if the short needs an AI-generated looping background video
-
-## Memory pointers (relevant feedback entries)
-
-- `feedback_short_form_principles.md` — the 10 rules, full rationale
-- `feedback_contrast_technique.md` — glow localization + text-shadow halos + brightening dim text
-- `feedback_techy_background_layers.md` — 6-layer control-room background stack
-- `feedback_visual_verification.md` — the verification gate
-- `project_ais_brand_specs.md` — if the short is AIS-branded (hex codes, fonts, logo glow)
+- `references/retention-pacing.md` — a complete runnable Remotion `<Short>` composition: a frame-driven shot scheduler with uneven cuts, the PunchIn pattern interrupt, an on-screen hook, a 9:16 safe-area overlay, and a seamless first/last-frame loop. Plus a hook-pattern library, a retention-curve debugging method, per-platform safe-zone maps, and the template×topic batch-render pattern.

@@ -5,7 +5,9 @@ Adapted from https://github.com/nateherkai/hyperframes-student-kit (MIT, see
 examples were copied; the showcase videos and teaching projects were left out,
 so references to `video-projects/<example>` or `README.md` point to the upstream repo.
 The `hyperframes`, `hyperframes-cli` and `hyperframes-registry` skills come from the
-official heygen-com/hyperframes install, not the kit.
+official heygen-com/hyperframes install, not the kit. The kit's legacy
+`short-form-video` skill (May Shorts examples) was replaced by the iart-ai
+`short-form-video` skill from iart-ai/tiktok-video-skills (MIT).
 
 Turn a talking-head recording into an intentional edit using local HyperFrames
 rendering, transcript-driven cuts, and reusable motion graphics.
@@ -20,7 +22,10 @@ For one stage, load the matching local skill:
 | --- | --- |
 | Reels, Shorts, and short advertisements | `short-form-edit` |
 | Motion-design showreels and brand reels cut to music | `motion-showreel` |
-| Existing May Shorts example maintenance | `short-form-video` |
+| Hooks, retention pacing and loops for TikTok/Reels/Shorts (iart-ai pack) | `short-form-video` |
+| Word-timed karaoke captions | `caption-animation` |
+| Countdown timers | `countdown-video` |
+| Animated lower thirds | `lower-thirds` |
 | New motion-graphics video from a brief | `make-a-video` |
 | Website-inspired compositions | `website-to-hyperframes` |
 | Full raw-video edit | `edit-video` |
