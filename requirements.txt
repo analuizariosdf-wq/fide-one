@@ -8,3 +8,5 @@ librosa
 matplotlib
 pillow
 numpy
+# download footage, cover photo and script from Google Drive share links
+gdown
