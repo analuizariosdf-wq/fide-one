@@ -46,3 +46,8 @@ next-env.d.ts
 /video-projects/
 /raw-media/
 /renders/
+
+# local tool shims (session-start hook)
+/.cache/
+/tmp/
+__pycache__/

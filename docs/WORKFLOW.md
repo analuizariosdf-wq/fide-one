@@ -18,7 +18,7 @@ JSON transcript with `words: [{text, start, end}]` and `audio_duration_secs`.
 ## 2. Remove dead air
 
 ```sh
-node .agents/skills/cut-silences/scripts/cut-silences.mjs video-projects/my-video/assets/raw.json --video video-projects/my-video/assets/raw.mp4 --out-dir video-projects/my-video/assets --output video-projects/my-video/assets/silenced.mp4 --apply
+node .claude/skills/cut-silences/scripts/cut-silences.mjs video-projects/my-video/assets/raw.json --video video-projects/my-video/assets/raw.mp4 --out-dir video-projects/my-video/assets --output video-projects/my-video/assets/silenced.mp4 --apply
 ```
 
 The retimed transcript is `raw.silence-transcript.json`. Tune gap and breathing
@@ -27,7 +27,7 @@ parameters in the skill; do not remove pauses that carry meaning.
 ## 3. Review mistakes
 
 ```sh
-node .agents/skills/cut-mistakes/scripts/find-cut-candidates.mjs video-projects/my-video/assets/raw.silence-transcript.json --out-dir video-projects/my-video/assets
+node .claude/skills/cut-mistakes/scripts/find-cut-candidates.mjs video-projects/my-video/assets/raw.silence-transcript.json --out-dir video-projects/my-video/assets
 ```
 
 Read each proposal against the speech. Write reviewed decisions to
@@ -35,7 +35,7 @@ Read each proposal against the speech. Write reviewed decisions to
 These times are on the SILENCED timeline. Empty cuts are valid.
 
 ```sh
-node .agents/skills/cut-mistakes/scripts/apply-cuts.mjs video-projects/my-video/assets/raw.silence-transcript.json --cuts video-projects/my-video/assets/approved-cuts.json --video video-projects/my-video/assets/silenced.mp4 --out-dir video-projects/my-video/assets --output video-projects/my-video/assets/clean.mp4 --apply
+node .claude/skills/cut-mistakes/scripts/apply-cuts.mjs video-projects/my-video/assets/raw.silence-transcript.json --cuts video-projects/my-video/assets/approved-cuts.json --video video-projects/my-video/assets/silenced.mp4 --out-dir video-projects/my-video/assets --output video-projects/my-video/assets/clean.mp4 --apply
 ```
 
 Use `raw.mistakes-transcript.json` alongside `clean.mp4`. Copy that transcript to

@@ -15,13 +15,13 @@ function node(script,args){return run(process.execPath,[script,...args]);}
 function probe(file) {return JSON.parse(run('ffprobe',['-v','error','-show_entries','stream=codec_type,duration','-show_entries','format=duration','-of','json',file]));}
 const video=join(dir,'source.mp4'),silenced=join(dir,'silenced.mp4'),clean=join(dir,'clean.mp4');
 run('ffmpeg',['-v','error','-y','-f','lavfi','-i','testsrc2=size=640x360:rate=30:duration=8','-f','lavfi','-i','sine=frequency=440:sample_rate=48000:duration=8','-c:v','libx264','-preset','ultrafast','-pix_fmt','yuv420p','-c:a','aac','-shortest',video]);
-node('.agents/skills/cut-silences/scripts/cut-silences.mjs',['examples/editing/source.json','--video',video,'--out-dir',dir,'--output',silenced,'--apply']);
+node('.claude/skills/cut-silences/scripts/cut-silences.mjs',['examples/editing/source.json','--video',video,'--out-dir',dir,'--output',silenced,'--apply']);
 const silencedTranscript=join(dir,'source.silence-transcript.json');
 const doc=JSON.parse(readFileSync(silencedTranscript));
-node('.agents/skills/cut-mistakes/scripts/find-cut-candidates.mjs',[silencedTranscript,'--out-dir',dir]);
+node('.claude/skills/cut-mistakes/scripts/find-cut-candidates.mjs',[silencedTranscript,'--out-dir',dir]);
 const cuts=join(dir,'reviewed.json');
 writeFileSync(cuts,JSON.stringify({cuts:[{start:doc.words[0].start,end:doc.words[1].start,reason:'Synthetic repeat exercise'}]}));
-node('.agents/skills/cut-mistakes/scripts/apply-cuts.mjs',[silencedTranscript,'--cuts',cuts,'--video',silenced,'--out-dir',dir,'--output',clean,'--apply']);
+node('.claude/skills/cut-mistakes/scripts/apply-cuts.mjs',[silencedTranscript,'--cuts',cuts,'--video',silenced,'--out-dir',dir,'--output',clean,'--apply']);
 const cleanDoc=JSON.parse(readFileSync(join(dir,'source.mistakes-transcript.json')));
 const reports=[];
 for(const [file,expected] of [[silenced,doc.audio_duration_secs],[clean,cleanDoc.audio_duration_secs]]) {

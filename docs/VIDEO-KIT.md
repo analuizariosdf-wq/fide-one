@@ -9,6 +9,36 @@ official heygen-com/hyperframes install, not the kit. The kit's legacy
 `short-form-video` skill (May Shorts examples) was replaced by the iart-ai
 `short-form-video` skill from iart-ai/tiktok-video-skills (MIT).
 
+## Toolchain in this repo (read first)
+
+Every installed tool serves video editing. Combine them this way. This section
+overrides the provider defaults further down (ElevenLabs is not the default here):
+
+| Stage | Default | Alternatives / notes |
+| --- | --- | --- |
+| Get footage | Files the user uploads or points to | `yt-dlp` (YouTube blocks cloud IPs; works on the user's machine) |
+| Transcribe | `python3 scripts/transcribe-local.py <file> --language pt` (faster-whisper, free, Scribe-shaped JSON next to the source) | ElevenLabs (`npm run transcribe`, video-use `transcribe.py`) only if the user asks and has a key |
+| Cut silences / mistakes | `/cut-silences` then `/cut-mistakes` (kit) | video-use cuts from its EDL |
+| Full edit of a recording | `/edit-video` (long form) or `/short-form-edit` (reels/Shorts) | `/video-use` when the user asks for it, for multi-take montages, or color grading |
+| Motion graphics / compositions | HyperFrames (`/hyperframes`, kit styles, `/gsap`) | Remotion (`remotion/`, `/remotion-*`) only when the user asks for React/Remotion |
+| Short-form craft | `/short-form-video` (hooks, retention), `/caption-animation`, `/lower-thirds`, `/countdown-video` | |
+| Audio, music, SFX, voice | `/hyperframes-audio`, `/media-use` | |
+| Verify output | `bash scripts/probe-mp4.sh out.mp4 1080x1920 30`, video-use `timeline_view.py` | |
+
+- Transcripts: for the kit, keep the default output (`<stem>.json` next to the
+  source). For video-use, add `--video-use` (writes `<dir>/edit/transcripts/<stem>.json`)
+  and then run `pack_transcripts.py --edit-dir <dir>/edit` directly; skip video-use's
+  `transcribe.py`/`transcribe_batch.py`, which demand an ElevenLabs key even when cached.
+  Use `--model small` or `medium` for Portuguese; `tiny` only for quick tests.
+- ffmpeg: the kit's cut scripts need ffmpeg 7 (`-/filter_complex`). The
+  session-start hook puts `node_modules/ffmpeg-static/ffmpeg` (7.x) first on PATH;
+  if `ffmpeg -version` shows 6.x, run `export PATH="$PWD/.cache/bin:$PATH"` after
+  `ln -sf "$PWD/node_modules/ffmpeg-static/ffmpeg" .cache/bin/ffmpeg`.
+- Remotion renders in the cloud need
+  `--browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`.
+  Remotion requires a paid company license for companies with more than 3 people.
+- Keep footage and renders under `video-projects/<slug>/` (gitignored).
+
 Turn a talking-head recording into an intentional edit using local HyperFrames
 rendering, transcript-driven cuts, and reusable motion graphics.
 
