@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+!.env.example
+
+# video kit (Herk Edit Kit): footage, transcripts and renders stay local
+/video-projects/
+/raw-media/
+/renders/

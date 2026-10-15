@@ -6,7 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup": "node scripts/setup.mjs",
+    "new-video": "node scripts/new-video.mjs",
+    "demo": "node scripts/new-video.mjs demo",
+    "transcribe": "node scripts/transcribe-elevenlabs.mjs",
+    "preflight": "node scripts/preflight.mjs",
+    "preflight:all": "node scripts/preflight-all.mjs",
+    "validate-beats": "node scripts/validate-beat-sync.mjs",
+    "catalog": "node scripts/style-library/build-registry.mjs",
+    "test:media": "node scripts/smoke-media.mjs",
+    "validate:short-form": "node .claude/skills/short-form-edit/scripts/validate-plan.mjs",
+    "validate:footage": "node .claude/skills/short-form-edit/scripts/validate-footage.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
