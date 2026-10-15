@@ -1,0 +1,56 @@
+/* ============================================================================
+   CONSERVAR — style tokens
+   Brand of Conservar Terceirização e Condomínios. Source: the official palette
+   sheet in references/marca-logo-paleta.jpg and the company's Instagram feed.
+   Cards reference these vars and never hardcode colors, fonts or easings.
+   See DESIGN.md for the why.
+   ============================================================================ */
+
+/* Montserrat is an approximation of the bold sans used in the feed posts.
+   Swap it here if the company sends its official fonts. */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&display=swap");
+
+:root {
+  /* --- palette: the four official brand colors --------------------------- */
+  --navy:   #43506A;   /* azul-ardósia: wordmark, dark surfaces */
+  --orange: #F07C26;   /* laranja: swoosh, highlighted words, CTAs */
+  --gray:   #C2C6CD;   /* cinza: dividers, secondary text on navy */
+  --white:  #FFFFFF;
+
+  /* derived shades (same hue, for depth only) */
+  --navy-deep: #2F3A4F;
+  --navy-rgb: 67, 80, 106;
+  --orange-rgb: 240, 124, 38;
+
+  /* roles */
+  --bg: var(--navy);
+  --fg: var(--white);
+  --accent: var(--orange);
+  --muted: var(--gray);
+
+  /* --- typography --------------------------------------------------------- */
+  --font-display: "Montserrat", system-ui, sans-serif;
+  --font-body: "Montserrat", system-ui, sans-serif;
+  --font-mono: "Montserrat", system-ui, sans-serif;
+
+  --wt-body: 500;
+  --wt-bold: 800;
+  --wt-black: 900;
+
+  --size-display: 150px;
+  --size-headline: 64px;
+  --size-body: 34px;
+  --size-label: 22px;
+
+  /* --- motion: confident and clean, no bounce-heavy cartoon moves --------- */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-in: 0.5s;
+  --dur-out: 0.35s;
+
+  /* --- shape -------------------------------------------------------------- */
+  --radius: 22px;
+  --radius-pill: 999px;
+  --pad: 48px;
+}
