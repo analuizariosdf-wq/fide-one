@@ -12,6 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent skills and the video-editing kit (not part of the app):
+    ".claude/**",
+    "style-library/**",
+    "style-templates/**",
+    "examples/**",
+    "video-projects/**",
+    "scripts/*.mjs",
+    "scripts/style-library/**",
   ]),
 ]);
 
