@@ -9,6 +9,13 @@ official heygen-com/hyperframes install, not the kit. The kit's legacy
 `short-form-video` skill (May Shorts examples) was replaced by the iart-ai
 `short-form-video` skill from iart-ai/tiktok-video-skills (MIT).
 
+## Client brand: Inovar Recursos Humanos
+
+Videos edited here are for Inovar Recursos Humanos. Read `brand/inovar/BRAND.md`
+(palette, type, tone, content pillars, open questions) before planning an edit,
+and use `brand/inovar/tokens.css` in compositions. It replaces a per-project
+DESIGN.md unless the user gives a different brief.
+
 ## Toolchain in this repo (read first)
 
 Every installed tool serves video editing. Combine them this way. This section
