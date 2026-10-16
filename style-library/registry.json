@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/style-library/build-registry.mjs",
   "styleCount": 3,
-  "cardCount": 416,
+  "cardCount": 419,
   "tiers": [
     "tier1",
     "tier2",
@@ -8616,7 +8616,7 @@
         "mono": "Montserrat",
         "notes": "Montserrat 800-900 approximates the feed's headline sans; replace if official fonts arrive. Never re-type the wordmark; use assets/logo-*.png."
       },
-      "cardCount": 10,
+      "cardCount": 13,
       "cards": [
         {
           "id": "conservar.t1.thesis",
@@ -8810,6 +8810,60 @@
           "preview": {
             "mp4": "03-conservar/undefined",
             "poster": "03-conservar/preview/conservar.v.end.png"
+          }
+        },
+        {
+          "id": "conservar.v.whatsapp",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "contact",
+          "file": "03-conservar/cards/vertical/v-whatsapp.html",
+          "slots": [
+            "phone"
+          ],
+          "duration": {
+            "min": 3.5,
+            "max": 5
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.whatsapp.png"
+          }
+        },
+        {
+          "id": "conservar.v.info",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "info",
+          "file": "03-conservar/cards/vertical/v-info.html",
+          "slots": [
+            "items"
+          ],
+          "duration": {
+            "min": 4,
+            "max": 7
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.info.png"
+          }
+        },
+        {
+          "id": "conservar.v.share",
+          "style": "conservar",
+          "tier": "tier2",
+          "purpose": "cta",
+          "file": "03-conservar/cards/vertical/v-share.html",
+          "slots": [
+            "label"
+          ],
+          "duration": {
+            "min": 1.5,
+            "max": 3
+          },
+          "preview": {
+            "mp4": "03-conservar/undefined",
+            "poster": "03-conservar/preview/conservar.v.share.png"
           }
         }
       ]

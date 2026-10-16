@@ -94,3 +94,8 @@ Roteiro 01 (Oct 2026).
 - Rendering note: a frame that is fully opaque (takeover) is saved by Chromium
   as RGB, not RGBA. Convert every overlay frame to RGBA before compositing, or
   FFmpeg loses transparency for the rest of the sequence.
+- Recruitment (Roteiro 02, vaga ASG): `v-whatsapp` (contact card), `v-info` (job
+  conditions) and `v-share` (share CTA). Phone numbers are typed exactly from the
+  brief and checked digit by digit in the encoded video; keep a number on screen
+  >= 5 s in total. The WhatsApp glyph is `assets/icons/whatsapp-branco.svg`
+  (Simple Icons, white only, never WhatsApp green).

@@ -302,6 +302,69 @@
       "preview": {
         "poster": "preview/conservar.v.end.png"
       }
+    },
+    {
+      "id": "conservar.v.whatsapp",
+      "tier": "tier2",
+      "purpose": "contact",
+      "format": "1080x1920",
+      "file": "cards/vertical/v-whatsapp.html",
+      "slots": [
+        {
+          "name": "phone",
+          "type": "text",
+          "maxChars": 16
+        }
+      ],
+      "duration": {
+        "min": 3.5,
+        "max": 5
+      },
+      "preview": {
+        "poster": "preview/conservar.v.whatsapp.png"
+      }
+    },
+    {
+      "id": "conservar.v.info",
+      "tier": "tier2",
+      "purpose": "info",
+      "format": "1080x1920",
+      "file": "cards/vertical/v-info.html",
+      "slots": [
+        {
+          "name": "items",
+          "type": "list",
+          "maxChars": 22
+        }
+      ],
+      "duration": {
+        "min": 4,
+        "max": 7
+      },
+      "preview": {
+        "poster": "preview/conservar.v.info.png"
+      }
+    },
+    {
+      "id": "conservar.v.share",
+      "tier": "tier2",
+      "purpose": "cta",
+      "format": "1080x1920",
+      "file": "cards/vertical/v-share.html",
+      "slots": [
+        {
+          "name": "label",
+          "type": "text",
+          "maxChars": 14
+        }
+      ],
+      "duration": {
+        "min": 1.5,
+        "max": 3
+      },
+      "preview": {
+        "poster": "preview/conservar.v.share.png"
+      }
     }
   ]
 }

@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+  CONSERVAR · vertical 9:16 · tier2 · WhatsApp contact card
+  Navy-deep card, orange bottom bar, white WhatsApp glyph + number in Montserrat 900. Hold it >= 3.5 s so people can note it.
+  Safe area (Reels): text in x 90..940, y 250..1540. Shared styles: ../../vertical.css
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <link rel="stylesheet" href="../../vertical.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: transparent; }
+      #wpp { position: absolute; left: 70px; top: 1050px; width: 870px; box-sizing: border-box; padding: 26px 32px 30px; border-radius: 20px; background: rgba(47, 58, 79, 0.97); border-bottom: 10px solid var(--orange); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+      #wpp .lead { font-weight: 700; font-size: 30px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gray); }
+      #wpp .num { display: flex; align-items: center; gap: 22px; margin-top: 14px; }
+      #wpp .num img { width: 78px; height: 78px; flex: none; }
+      #wpp .num span { font-family: var(--font-display); font-weight: var(--wt-black); font-size: 74px; letter-spacing: -0.01em; white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div id="v-whatsapp" class="cv-stage" data-composition-id="v-whatsapp" data-start="0" data-width="1080" data-height="1920">
+
+      <div id="wpp">
+        <div class="lead">Envie seu currículo</div>
+        <div class="num"><img src="../../assets/icons/whatsapp-branco.svg" alt="WhatsApp" /><span data-slot="phone">(31) 97231-7190</span></div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.from("#wpp", { autoAlpha: 0, y: 60, duration: 0.45 }, 0)
+        .from("#wpp .num img", { scale: 0.6, rotation: -8, duration: 0.4 }, 0.1)
+        .to("#wpp", { autoAlpha: 0, y: 40, duration: 0.3, ease: "power2.in" }, 3.7).set({}, {}, 4);
+      window.__timelines["v-whatsapp"] = tl;
+    </script>
+  </body>
+</html>

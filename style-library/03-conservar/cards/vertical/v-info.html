@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  CONSERVAR · vertical 9:16 · tier2 · info cards (job conditions)
+  Stat card (kicker + big number) plus three icon rows; each enters on its spoken word, all leave together.
+  Safe area (Reels): text in x 90..940, y 250..1540. Shared styles: ../../vertical.css
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../tokens.css" />
+    <link rel="stylesheet" href="../../vertical.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; background: transparent; }
+      #info { position: absolute; left: 90px; top: 900px; width: 850px; height: 420px; }
+      #info .card { position: absolute; border-radius: 18px; background: rgba(47, 58, 79, 0.95); box-shadow: 0 14px 34px rgba(0,0,0,0.3); color: var(--white); }
+      #info .stat { left: 0; top: 0; width: 360px; height: 400px; border-top: 10px solid var(--gray); box-sizing: border-box; padding: 34px 32px; }
+      #info .stat .k { font-weight: 700; font-size: 24px; letter-spacing: 0.2em; color: var(--gray); }
+      #info .stat .n { font-family: var(--font-display); font-weight: var(--wt-black); font-size: 150px; line-height: 1; margin-top: 30px; letter-spacing: -0.03em; }
+      #info .stat .u { font-weight: 700; font-size: 38px; margin-top: 14px; }
+      #info .row { left: 380px; width: 470px; height: 120px; display: flex; align-items: center; gap: 18px; padding: 0 24px; box-sizing: border-box; font-weight: 700; font-size: 32px; white-space: nowrap; }
+      #info .row svg { flex: none; width: 52px; height: 52px; }
+      #info .r1 { top: 0; } #info .r2 { top: 140px; } #info .r3 { top: 280px; }
+    </style>
+  </head>
+  <body>
+    <div id="v-info" class="cv-stage" data-composition-id="v-info" data-start="0" data-width="1080" data-height="1920">
+
+      <div id="info">
+        <div class="card stat"><div class="k">JORNADA</div><div class="n">36h</div><div class="u">semanais</div></div>
+        <div class="card row r1"><svg viewBox="0 0 24 24" fill="none" stroke="#C2C6CD" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Segunda a sexta</div>
+        <div class="card row r2"><svg viewBox="0 0 24 24" fill="none" stroke="#C2C6CD" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horário comercial</div>
+        <div class="card row r3"><svg viewBox="0 0 24 24" fill="none" stroke="#C2C6CD" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 9v6M18 9v6"/></svg>Salário a combinar</div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      document.querySelectorAll("#info .card").forEach((el, i) => tl.from(el, { autoAlpha: 0, y: 40, duration: 0.4 }, i * 1.2));
+      tl.to("#info .card", { autoAlpha: 0, y: 30, duration: 0.3, stagger: 0.04, ease: "power2.in" }, 5.2).set({}, {}, 5.6);
+      window.__timelines["v-info"] = tl;
+    </script>
+  </body>
+</html>
