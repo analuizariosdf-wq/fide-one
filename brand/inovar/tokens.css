@@ -1,0 +1,28 @@
+/* Inovar Recursos Humanos: brand tokens for HyperFrames compositions. See BRAND.md. */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&family=Bebas+Neue&display=swap");
+
+:root {
+  --inovar-ink: #212829;
+  --inovar-teal-deep: #00494f;
+  --inovar-teal: #00696e;
+  --inovar-mist: #d7e3e2;
+  --inovar-paper: #f1f1f1;
+  --inovar-yellow: #ffce23;
+  --inovar-white: #ffffff;
+
+  --inovar-font: "Montserrat", system-ui, sans-serif;
+  --inovar-font-condensed: "Bebas Neue", "Oswald", sans-serif;
+
+  --inovar-radius: 24px;
+  --inovar-gradient-dark: linear-gradient(160deg, var(--inovar-teal) 0%, var(--inovar-teal-deep) 55%, var(--inovar-ink) 100%);
+}
+
+/* Yellow highlighter box behind a keyword, as in the Instagram titles. */
+.inovar-highlight {
+  background: var(--inovar-yellow);
+  color: var(--inovar-teal-deep);
+  padding: 0.02em 0.18em;
+  border-radius: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
