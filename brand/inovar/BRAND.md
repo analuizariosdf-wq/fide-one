@@ -12,9 +12,9 @@ em `tokens.css` e o logo com a paleta em `assets/logo-e-paleta.jpg`.
 - **Serviços:** recrutamento e seleção, avaliação psicológica (mapeamento de
   perfil), mão de obra temporária, terceirização, treinamentos, consultoria de RH
   e segurança do trabalho.
-- **Assinatura:** "Confiança e Inovação em RH". Bio do Instagram: "25 anos de
-  conexões". Posts recentes falam em "27 anos". Confirme o número com a cliente
-  antes de colocar na tela.
+- **Assinatura:** "Confiança e Inovação em RH". A Inovar completou **27 anos em
+  14/10/2026** (confirmado pela cliente). Use "27 anos" na tela; a bio antiga
+  ainda diz "25 anos de conexões".
 - **Canais:** Instagram @rh_inovar (~47 mil seguidores), site
   www.inovar-rh.com, linklist.bio/inovarrh. Vagas por WhatsApp (vários números
   31 9xxxx-xxxx, um por vaga: sempre copie o número do roteiro, nunca invente).
@@ -62,7 +62,7 @@ Regras:
 - Fundo escuro = teal profundo com foto escurecida ou formas curvas em
   `#00696E`. Fundo claro = `#F1F1F1`/`#D7E3E2` com uma onda/forma teal na lateral.
 
-## Tipografia (identificada pelos posts, confirme com a cliente)
+## Tipografia (Montserrat confirmada pela cliente)
 
 - **Títulos e corpo:** sans geométrica tipo **Montserrat** (Bold/ExtraBold no
   título, Regular/Medium no apoio). Os títulos misturam pesos na mesma frase:
@@ -82,9 +82,11 @@ Regras:
 - Posição nos posts: canto inferior direito ou superior direito, pequeno.
 - Em vídeo: entrada no início (opcional) e assinatura no fim; no resto do vídeo,
   só um selo pequeno e discreto, se a cliente pedir.
-- Arquivo atual: apenas o JPG da paleta (`assets/logo-e-paleta.jpg`).
-  **Pendente:** pedir o logo em PNG transparente ou SVG, versão para fundo
-  escuro (branca) e para fundo claro.
+- Arquivo oficial: `assets/logo-inovar.png` (PNG com fundo transparente,
+  475x422). Funciona em fundo claro e escuro. Por ser pequeno, use-o como selo
+  ou na assinatura final até ~500 px de largura; acima disso fica borrado (peça
+  uma versão maior ou SVG se precisar de tela cheia). O JPG da paleta continua
+  em `assets/logo-e-paleta.jpg` só como referência de cor.
 
 ## Linguagem visual para os vídeos
 
@@ -106,14 +108,16 @@ Regras:
   punchlines, animações suaves (slide/scale). Humor só quando o roteiro pedir.
 - **Música:** leve e positiva, baixa sob a voz.
 
+## Estilo preferido da cliente
+
+Vídeo **humano e dinâmico**: a pessoa falando é o centro, com motion graphics e
+ganchos visuais (títulos que entram, palavras-chave em caixa amarela, cartelas,
+zooms nos pontos fortes, pequenos efeitos sonoros) e **legenda sempre**. Ritmo
+ágil, mas a fala precisa respirar.
+
 ## Pendências com a cliente
 
-- Logo em PNG transparente / SVG (versões clara e escura).
-- Confirmar fontes oficiais (Montserrat? qual condensada?).
-- Confirmar "25" ou "27 anos".
-- Os vídeos de referência do Instagram (links abaixo) não puderam ser abertos
-  pelo ambiente de edição: pedir os MP4 ou a descrição do que mais gostam neles.
-  - https://www.instagram.com/p/DebwnXFzBat/
-  - https://www.instagram.com/p/DeSaHMbRr82/
-  - https://www.instagram.com/p/DdG_YUgxG50/
-  - https://www.instagram.com/p/DdrTKq0RHWI/
+- Logo em SVG ou PNG maior (o PNG atual tem 475 px de largura).
+- Qual condensada usar nos posts de vaga (Bebas Neue ou Oswald)?
+- Para cada vídeo: roteiro, pasta do Drive, quem grava (nome e cargo), duração e
+  público.
