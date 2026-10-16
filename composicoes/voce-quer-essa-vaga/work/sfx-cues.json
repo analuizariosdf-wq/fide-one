@@ -1,0 +1,42 @@
+[
+ {
+  "sfx": "whoosh",
+  "label": "Entrada do título do gancho",
+  "t": 0.05
+ },
+ {
+  "sfx": "tum",
+  "label": "\"E aí mora o perigo\" (no \"perigo\")",
+  "t": 13.77
+ },
+ {
+  "sfx": "pop",
+  "label": "Salário",
+  "t": 31.05
+ },
+ {
+  "sfx": "pop",
+  "label": "Horário",
+  "t": 31.92
+ },
+ {
+  "sfx": "pop",
+  "label": "Ambiente",
+  "t": 32.7
+ },
+ {
+  "sfx": "pop",
+  "label": "Gestão",
+  "t": 33.49
+ },
+ {
+  "sfx": "pop",
+  "label": "Crescimento (em \"crescimento\")",
+  "t": 34.53
+ },
+ {
+  "sfx": "ding",
+  "label": "Número 3 (em \"escolha três coisas\")",
+  "t": 43.18
+ }
+]

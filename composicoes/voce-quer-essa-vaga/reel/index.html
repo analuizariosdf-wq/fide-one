@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Você quer essa vaga ou só quer sair do seu emprego?</title>
+<meta name="viewport" content="width=1080, height=1920">
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Montserrat';font-weight:400;font-style:normal;src:url('assets/fonts/montserrat-latin-400-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:700;font-style:normal;src:url('assets/fonts/montserrat-latin-700-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:800;font-style:normal;src:url('assets/fonts/montserrat-latin-800-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:900;font-style:normal;src:url('assets/fonts/montserrat-latin-900-normal.woff2') format('woff2')}
+
+:root{--ink:#212829;--teal-deep:#00494F;--teal:#00696E;--mist:#D7E3E2;--paper:#F1F1F1;--yellow:#FFCE23}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:'Montserrat',sans-serif}
+#root{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+.hl{position:relative;display:inline-block;color:var(--teal-deep);z-index:0}
+.hl .paint{position:absolute;left:-.14em;right:-.14em;top:.02em;bottom:-.02em;background:var(--yellow);border-radius:.14em;z-index:-1;transform-origin:0 50%}
+
+#cam{position:absolute;inset:0;transform-origin:50% 30%}
+#shake{position:absolute;inset:0}
+#speaker{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* gancho */
+#hook{position:absolute;left:0;right:0;top:870px;height:470px;display:flex;align-items:center;justify-content:center}
+#hookbox{width:860px;text-align:center;color:#fff;font-size:94px;line-height:1.13;letter-spacing:-1px;text-shadow:0 4px 22px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.5)}
+.tw{display:inline-block}
+#hook .hl{text-shadow:none}
+/* legendas */
+.cap{position:absolute;left:120px;right:120px;top:1290px;height:230px;display:flex;align-items:center;justify-content:center}
+.capline{text-align:center;color:#fff;font-weight:800;font-size:66px;line-height:1.18;letter-spacing:-.5px;text-shadow:0 3px 16px rgba(0,0,0,.65),0 2px 4px rgba(0,0,0,.7)}
+.w{display:inline-block}
+.capbox{display:inline-block;background:var(--yellow);color:var(--teal-deep);padding:0 .2em;border-radius:.16em;text-shadow:none;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+/* elementos */
+.card{position:absolute;display:flex;align-items:center;gap:26px;background:var(--teal-deep);border-radius:30px;padding:22px 34px 22px 22px;box-shadow:0 14px 40px rgba(0,0,0,.35);color:#fff;font-weight:800;font-size:50px;letter-spacing:-.5px}
+.ic{width:96px;height:96px;flex:0 0 96px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center}
+.ic svg{width:56px;height:56px}
+.ic-text{color:#fff;font-weight:900;font-size:38px;letter-spacing:-1px}
+#card1{left:90px;top:860px}
+#card2{right:150px;top:1060px}
+#alert{position:absolute;left:770px;top:420px;width:170px;height:170px;border-radius:50%;background:var(--teal);border:7px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#alert svg{width:96px;height:96px}
+#bubble{position:absolute;left:600px;top:280px;width:390px}
+#bubble .b{background:#fff;border-radius:46px;padding:30px 30px;color:var(--teal-deep);font-weight:800;font-size:40px;line-height:1.16;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.3)}
+#bubble .d1,#bubble .d2{position:absolute;background:#fff;border-radius:50%;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+#bubble .d1{width:44px;height:44px;left:40px;bottom:-50px}
+#bubble .d2{width:24px;height:24px;left:6px;bottom:-86px}
+#repeat{position:absolute;left:110px;top:640px;width:190px;height:190px;border-radius:50%;background:var(--teal-deep);border:6px solid var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#repeat svg{width:118px;height:118px}
+#mudar{position:absolute;left:0;right:0;top:300px;display:flex;justify-content:center}
+#mudar span{background:var(--teal-deep);color:#fff;font-weight:800;font-size:60px;padding:18px 40px;border-radius:999px;box-shadow:0 12px 34px rgba(0,0,0,.35);letter-spacing:-.5px}
+#list{position:absolute;left:150px;right:150px;top:780px;background:rgba(0,73,79,.94);border-radius:34px;padding:22px 30px;box-shadow:0 16px 44px rgba(0,0,0,.38)}
+.row{display:flex;align-items:center;gap:24px;height:86px}
+.row .ic{width:72px;height:72px;flex:0 0 72px}
+.row .ic svg{width:42px;height:42px}
+.row .ic-text{font-size:28px}
+.row .lbl{flex:1;color:#fff;font-weight:800;font-size:46px;letter-spacing:-.5px}
+.row .ok{width:56px;height:56px;border-radius:50%;background:var(--teal);border:3px solid #fff;display:flex;align-items:center;justify-content:center}
+.row .ok svg{width:34px;height:34px}
+#three{position:absolute;left:0;right:0;top:690px;display:flex;flex-direction:column;align-items:center;gap:30px}
+#three .n{width:300px;height:300px;border-radius:50%;background:var(--teal-deep);border:10px solid var(--teal);display:flex;align-items:center;justify-content:center;color:var(--yellow);font-weight:900;font-size:230px;line-height:1;box-shadow:0 16px 44px rgba(0,0,0,.4)}
+#three .n span{display:block;transform:translateY(-6px)}
+#three .boxes{display:flex;gap:34px}
+#three .bx{width:92px;height:92px;border-radius:20px;border:7px solid #fff;background:rgba(0,73,79,.85);box-shadow:0 8px 22px rgba(0,0,0,.35)}
+</style></head><body>
+<div id="root" data-composition-id="reel" data-start="0" data-duration="53.82" data-width="1080" data-height="1920">
+<div id="cam"><div id="shake">
+<video id="speaker" class="clip" src="assets/speaker.mp4" muted playsinline data-start="0" data-duration="48.82" data-track-index="0"></video>
+</div></div>
+<audio id="mix" src="assets/mix.wav" data-start="0" data-duration="53.82" data-track-index="1"></audio>
+
+<div id="hook" class="clip" data-start="0" data-duration="3.9" data-track-index="10"><div id="hookbox"><span class="tw" id="hw0" style="font-weight:400">Você</span> <span class="tw" id="hw1" style="font-weight:400">quer</span> <span class="tw" id="hw2" style="font-weight:400">essa</span> <span class="tw" id="hw3" style="font-weight:800">vaga</span> <span class="tw" id="hw4" style="font-weight:400">ou</span> <span class="tw" id="hw5" style="font-weight:400">só</span> <span class="tw" id="hw6" style="font-weight:400">quer</span> <span class="tw" id="hw7" style="font-weight:800"><span class="hl" id="hsair"><span class="paint" id="hpaint"></span>SAIR</span></span> <span class="tw" id="hw8" style="font-weight:400">do</span> <span class="tw" id="hw9" style="font-weight:400">seu</span> <span class="tw" id="hw10" style="font-weight:400">emprego?</span></div></div>
+
+<div id="alert-c" class="clip" data-start="13.690" data-duration="1.260" data-track-index="11"><div id="alert"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.8 19.5h18.4L12 3.5Z"/><path d="M12 9.5v4.5"/><circle cx="12" cy="17" r=".6" fill="#fff"/></svg></div></div>
+<div id="card1-c" class="clip" data-start="14.86" data-duration="2.42" data-track-index="12"><div class="card" id="card1"><span class="ic"><span class="ic-text">R$</span></span>Salário parecido</div></div>
+<div id="card2-c" class="clip" data-start="16.04" data-duration="1.24" data-track-index="13"><div class="card" id="card2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M11 21v-3h2v3"/></svg></span>Empresa diferente</div></div>
+<div id="bubble-c" class="clip" data-start="17.80" data-duration="1.85" data-track-index="11"><div id="bubble"><div class="b">“Qualquer coisa é melhor do que aqui”</div><span class="d1"></span><span class="d2"></span></div></div>
+<div id="repeat-c" class="clip" data-start="26.10" data-duration="1.80" data-track-index="11"><div id="repeat"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20.5V16h-4.5"/></svg></div></div>
+<div id="mudar-c" class="clip" data-start="29.85" data-duration="5.30" data-track-index="12"><div id="mudar"><span>O que eu quero mudar?</span></div></div>
+<div id="list-c" class="clip" data-start="30.80" data-duration="4.35" data-track-index="13"><div id="list"><div class="row" id="row0"><span class="ic"><span class="ic-text">R$</span></span><span class="lbl">Salário</span><span class="ok" id="ok0"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div><div class="row" id="row1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="lbl">Horário</span><span class="ok" id="ok1"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div><div class="row" id="row2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M15.5 14.2c2.6-.3 4.6 1.3 5 4.3"/></svg></span><span class="lbl">Ambiente</span><span class="ok" id="ok2"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div><div class="row" id="row3"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.5" r="3.2"/><path d="M5.5 20c.7-3.8 3.3-6 6.5-6s5.8 2.2 6.5 6"/><path d="M12 14l-1 2.5 1 1.5 1-1.5-1-2.5"/></svg></span><span class="lbl">Gestão</span><span class="ok" id="ok3"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div><div class="row" id="row4"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 17.5 9.5 11.5l4 4 7-7.5"/><path d="M15.5 8h5v5"/></svg></span><span class="lbl">Crescimento</span><span class="ok" id="ok4"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div></div></div>
+<div id="three-c" class="clip" data-start="43.060" data-duration="3.190" data-track-index="11"><div id="three"><div class="n"><span>3</span></div><div class="boxes"><div class="bx" id="bx0"></div><div class="bx" id="bx1"></div><div class="bx" id="bx2"></div></div></div></div>
+
+<div id="cap0" class="clip cap" data-start="3.810" data-duration="0.780" data-track-index="20"><div class="capline" id="capl0"><span class="w" id="cw0_0">Talvez</span> <span class="w" id="cw0_1">você</span></div></div>
+<div id="cap1" class="clip cap" data-start="4.590" data-duration="1.000" data-track-index="20"><div class="capline" id="capl1"><span class="w" id="cw1_0">não</span> <span class="w" id="cw1_1">esteja</span> <span class="w" id="cw1_2">procurando</span></div></div>
+<div id="cap2" class="clip cap" data-start="5.590" data-duration="0.920" data-track-index="20"><div class="capline" id="capl2"><span class="w" id="cw2_0">um</span> <span class="w" id="cw2_1">emprego</span> <span class="w" id="cw2_2">melhor.</span></div></div>
+<div id="cap3" class="clip cap" data-start="6.510" data-duration="0.600" data-track-index="20"><div class="capline" id="capl3"><span class="w" id="cw3_0">Talvez</span> <span class="w" id="cw3_1">só</span> <span class="w" id="cw3_2">esteja</span></div></div>
+<div id="cap4" class="clip cap" data-start="7.110" data-duration="1.730" data-track-index="20"><div class="capline" id="capl4"><span class="w" id="cw4_0">tentando</span> <span class="capbox"><span class="w kw" id="cw4_1">fugir</span></span> <span class="w" id="cw4_2">do</span> <span class="w" id="cw4_3">atual.</span></div></div>
+<div id="cap5" class="clip cap" data-start="8.840" data-duration="1.020" data-track-index="20"><div class="capline" id="capl5"><span class="w" id="cw5_0">Quando</span> <span class="w" id="cw5_1">o</span> <span class="w" id="cw5_2">trabalho</span></div></div>
+<div id="cap6" class="clip cap" data-start="9.860" data-duration="1.220" data-track-index="20"><div class="capline" id="capl6"><span class="w" id="cw6_0">atual</span> <span class="w" id="cw6_1">está</span> <span class="w" id="cw6_2">ruim,</span></div></div>
+<div id="cap7" class="clip cap" data-start="11.080" data-duration="0.600" data-track-index="20"><div class="capline" id="capl7"><span class="w" id="cw7_0">qualquer</span> <span class="w" id="cw7_1">vaga</span></div></div>
+<div id="cap8" class="clip cap" data-start="11.680" data-duration="1.460" data-track-index="20"><div class="capline" id="capl8"><span class="w" id="cw8_0">começa</span> <span class="w" id="cw8_1">a</span> <span class="w" id="cw8_2">parecer</span> <span class="w" id="cw8_3">boa.</span></div></div>
+<div id="cap9" class="clip cap" data-start="13.140" data-duration="0.540" data-track-index="20"><div class="capline" id="capl9"><span class="w" id="cw9_0">E</span> <span class="w" id="cw9_1">aí</span> <span class="w" id="cw9_2">mora</span></div></div>
+<div id="cap10" class="clip cap" data-start="13.680" data-duration="0.700" data-track-index="20"><div class="capline" id="capl10"><span class="w" id="cw10_0">o</span> <span class="capbox"><span class="w kw" id="cw10_1">perigo.</span></span></div></div>
+<div id="cap11" class="clip cap" data-start="14.380" data-duration="0.520" data-track-index="20"><div class="capline" id="capl11"><span class="w" id="cw11_0">Você</span> <span class="w" id="cw11_1">vê</span> <span class="w" id="cw11_2">um</span></div></div>
+<div id="cap12" class="clip cap" data-start="14.900" data-duration="1.120" data-track-index="20"><div class="capline" id="capl12"><span class="w" id="cw12_0">salário</span> <span class="w" id="cw12_1">parecido…</span></div></div>
+<div id="cap13" class="clip cap" data-start="16.020" data-duration="1.160" data-track-index="20"><div class="capline" id="capl13"><span class="w" id="cw13_0">uma</span> <span class="w" id="cw13_1">empresa</span> <span class="w" id="cw13_2">diferente…</span></div></div>
+<div id="cap14" class="clip cap" data-start="17.180" data-duration="0.660" data-track-index="20"><div class="capline" id="capl14"><span class="w" id="cw14_0">e</span> <span class="w" id="cw14_1">pensa:</span></div></div>
+<div id="cap15" class="clip cap" data-start="17.840" data-duration="0.940" data-track-index="20"><div class="capline" id="capl15"><span class="w" id="cw15_0">“Qualquer</span> <span class="w" id="cw15_1">coisa</span> <span class="w" id="cw15_2">é</span> <span class="w" id="cw15_3">melhor</span></div></div>
+<div id="cap16" class="clip cap" data-start="18.780" data-duration="0.830" data-track-index="20"><div class="capline" id="capl16"><span class="w" id="cw16_0">do</span> <span class="w" id="cw16_1">que</span> <span class="w" id="cw16_2">aqui.”</span></div></div>
+<div id="cap17" class="clip cap" data-start="19.610" data-duration="1.120" data-track-index="20"><div class="capline" id="capl17"><span class="w" id="cw17_0">Mas</span> <span class="w" id="cw17_1">se</span> <span class="w" id="cw17_2">você</span></div></div>
+<div id="cap18" class="clip cap" data-start="20.730" data-duration="0.640" data-track-index="20"><div class="capline" id="capl18"><span class="w" id="cw18_0">não</span> <span class="w" id="cw18_1">entender</span></div></div>
+<div id="cap19" class="clip cap" data-start="21.370" data-duration="0.780" data-track-index="20"><div class="capline" id="capl19"><span class="w" id="cw19_0">o</span> <span class="w" id="cw19_1">que</span> <span class="w" id="cw19_2">realmente</span></div></div>
+<div id="cap20" class="clip cap" data-start="22.150" data-duration="0.820" data-track-index="20"><div class="capline" id="capl20"><span class="w" id="cw20_0">está</span> <span class="w" id="cw20_1">fazendo</span> <span class="w" id="cw20_2">você</span></div></div>
+<div id="cap21" class="clip cap" data-start="22.970" data-duration="1.000" data-track-index="20"><div class="capline" id="capl21"><span class="w" id="cw21_0">querer</span> <span class="w" id="cw21_1">sair,</span></div></div>
+<div id="cap22" class="clip cap" data-start="23.970" data-duration="0.940" data-track-index="20"><div class="capline" id="capl22"><span class="w" id="cw22_0">pode</span> <span class="w" id="cw22_1">trocar</span> <span class="w" id="cw22_2">de</span> <span class="w" id="cw22_3">emprego</span></div></div>
+<div id="cap23" class="clip cap" data-start="24.910" data-duration="1.220" data-track-index="20"><div class="capline" id="capl23"><span class="w" id="cw23_0">e</span> <span class="w" id="cw23_1">encontrar</span> <span class="w" id="cw23_2">exatamente</span></div></div>
+<div id="cap24" class="clip cap" data-start="26.130" data-duration="1.320" data-track-index="20"><div class="capline" id="capl24"><span class="w" id="cw24_0">o</span> <span class="capbox"><span class="w kw" id="cw24_1">mesmo</span> <span class="w kw" id="cw24_2">problema.</span></span></div></div>
+<div id="cap25" class="clip cap" data-start="27.450" data-duration="0.720" data-track-index="20"><div class="capline" id="capl25"><span class="w" id="cw25_0">Antes</span> <span class="w" id="cw25_1">de</span> <span class="w" id="cw25_2">aceitar</span></div></div>
+<div id="cap26" class="clip cap" data-start="28.170" data-duration="1.280" data-track-index="20"><div class="capline" id="capl26"><span class="w" id="cw26_0">uma</span> <span class="w" id="cw26_1">oportunidade,</span></div></div>
+<div id="cap27" class="clip cap" data-start="29.450" data-duration="0.400" data-track-index="20"><div class="capline" id="capl27"><span class="w" id="cw27_0">pense:</span></div></div>
+<div id="cap28" class="clip cap" data-start="29.850" data-duration="0.360" data-track-index="20"><div class="capline" id="capl28"><span class="w" id="cw28_0">O</span> <span class="w" id="cw28_1">que</span> <span class="w" id="cw28_2">eu</span></div></div>
+<div id="cap29" class="clip cap" data-start="30.210" data-duration="0.800" data-track-index="20"><div class="capline" id="capl29"><span class="w" id="cw29_0">quero</span> <span class="capbox"><span class="w kw" id="cw29_1">mudar?</span></span></div></div>
+<div id="cap30" class="clip cap" data-start="31.010" data-duration="0.870" data-track-index="20"><div class="capline" id="capl30"><span class="w" id="cw30_0">Salário,</span></div></div>
+<div id="cap31" class="clip cap" data-start="31.880" data-duration="0.780" data-track-index="20"><div class="capline" id="capl31"><span class="w" id="cw31_0">horário,</span></div></div>
+<div id="cap32" class="clip cap" data-start="32.660" data-duration="0.710" data-track-index="20"><div class="capline" id="capl32"><span class="w" id="cw32_0">ambiente,</span></div></div>
+<div id="cap33" class="clip cap" data-start="33.370" data-duration="0.560" data-track-index="20"><div class="capline" id="capl33"><span class="w" id="cw33_0">gestão,</span></div></div>
+<div id="cap34" class="clip cap" data-start="33.930" data-duration="1.260" data-track-index="20"><div class="capline" id="capl34"><span class="w" id="cw34_0">possibilidade</span> <span class="w" id="cw34_1">de</span> <span class="w" id="cw34_2">crescimento?</span></div></div>
+<div id="cap35" class="clip cap" data-start="35.190" data-duration="1.100" data-track-index="20"><div class="capline" id="capl35"><span class="w" id="cw35_0">Você</span> <span class="w" id="cw35_1">não</span> <span class="w" id="cw35_2">precisa</span></div></div>
+<div id="cap36" class="clip cap" data-start="36.290" data-duration="0.870" data-track-index="20"><div class="capline" id="capl36"><span class="w" id="cw36_0">encontrar</span> <span class="w" id="cw36_1">o</span> <span class="w" id="cw36_2">emprego</span></div></div>
+<div id="cap37" class="clip cap" data-start="37.160" data-duration="0.750" data-track-index="20"><div class="capline" id="capl37"><span class="capbox"><span class="w kw" id="cw37_0">perfeito.</span></span></div></div>
+<div id="cap38" class="clip cap" data-start="37.910" data-duration="0.930" data-track-index="20"><div class="capline" id="capl38"><span class="w" id="cw38_0">Mas</span> <span class="w" id="cw38_1">precisa</span> <span class="w" id="cw38_2">saber</span></div></div>
+<div id="cap39" class="clip cap" data-start="38.840" data-duration="0.360" data-track-index="20"><div class="capline" id="capl39"><span class="w" id="cw39_0">o</span> <span class="w" id="cw39_1">que</span></div></div>
+<div id="cap40" class="clip cap" data-start="39.200" data-duration="1.450" data-track-index="20"><div class="capline" id="capl40"><span class="capbox"><span class="w kw" id="cw40_0">não</span> <span class="w kw" id="cw40_1">quer</span> <span class="w kw" id="cw40_2">repetir.</span></span></div></div>
+<div id="cap41" class="clip cap" data-start="40.650" data-duration="0.660" data-track-index="20"><div class="capline" id="capl41"><span class="w" id="cw41_0">Antes</span> <span class="w" id="cw41_1">de</span> <span class="w" id="cw41_2">aceitar</span></div></div>
+<div id="cap42" class="clip cap" data-start="41.310" data-duration="1.480" data-track-index="20"><div class="capline" id="capl42"><span class="w" id="cw42_0">a</span> <span class="w" id="cw42_1">sua</span> <span class="w" id="cw42_2">próxima</span> <span class="w" id="cw42_3">oportunidade,</span></div></div>
+<div id="cap43" class="clip cap" data-start="42.790" data-duration="1.020" data-track-index="20"><div class="capline" id="capl43"><span class="w" id="cw43_0">escolha</span> <span class="capbox"><span class="w kw" id="cw43_1">três</span></span> <span class="w" id="cw43_2">coisas</span></div></div>
+<div id="cap44" class="clip cap" data-start="43.810" data-duration="0.820" data-track-index="20"><div class="capline" id="capl44"><span class="w" id="cw44_0">que</span> <span class="w" id="cw44_1">precisam</span> <span class="w" id="cw44_2">ser</span></div></div>
+<div id="cap45" class="clip cap" data-start="44.630" data-duration="0.740" data-track-index="20"><div class="capline" id="capl45"><span class="w" id="cw45_0">diferentes</span> <span class="w" id="cw45_1">do</span> <span class="w" id="cw45_2">seu</span></div></div>
+<div id="cap46" class="clip cap" data-start="45.370" data-duration="0.880" data-track-index="20"><div class="capline" id="capl46"><span class="w" id="cw46_0">emprego</span> <span class="w" id="cw46_1">atual.</span></div></div>
+<div id="cap47" class="clip cap" data-start="46.250" data-duration="0.580" data-track-index="20"><div class="capline" id="capl47"><span class="w" id="cw47_0">Isso</span> <span class="w" id="cw47_1">já</span> <span class="w" id="cw47_2">pode</span></div></div>
+<div id="cap48" class="clip cap" data-start="46.830" data-duration="1.100" data-track-index="20"><div class="capline" id="capl48"><span class="w" id="cw48_0">mudar</span> <span class="w" id="cw48_1">completamente</span></div></div>
+<div id="cap49" class="clip cap" data-start="47.930" data-duration="0.890" data-track-index="20"><div class="capline" id="capl49"><span class="w" id="cw49_0">sua</span> <span class="w" id="cw49_1">decisão.</span></div></div>
+
+<video id="outro" class="clip" src="assets/encerramento.mp4" muted playsinline data-start="48.82" data-duration="5.0" data-track-index="30"></video>
+</div>
+<script>
+const tl = gsap.timeline({paused:true});
+tl.set({},{},53.82);
+// ---- gancho: whoosh em 0,05 s; palavras entram rápido; a caixa pinta o SAIR quando ela fala
+tl.fromTo("#cam",{scale:1},{scale:1.04,duration:3.8,ease:"none"},0);
+tl.fromTo("#hw0",{opacity:1,scale:1.25},{opacity:1,scale:1,duration:.2,ease:"back.out(2)"},0);
+tl.fromTo("#hw1",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.110);
+tl.fromTo("#hw2",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.180);
+tl.fromTo("#hw3",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.250);
+tl.fromTo("#hw4",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.320);
+tl.fromTo("#hw5",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.390);
+tl.fromTo("#hw6",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.460);
+tl.fromTo("#hw7",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.530);
+tl.fromTo("#hw8",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.600);
+tl.fromTo("#hw9",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.670);
+tl.fromTo("#hw10",{opacity:0,y:40,scale:.85},{opacity:1,y:0,scale:1,duration:.18,ease:"back.out(2)"},0.740);
+tl.set("#hsair",{color:"#FFFFFF"},0);
+tl.fromTo("#hpaint",{scaleX:0},{scaleX:1,duration:.22,ease:"power2.out"},2.36);
+tl.to("#hsair",{color:"#00494F",duration:.08},2.42);
+tl.to("#hookbox",{scale:.55,y:-120,opacity:0,duration:.32,ease:"power2.in"},3.52);
+tl.set("#cam",{scale:1},3.84);
+// ---- cena 1: punch-in em "fugir do atual"
+tl.to("#cam",{scale:1.15,duration:.28,ease:"power2.out"},7.40);
+tl.set("#cam",{scale:1},8.47);
+// ---- cena 2: perigo
+tl.to("#cam",{scale:1.12,duration:.12,ease:"power3.out"},13.710);
+tl.to("#shake",{x:9,y:-6,duration:.04,ease:"none"},13.790);tl.to("#shake",{x:-8,y:5,duration:.04,ease:"none"},13.830);tl.to("#shake",{x:7,y:7,duration:.04,ease:"none"},13.870);tl.to("#shake",{x:-6,y:-5,duration:.04,ease:"none"},13.910);tl.to("#shake",{x:5,y:3,duration:.04,ease:"none"},13.950);tl.to("#shake",{x:-3,y:-2,duration:.04,ease:"none"},13.990);tl.to("#shake",{x:2,y:1,duration:.04,ease:"none"},14.030);tl.to("#shake",{x:0,y:0,duration:.04,ease:"none"},14.070);
+tl.to("#cam",{scale:1,duration:.35,ease:"power2.inOut"},14.38);
+tl.fromTo("#alert",{scale:0,rotation:-25},{scale:1,rotation:0,duration:.26,ease:"back.out(2.6)"},13.690);
+tl.to("#alert",{rotation:8,duration:.12,yoyo:true,repeat:3,ease:"sine.inOut"},13.970);
+tl.to("#alert",{scale:0,opacity:0,duration:.18,ease:"power2.in"},14.75);
+tl.fromTo("#card1",{x:-760},{x:0,duration:.34,ease:"back.out(1.3)"},14.86);
+tl.fromTo("#card2",{x:760},{x:0,duration:.34,ease:"back.out(1.3)"},16.04);
+tl.to("#card1",{x:-760,duration:.24,ease:"power2.in"},17.02);
+tl.to("#card2",{x:760,duration:.24,ease:"power2.in"},17.04);
+tl.fromTo("#bubble",{scale:.4,opacity:0,transformOrigin:"10% 100%"},{scale:1,opacity:1,duration:.3,ease:"back.out(2)"},17.80);
+tl.fromTo("#bubble",{rotation:-2},{rotation:2,duration:.45,yoyo:true,repeat:2,ease:"sine.inOut"},18.1);
+tl.to("#bubble",{scale:.6,opacity:0,duration:.18,ease:"power2.in"},19.47);
+// ---- cena 3
+tl.fromTo("#repeat",{scale:0},{scale:1,duration:.25,ease:"back.out(2.4)"},26.10);
+tl.fromTo("#repeat svg",{rotation:0},{rotation:540,duration:1.6,ease:"power1.inOut"},26.15);
+tl.to("#repeat",{scale:0,duration:.18,ease:"power2.in"},27.72);
+tl.fromTo("#mudar span",{y:-60,opacity:0,scale:.9},{y:0,opacity:1,scale:1,duration:.3,ease:"back.out(2)"},29.85);
+tl.fromTo("#list",{opacity:0,y:40,scale:.96},{opacity:1,y:0,scale:1,duration:.25,ease:"power2.out"},30.80);
+tl.fromTo("#row0",{opacity:0,x:-40,scale:.9},{opacity:1,x:0,scale:1,duration:.22,ease:"back.out(2.2)"},31.000);tl.fromTo("#ok0",{scale:0,rotation:-30},{scale:1,rotation:0,duration:.2,ease:"back.out(3)"},31.170);
+tl.fromTo("#row1",{opacity:0,x:-40,scale:.9},{opacity:1,x:0,scale:1,duration:.22,ease:"back.out(2.2)"},31.870);tl.fromTo("#ok1",{scale:0,rotation:-30},{scale:1,rotation:0,duration:.2,ease:"back.out(3)"},32.040);
+tl.fromTo("#row2",{opacity:0,x:-40,scale:.9},{opacity:1,x:0,scale:1,duration:.22,ease:"back.out(2.2)"},32.650);tl.fromTo("#ok2",{scale:0,rotation:-30},{scale:1,rotation:0,duration:.2,ease:"back.out(3)"},32.820);
+tl.fromTo("#row3",{opacity:0,x:-40,scale:.9},{opacity:1,x:0,scale:1,duration:.22,ease:"back.out(2.2)"},33.440);tl.fromTo("#ok3",{scale:0,rotation:-30},{scale:1,rotation:0,duration:.2,ease:"back.out(3)"},33.610);
+tl.fromTo("#row4",{opacity:0,x:-40,scale:.9},{opacity:1,x:0,scale:1,duration:.22,ease:"back.out(2.2)"},34.480);tl.fromTo("#ok4",{scale:0,rotation:-30},{scale:1,rotation:0,duration:.2,ease:"back.out(3)"},34.650);
+tl.to(["#list","#mudar span"],{opacity:0,y:-30,duration:.22,ease:"power2.in"},34.92);
+// ---- cena 4
+tl.to("#cam",{scale:1.15,duration:.28,ease:"power2.out"},39.10);
+tl.set("#cam",{scale:1},40.55);
+tl.fromTo("#three .n",{scale:0,rotation:-20},{scale:1,rotation:0,duration:.3,ease:"back.out(2.4)"},43.060);
+tl.fromTo("#three .bx",{y:30,opacity:0},{y:0,opacity:1,duration:.2,stagger:.12,ease:"back.out(2)"},43.500);
+tl.to("#three",{opacity:0,y:30,duration:.22,ease:"power2.in"},46.03);
+// ---- legendas
+tl.fromTo("#capl0",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},3.810);
+tl.set("#cw0_0",{color:"#FFCE23"},3.830);
+tl.set("#cw0_0",{color:"#FFFFFF"},4.330);
+tl.set("#cw0_1",{color:"#FFCE23"},4.330);
+tl.set("#cw0_1",{color:"#FFFFFF"},4.570);
+tl.fromTo("#capl1",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},4.590);
+tl.set("#cw1_0",{color:"#FFCE23"},4.610);
+tl.set("#cw1_0",{color:"#FFFFFF"},4.830);
+tl.set("#cw1_1",{color:"#FFCE23"},4.830);
+tl.set("#cw1_1",{color:"#FFFFFF"},5.210);
+tl.set("#cw1_2",{color:"#FFCE23"},5.210);
+tl.set("#cw1_2",{color:"#FFFFFF"},5.570);
+tl.fromTo("#capl2",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},5.590);
+tl.set("#cw2_0",{color:"#FFCE23"},5.610);
+tl.set("#cw2_0",{color:"#FFFFFF"},5.730);
+tl.set("#cw2_1",{color:"#FFCE23"},5.730);
+tl.set("#cw2_1",{color:"#FFFFFF"},5.930);
+tl.set("#cw2_2",{color:"#FFCE23"},5.930);
+tl.set("#cw2_2",{color:"#FFFFFF"},6.490);
+tl.fromTo("#capl3",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},6.510);
+tl.set("#cw3_0",{color:"#FFCE23"},6.530);
+tl.set("#cw3_0",{color:"#FFFFFF"},6.690);
+tl.set("#cw3_1",{color:"#FFCE23"},6.690);
+tl.set("#cw3_1",{color:"#FFFFFF"},6.810);
+tl.set("#cw3_2",{color:"#FFCE23"},6.810);
+tl.set("#cw3_2",{color:"#FFFFFF"},7.090);
+tl.fromTo("#capl4",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},7.110);
+tl.set("#cw4_0",{color:"#FFCE23"},7.130);
+tl.set("#cw4_0",{color:"#FFFFFF"},7.470);
+tl.fromTo("#cw4_1",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},7.470);
+tl.set("#cw4_2",{color:"#FFCE23"},7.790);
+tl.set("#cw4_2",{color:"#FFFFFF"},7.950);
+tl.set("#cw4_3",{color:"#FFCE23"},7.950);
+tl.set("#cw4_3",{color:"#FFFFFF"},8.820);
+tl.fromTo("#capl5",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},8.840);
+tl.set("#cw5_0",{color:"#FFCE23"},8.860);
+tl.set("#cw5_0",{color:"#FFFFFF"},9.380);
+tl.set("#cw5_1",{color:"#FFCE23"},9.380);
+tl.set("#cw5_1",{color:"#FFFFFF"},9.600);
+tl.set("#cw5_2",{color:"#FFCE23"},9.600);
+tl.set("#cw5_2",{color:"#FFFFFF"},9.840);
+tl.fromTo("#capl6",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},9.860);
+tl.set("#cw6_0",{color:"#FFCE23"},9.880);
+tl.set("#cw6_0",{color:"#FFFFFF"},10.140);
+tl.set("#cw6_1",{color:"#FFCE23"},10.140);
+tl.set("#cw6_1",{color:"#FFFFFF"},10.400);
+tl.set("#cw6_2",{color:"#FFCE23"},10.400);
+tl.set("#cw6_2",{color:"#FFFFFF"},11.060);
+tl.fromTo("#capl7",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},11.080);
+tl.set("#cw7_0",{color:"#FFCE23"},11.100);
+tl.set("#cw7_0",{color:"#FFFFFF"},11.300);
+tl.set("#cw7_1",{color:"#FFCE23"},11.300);
+tl.set("#cw7_1",{color:"#FFFFFF"},11.660);
+tl.fromTo("#capl8",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},11.680);
+tl.set("#cw8_0",{color:"#FFCE23"},11.700);
+tl.set("#cw8_0",{color:"#FFFFFF"},11.980);
+tl.set("#cw8_1",{color:"#FFCE23"},11.980);
+tl.set("#cw8_1",{color:"#FFFFFF"},12.080);
+tl.set("#cw8_2",{color:"#FFCE23"},12.080);
+tl.set("#cw8_2",{color:"#FFFFFF"},12.360);
+tl.set("#cw8_3",{color:"#FFCE23"},12.360);
+tl.set("#cw8_3",{color:"#FFFFFF"},13.120);
+tl.fromTo("#capl9",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},13.140);
+tl.set("#cw9_0",{color:"#FFCE23"},13.160);
+tl.set("#cw9_0",{color:"#FFFFFF"},13.240);
+tl.set("#cw9_1",{color:"#FFCE23"},13.240);
+tl.set("#cw9_1",{color:"#FFFFFF"},13.400);
+tl.set("#cw9_2",{color:"#FFCE23"},13.400);
+tl.set("#cw9_2",{color:"#FFFFFF"},13.660);
+tl.fromTo("#capl10",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},13.680);
+tl.set("#cw10_0",{color:"#FFCE23"},13.700);
+tl.set("#cw10_0",{color:"#FFFFFF"},13.800);
+tl.fromTo("#cw10_1",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},13.800);
+tl.fromTo("#capl11",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},14.380);
+tl.set("#cw11_0",{color:"#FFCE23"},14.400);
+tl.set("#cw11_0",{color:"#FFFFFF"},14.620);
+tl.set("#cw11_1",{color:"#FFCE23"},14.620);
+tl.set("#cw11_1",{color:"#FFFFFF"},14.720);
+tl.set("#cw11_2",{color:"#FFCE23"},14.720);
+tl.set("#cw11_2",{color:"#FFFFFF"},14.880);
+tl.fromTo("#capl12",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},14.900);
+tl.set("#cw12_0",{color:"#FFCE23"},14.920);
+tl.set("#cw12_0",{color:"#FFFFFF"},15.160);
+tl.set("#cw12_1",{color:"#FFCE23"},15.160);
+tl.set("#cw12_1",{color:"#FFFFFF"},16.000);
+tl.fromTo("#capl13",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},16.020);
+tl.set("#cw13_0",{color:"#FFCE23"},16.040);
+tl.set("#cw13_0",{color:"#FFFFFF"},16.100);
+tl.set("#cw13_1",{color:"#FFCE23"},16.100);
+tl.set("#cw13_1",{color:"#FFFFFF"},16.340);
+tl.set("#cw13_2",{color:"#FFCE23"},16.340);
+tl.set("#cw13_2",{color:"#FFFFFF"},17.160);
+tl.fromTo("#capl14",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},17.180);
+tl.set("#cw14_0",{color:"#FFCE23"},17.200);
+tl.set("#cw14_0",{color:"#FFFFFF"},17.300);
+tl.set("#cw14_1",{color:"#FFCE23"},17.300);
+tl.set("#cw14_1",{color:"#FFFFFF"},17.820);
+tl.fromTo("#capl15",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},17.840);
+tl.set("#cw15_0",{color:"#FFCE23"},17.860);
+tl.set("#cw15_0",{color:"#FFFFFF"},18.080);
+tl.set("#cw15_1",{color:"#FFCE23"},18.080);
+tl.set("#cw15_1",{color:"#FFFFFF"},18.340);
+tl.set("#cw15_2",{color:"#FFCE23"},18.340);
+tl.set("#cw15_2",{color:"#FFFFFF"},18.440);
+tl.set("#cw15_3",{color:"#FFCE23"},18.440);
+tl.set("#cw15_3",{color:"#FFFFFF"},18.760);
+tl.fromTo("#capl16",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},18.780);
+tl.set("#cw16_0",{color:"#FFCE23"},18.800);
+tl.set("#cw16_0",{color:"#FFFFFF"},18.980);
+tl.set("#cw16_1",{color:"#FFCE23"},18.980);
+tl.set("#cw16_1",{color:"#FFFFFF"},19.100);
+tl.set("#cw16_2",{color:"#FFCE23"},19.100);
+tl.set("#cw16_2",{color:"#FFFFFF"},19.590);
+tl.fromTo("#capl17",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},19.610);
+tl.set("#cw17_0",{color:"#FFCE23"},19.630);
+tl.set("#cw17_0",{color:"#FFFFFF"},20.230);
+tl.set("#cw17_1",{color:"#FFCE23"},20.230);
+tl.set("#cw17_1",{color:"#FFFFFF"},20.450);
+tl.set("#cw17_2",{color:"#FFCE23"},20.450);
+tl.set("#cw17_2",{color:"#FFFFFF"},20.710);
+tl.fromTo("#capl18",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},20.730);
+tl.set("#cw18_0",{color:"#FFCE23"},20.750);
+tl.set("#cw18_0",{color:"#FFFFFF"},20.950);
+tl.set("#cw18_1",{color:"#FFCE23"},20.950);
+tl.set("#cw18_1",{color:"#FFFFFF"},21.350);
+tl.fromTo("#capl19",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},21.370);
+tl.set("#cw19_0",{color:"#FFCE23"},21.390);
+tl.set("#cw19_0",{color:"#FFFFFF"},21.530);
+tl.set("#cw19_1",{color:"#FFCE23"},21.530);
+tl.set("#cw19_1",{color:"#FFFFFF"},21.690);
+tl.set("#cw19_2",{color:"#FFCE23"},21.690);
+tl.set("#cw19_2",{color:"#FFFFFF"},22.130);
+tl.fromTo("#capl20",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},22.150);
+tl.set("#cw20_0",{color:"#FFCE23"},22.170);
+tl.set("#cw20_0",{color:"#FFFFFF"},22.370);
+tl.set("#cw20_1",{color:"#FFCE23"},22.370);
+tl.set("#cw20_1",{color:"#FFFFFF"},22.690);
+tl.set("#cw20_2",{color:"#FFCE23"},22.690);
+tl.set("#cw20_2",{color:"#FFFFFF"},22.950);
+tl.fromTo("#capl21",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},22.970);
+tl.set("#cw21_0",{color:"#FFCE23"},22.990);
+tl.set("#cw21_0",{color:"#FFFFFF"},23.210);
+tl.set("#cw21_1",{color:"#FFCE23"},23.210);
+tl.set("#cw21_1",{color:"#FFFFFF"},23.950);
+tl.fromTo("#capl22",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},23.970);
+tl.set("#cw22_0",{color:"#FFCE23"},23.990);
+tl.set("#cw22_0",{color:"#FFFFFF"},24.090);
+tl.set("#cw22_1",{color:"#FFCE23"},24.090);
+tl.set("#cw22_1",{color:"#FFFFFF"},24.390);
+tl.set("#cw22_2",{color:"#FFCE23"},24.390);
+tl.set("#cw22_2",{color:"#FFFFFF"},24.630);
+tl.set("#cw22_3",{color:"#FFCE23"},24.630);
+tl.set("#cw22_3",{color:"#FFFFFF"},24.890);
+tl.fromTo("#capl23",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},24.910);
+tl.set("#cw23_0",{color:"#FFCE23"},24.930);
+tl.set("#cw23_0",{color:"#FFFFFF"},25.190);
+tl.set("#cw23_1",{color:"#FFCE23"},25.190);
+tl.set("#cw23_1",{color:"#FFFFFF"},25.510);
+tl.set("#cw23_2",{color:"#FFCE23"},25.510);
+tl.set("#cw23_2",{color:"#FFFFFF"},26.110);
+tl.fromTo("#capl24",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},26.130);
+tl.set("#cw24_0",{color:"#FFCE23"},26.150);
+tl.set("#cw24_0",{color:"#FFFFFF"},26.350);
+tl.fromTo("#cw24_1",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},26.350);
+tl.fromTo("#cw24_2",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},26.550);
+tl.fromTo("#capl25",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},27.450);
+tl.set("#cw25_0",{color:"#FFCE23"},27.470);
+tl.set("#cw25_0",{color:"#FFFFFF"},27.710);
+tl.set("#cw25_1",{color:"#FFCE23"},27.710);
+tl.set("#cw25_1",{color:"#FFFFFF"},27.890);
+tl.set("#cw25_2",{color:"#FFCE23"},27.890);
+tl.set("#cw25_2",{color:"#FFFFFF"},28.150);
+tl.fromTo("#capl26",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},28.170);
+tl.set("#cw26_0",{color:"#FFCE23"},28.190);
+tl.set("#cw26_0",{color:"#FFFFFF"},28.330);
+tl.set("#cw26_1",{color:"#FFCE23"},28.330);
+tl.set("#cw26_1",{color:"#FFFFFF"},29.430);
+tl.fromTo("#capl27",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},29.450);
+tl.set("#cw27_0",{color:"#FFCE23"},29.470);
+tl.set("#cw27_0",{color:"#FFFFFF"},29.830);
+tl.fromTo("#capl28",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},29.850);
+tl.set("#cw28_0",{color:"#FFCE23"},29.870);
+tl.set("#cw28_0",{color:"#FFFFFF"},29.990);
+tl.set("#cw28_1",{color:"#FFCE23"},29.990);
+tl.set("#cw28_1",{color:"#FFFFFF"},30.110);
+tl.set("#cw28_2",{color:"#FFCE23"},30.110);
+tl.set("#cw28_2",{color:"#FFFFFF"},30.190);
+tl.fromTo("#capl29",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},30.210);
+tl.set("#cw29_0",{color:"#FFCE23"},30.230);
+tl.set("#cw29_0",{color:"#FFFFFF"},30.350);
+tl.fromTo("#cw29_1",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},30.350);
+tl.fromTo("#capl30",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},31.010);
+tl.set("#cw30_0",{color:"#FFCE23"},31.030);
+tl.set("#cw30_0",{color:"#FFFFFF"},31.860);
+tl.fromTo("#capl31",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},31.880);
+tl.set("#cw31_0",{color:"#FFCE23"},31.900);
+tl.set("#cw31_0",{color:"#FFFFFF"},32.640);
+tl.fromTo("#capl32",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},32.660);
+tl.set("#cw32_0",{color:"#FFCE23"},32.680);
+tl.set("#cw32_0",{color:"#FFFFFF"},33.350);
+tl.fromTo("#capl33",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},33.370);
+tl.set("#cw33_0",{color:"#FFCE23"},33.390);
+tl.set("#cw33_0",{color:"#FFFFFF"},33.910);
+tl.fromTo("#capl34",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},33.930);
+tl.set("#cw34_0",{color:"#FFCE23"},33.950);
+tl.set("#cw34_0",{color:"#FFFFFF"},34.290);
+tl.set("#cw34_1",{color:"#FFCE23"},34.290);
+tl.set("#cw34_1",{color:"#FFFFFF"},34.410);
+tl.set("#cw34_2",{color:"#FFCE23"},34.410);
+tl.set("#cw34_2",{color:"#FFFFFF"},35.170);
+tl.fromTo("#capl35",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},35.190);
+tl.set("#cw35_0",{color:"#FFCE23"},35.210);
+tl.set("#cw35_0",{color:"#FFFFFF"},35.720);
+tl.set("#cw35_1",{color:"#FFCE23"},35.720);
+tl.set("#cw35_1",{color:"#FFFFFF"},36.070);
+tl.set("#cw35_2",{color:"#FFCE23"},36.070);
+tl.set("#cw35_2",{color:"#FFFFFF"},36.270);
+tl.fromTo("#capl36",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},36.290);
+tl.set("#cw36_0",{color:"#FFCE23"},36.310);
+tl.set("#cw36_0",{color:"#FFFFFF"},36.760);
+tl.set("#cw36_1",{color:"#FFCE23"},36.760);
+tl.set("#cw36_1",{color:"#FFFFFF"},36.950);
+tl.set("#cw36_2",{color:"#FFCE23"},36.950);
+tl.set("#cw36_2",{color:"#FFFFFF"},37.140);
+tl.fromTo("#capl37",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},37.160);
+tl.fromTo("#cw37_0",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},37.180);
+tl.fromTo("#capl38",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},37.910);
+tl.set("#cw38_0",{color:"#FFCE23"},37.930);
+tl.set("#cw38_0",{color:"#FFFFFF"},38.210);
+tl.set("#cw38_1",{color:"#FFCE23"},38.210);
+tl.set("#cw38_1",{color:"#FFFFFF"},38.450);
+tl.set("#cw38_2",{color:"#FFCE23"},38.450);
+tl.set("#cw38_2",{color:"#FFFFFF"},38.820);
+tl.fromTo("#capl39",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},38.840);
+tl.set("#cw39_0",{color:"#FFCE23"},38.860);
+tl.set("#cw39_0",{color:"#FFFFFF"},39.080);
+tl.set("#cw39_1",{color:"#FFCE23"},39.080);
+tl.set("#cw39_1",{color:"#FFFFFF"},39.180);
+tl.fromTo("#capl40",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},39.200);
+tl.fromTo("#cw40_0",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},39.220);
+tl.fromTo("#cw40_1",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},39.430);
+tl.fromTo("#cw40_2",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},39.610);
+tl.fromTo("#capl41",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},40.650);
+tl.set("#cw41_0",{color:"#FFCE23"},40.670);
+tl.set("#cw41_0",{color:"#FFFFFF"},40.830);
+tl.set("#cw41_1",{color:"#FFCE23"},40.830);
+tl.set("#cw41_1",{color:"#FFFFFF"},41.010);
+tl.set("#cw41_2",{color:"#FFCE23"},41.010);
+tl.set("#cw41_2",{color:"#FFFFFF"},41.290);
+tl.fromTo("#capl42",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},41.310);
+tl.set("#cw42_0",{color:"#FFCE23"},41.330);
+tl.set("#cw42_0",{color:"#FFFFFF"},41.470);
+tl.set("#cw42_1",{color:"#FFCE23"},41.470);
+tl.set("#cw42_1",{color:"#FFFFFF"},41.570);
+tl.set("#cw42_2",{color:"#FFCE23"},41.570);
+tl.set("#cw42_2",{color:"#FFFFFF"},41.830);
+tl.set("#cw42_3",{color:"#FFCE23"},41.830);
+tl.set("#cw42_3",{color:"#FFFFFF"},42.770);
+tl.fromTo("#capl43",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},42.790);
+tl.set("#cw43_0",{color:"#FFCE23"},42.810);
+tl.set("#cw43_0",{color:"#FFFFFF"},43.090);
+tl.fromTo("#cw43_1",{scale:1},{scale:1.08,duration:.08,yoyo:true,repeat:1,ease:"power1.out"},43.090);
+tl.set("#cw43_2",{color:"#FFCE23"},43.490);
+tl.set("#cw43_2",{color:"#FFFFFF"},43.790);
+tl.fromTo("#capl44",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},43.810);
+tl.set("#cw44_0",{color:"#FFCE23"},43.830);
+tl.set("#cw44_0",{color:"#FFFFFF"},44.070);
+tl.set("#cw44_1",{color:"#FFCE23"},44.070);
+tl.set("#cw44_1",{color:"#FFFFFF"},44.390);
+tl.set("#cw44_2",{color:"#FFCE23"},44.390);
+tl.set("#cw44_2",{color:"#FFFFFF"},44.610);
+tl.fromTo("#capl45",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},44.630);
+tl.set("#cw45_0",{color:"#FFCE23"},44.650);
+tl.set("#cw45_0",{color:"#FFFFFF"},45.070);
+tl.set("#cw45_1",{color:"#FFCE23"},45.070);
+tl.set("#cw45_1",{color:"#FFFFFF"},45.290);
+tl.set("#cw45_2",{color:"#FFCE23"},45.290);
+tl.set("#cw45_2",{color:"#FFFFFF"},45.350);
+tl.fromTo("#capl46",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},45.370);
+tl.set("#cw46_0",{color:"#FFCE23"},45.390);
+tl.set("#cw46_0",{color:"#FFFFFF"},45.690);
+tl.set("#cw46_1",{color:"#FFCE23"},45.690);
+tl.set("#cw46_1",{color:"#FFFFFF"},46.230);
+tl.fromTo("#capl47",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},46.250);
+tl.set("#cw47_0",{color:"#FFCE23"},46.270);
+tl.set("#cw47_0",{color:"#FFFFFF"},46.470);
+tl.set("#cw47_1",{color:"#FFCE23"},46.470);
+tl.set("#cw47_1",{color:"#FFFFFF"},46.690);
+tl.set("#cw47_2",{color:"#FFCE23"},46.690);
+tl.set("#cw47_2",{color:"#FFFFFF"},46.810);
+tl.fromTo("#capl48",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},46.830);
+tl.set("#cw48_0",{color:"#FFCE23"},46.850);
+tl.set("#cw48_0",{color:"#FFFFFF"},47.210);
+tl.set("#cw48_1",{color:"#FFCE23"},47.210);
+tl.set("#cw48_1",{color:"#FFFFFF"},47.910);
+tl.fromTo("#capl49",{opacity:0,y:18,scale:.92},{opacity:1,y:0,scale:1,duration:.14,ease:"back.out(2)"},47.930);
+tl.set("#cw49_0",{color:"#FFCE23"},47.950);
+tl.set("#cw49_0",{color:"#FFFFFF"},48.130);
+tl.set("#cw49_1",{color:"#FFCE23"},48.130);
+tl.set("#cw49_1",{color:"#FFFFFF"},48.800);
+window.__timelines["reel"] = tl;
+</script>
+</body></html>

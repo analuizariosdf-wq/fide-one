@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Capa do Reel</title>
+<meta name="viewport" content="width=1080, height=1920">
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Montserrat';font-weight:400;font-style:normal;src:url('assets/fonts/montserrat-latin-400-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:700;font-style:normal;src:url('assets/fonts/montserrat-latin-700-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:800;font-style:normal;src:url('assets/fonts/montserrat-latin-800-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:900;font-style:normal;src:url('assets/fonts/montserrat-latin-900-normal.woff2') format('woff2')}
+
+:root{--ink:#212829;--teal-deep:#00494F;--teal:#00696E;--mist:#D7E3E2;--paper:#F1F1F1;--yellow:#FFCE23}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:'Montserrat',sans-serif}
+#root{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+.hl{position:relative;display:inline-block;color:var(--teal-deep);z-index:0}
+.hl .paint{position:absolute;left:-.14em;right:-.14em;top:.02em;bottom:-.02em;background:var(--yellow);border-radius:.14em;z-index:-1;transform-origin:0 50%}
+
+#photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.78)}
+#grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,73,79,0) 30%,rgba(0,73,79,.55) 52%,rgba(0,73,79,.92) 78%,#00494F 100%)}
+#title{position:absolute;left:0;right:0;top:880px;height:470px;display:flex;align-items:center;justify-content:center}
+#tbox{width:880px;text-align:center;color:#fff;font-size:100px;line-height:1.12;letter-spacing:-1px;text-shadow:0 4px 22px rgba(0,0,0,.4)}
+#tbox .hl{text-shadow:none}
+.tw{display:inline-block}
+#clogo{position:absolute;right:90px;top:310px;width:170px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}
+#clogo img{display:block;width:100%}
+</style></head><body>
+<div id="root" data-composition-id="cover" data-start="0" data-duration="1" data-width="1080" data-height="1920">
+<img id="photo" class="clip" src="cover-photo.png" alt="" data-start="0" data-duration="1" data-track-index="0">
+<div id="grad" class="clip" data-start="0" data-duration="1" data-track-index="1"></div>
+<div id="title" class="clip" data-start="0" data-duration="1" data-track-index="2"><div id="tbox"><span class="tw" id="cw0" style="font-weight:400">Você</span> <span class="tw" id="cw1" style="font-weight:400">quer</span> <span class="tw" id="cw2" style="font-weight:400">essa</span> <span class="tw" id="cw3" style="font-weight:800">vaga</span> <span class="tw" id="cw4" style="font-weight:400">ou</span> <span class="tw" id="cw5" style="font-weight:400">só</span> <span class="tw" id="cw6" style="font-weight:400">quer</span> <span class="tw" id="cw7" style="font-weight:800"><span class="hl" id="csair"><span class="paint" id="cpaint"></span>SAIR</span></span> <span class="tw" id="cw8" style="font-weight:400">do</span> <span class="tw" id="cw9" style="font-weight:400">seu</span> <span class="tw" id="cw10" style="font-weight:400">emprego?</span></div></div>
+<div id="clogo-c" class="clip" data-start="0" data-duration="1" data-track-index="3"><div id="clogo"><img src="assets/logo-inovar.png" alt="Inovar Recursos Humanos"></div></div>
+</div>
+<script>
+const tl = gsap.timeline({paused:true});
+tl.set({},{},1);
+window.__timelines["cover"] = tl;
+</script>
+</body></html>

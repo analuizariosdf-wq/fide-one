@@ -1,0 +1,74 @@
+{
+ "segments": [
+  {
+   "scene": "Gancho",
+   "take": "take01",
+   "start": 0.253,
+   "end": 4.023,
+   "text": "Você quer essa vaga, ou só quer sair do seu emprego?",
+   "first_in_scene": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 1",
+   "take": "take01",
+   "start": 25.523,
+   "end": 30.227,
+   "text": "Talvez você não esteja procurando um emprego melhor, talvez só esteja tentando fugir do atual.",
+   "first_in_scene": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 0.733,
+   "end": 10.96,
+   "text": "Quando o trabalho atual está ruim, qualquer vaga começa a parecer boa. E aí mora o perigo. Você vê um salário parecido, uma empresa diferente, e pensa, qualquer coisa é melhor do",
+   "first_in_scene": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 12.2,
+   "end": 13.013,
+   "text": "do que aqui.",
+   "first_in_scene": false,
+   "zoom": 1.08
+  },
+  {
+   "scene": "Cena 3",
+   "take": "take03",
+   "start": 1.623,
+   "end": 17.177,
+   "text": "Mas se você não entender o que realmente está fazendo você querer sair, pode trocar de emprego e encontrar exatamente o mesmo problema. Antes de aceitar uma oportunidade, pense, o que eu quero mudar? Salário, horário, ambiente, gestão, possibilidade de crescimento?",
+   "first_in_scene": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 4",
+   "take": "take04",
+   "start": 12.343,
+   "end": 17.827,
+   "text": "Você não precisa encontrar o emprego perfeito, mas precisa saber o que não quer repetir. Antes de aceitar a sua próxima oportunidade, escolha três coisas que precisam ser diferentes do seu emprego atual. Isso já pode mudar completamente sua decisão.",
+   "first_in_scene": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 4",
+   "take": "take04",
+   "start": 18.343,
+   "end": 26.613,
+   "text": "(cont.) Você não precisa encontrar o emprego perfeito, mas precisa saber o que não quer repetir. Antes de aceitar a sua próxima oportunidade, escolha três coisas que precisam ser diferentes do seu emprego atual. Isso já pode mudar completamente sua decisão.",
+   "first_in_scene": false,
+   "zoom": 1.08
+  }
+ ],
+ "duration": 48.82,
+ "takes": [
+  "take01",
+  "take02",
+  "take03",
+  "take04"
+ ]
+}

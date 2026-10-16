@@ -1,0 +1,710 @@
+{
+"words": [
+{
+"text": "Você",
+"start": 0.397,
+"end": 0.917
+},
+{
+"text": "quer",
+"start": 0.917,
+"end": 1.097
+},
+{
+"text": "essa",
+"start": 1.097,
+"end": 1.377
+},
+{
+"text": "vaga,",
+"start": 1.377,
+"end": 1.777
+},
+{
+"text": "ou",
+"start": 1.957,
+"end": 2.037
+},
+{
+"text": "só",
+"start": 2.037,
+"end": 2.257
+},
+{
+"text": "quer",
+"start": 2.257,
+"end": 2.417
+},
+{
+"text": "sair",
+"start": 2.417,
+"end": 2.557
+},
+{
+"text": "do",
+"start": 2.557,
+"end": 2.737
+},
+{
+"text": "seu",
+"start": 2.737,
+"end": 2.817
+},
+{
+"text": "emprego?",
+"start": 2.817,
+"end": 3.637
+},
+{
+"text": "Talvez",
+"start": 3.847,
+"end": 4.347
+},
+{
+"text": "você",
+"start": 4.347,
+"end": 4.627
+},
+{
+"text": "não",
+"start": 4.627,
+"end": 4.847
+},
+{
+"text": "esteja",
+"start": 4.847,
+"end": 5.227
+},
+{
+"text": "procurando",
+"start": 5.227,
+"end": 5.627
+},
+{
+"text": "um",
+"start": 5.627,
+"end": 5.747
+},
+{
+"text": "emprego",
+"start": 5.747,
+"end": 5.947
+},
+{
+"text": "melhor,",
+"start": 5.947,
+"end": 6.287
+},
+{
+"text": "talvez",
+"start": 6.547,
+"end": 6.707
+},
+{
+"text": "só",
+"start": 6.707,
+"end": 6.827
+},
+{
+"text": "esteja",
+"start": 6.827,
+"end": 7.147
+},
+{
+"text": "tentando",
+"start": 7.147,
+"end": 7.487
+},
+{
+"text": "fugir",
+"start": 7.487,
+"end": 7.807
+},
+{
+"text": "do",
+"start": 7.807,
+"end": 7.967
+},
+{
+"text": "atual.",
+"start": 7.967,
+"end": 8.207
+},
+{
+"text": "Quando",
+"start": 8.881,
+"end": 9.401
+},
+{
+"text": "o",
+"start": 9.401,
+"end": 9.621
+},
+{
+"text": "trabalho",
+"start": 9.621,
+"end": 9.901
+},
+{
+"text": "atual",
+"start": 9.901,
+"end": 10.161
+},
+{
+"text": "está",
+"start": 10.161,
+"end": 10.421
+},
+{
+"text": "ruim,",
+"start": 10.421,
+"end": 10.781
+},
+{
+"text": "qualquer",
+"start": 11.121,
+"end": 11.321
+},
+{
+"text": "vaga",
+"start": 11.321,
+"end": 11.721
+},
+{
+"text": "começa",
+"start": 11.721,
+"end": 12.001
+},
+{
+"text": "a",
+"start": 12.001,
+"end": 12.101
+},
+{
+"text": "parecer",
+"start": 12.101,
+"end": 12.381
+},
+{
+"text": "boa.",
+"start": 12.381,
+"end": 12.741
+},
+{
+"text": "E",
+"start": 13.181,
+"end": 13.261
+},
+{
+"text": "aí",
+"start": 13.261,
+"end": 13.421
+},
+{
+"text": "mora",
+"start": 13.421,
+"end": 13.721
+},
+{
+"text": "o",
+"start": 13.721,
+"end": 13.821
+},
+{
+"text": "perigo.",
+"start": 13.821,
+"end": 14.101
+},
+{
+"text": "Você",
+"start": 14.421,
+"end": 14.641
+},
+{
+"text": "vê",
+"start": 14.641,
+"end": 14.741
+},
+{
+"text": "um",
+"start": 14.741,
+"end": 14.941
+},
+{
+"text": "salário",
+"start": 14.941,
+"end": 15.181
+},
+{
+"text": "parecido,",
+"start": 15.181,
+"end": 15.861
+},
+{
+"text": "uma",
+"start": 16.061,
+"end": 16.121
+},
+{
+"text": "empresa",
+"start": 16.121,
+"end": 16.361
+},
+{
+"text": "diferente,",
+"start": 16.361,
+"end": 16.961
+},
+{
+"text": "e",
+"start": 17.221,
+"end": 17.321
+},
+{
+"text": "pensa,",
+"start": 17.321,
+"end": 17.621
+},
+{
+"text": "qualquer",
+"start": 17.881,
+"end": 18.101
+},
+{
+"text": "coisa",
+"start": 18.101,
+"end": 18.361
+},
+{
+"text": "é",
+"start": 18.361,
+"end": 18.461
+},
+{
+"text": "melhor",
+"start": 18.461,
+"end": 18.621
+},
+{
+"text": "do",
+"start": 18.621,
+"end": 18.701
+},
+{
+"text": "do",
+"start": 18.821,
+"end": 19.001
+},
+{
+"text": "que",
+"start": 19.001,
+"end": 19.121
+},
+{
+"text": "aqui.",
+"start": 19.121,
+"end": 19.381
+},
+{
+"text": "Mas",
+"start": 19.651,
+"end": 20.251
+},
+{
+"text": "se",
+"start": 20.251,
+"end": 20.471
+},
+{
+"text": "você",
+"start": 20.471,
+"end": 20.771
+},
+{
+"text": "não",
+"start": 20.771,
+"end": 20.971
+},
+{
+"text": "entender",
+"start": 20.971,
+"end": 21.411
+},
+{
+"text": "o",
+"start": 21.411,
+"end": 21.551
+},
+{
+"text": "que",
+"start": 21.551,
+"end": 21.711
+},
+{
+"text": "realmente",
+"start": 21.711,
+"end": 22.191
+},
+{
+"text": "está",
+"start": 22.191,
+"end": 22.391
+},
+{
+"text": "fazendo",
+"start": 22.391,
+"end": 22.711
+},
+{
+"text": "você",
+"start": 22.711,
+"end": 23.011
+},
+{
+"text": "querer",
+"start": 23.011,
+"end": 23.231
+},
+{
+"text": "sair,",
+"start": 23.231,
+"end": 23.591
+},
+{
+"text": "pode",
+"start": 24.011,
+"end": 24.111
+},
+{
+"text": "trocar",
+"start": 24.111,
+"end": 24.411
+},
+{
+"text": "de",
+"start": 24.411,
+"end": 24.651
+},
+{
+"text": "emprego",
+"start": 24.651,
+"end": 24.951
+},
+{
+"text": "e",
+"start": 24.951,
+"end": 25.211
+},
+{
+"text": "encontrar",
+"start": 25.211,
+"end": 25.531
+},
+{
+"text": "exatamente",
+"start": 25.531,
+"end": 26.171
+},
+{
+"text": "o",
+"start": 26.171,
+"end": 26.371
+},
+{
+"text": "mesmo",
+"start": 26.371,
+"end": 26.571
+},
+{
+"text": "problema.",
+"start": 26.571,
+"end": 27.111
+},
+{
+"text": "Antes",
+"start": 27.491,
+"end": 27.731
+},
+{
+"text": "de",
+"start": 27.731,
+"end": 27.911
+},
+{
+"text": "aceitar",
+"start": 27.911,
+"end": 28.211
+},
+{
+"text": "uma",
+"start": 28.211,
+"end": 28.351
+},
+{
+"text": "oportunidade,",
+"start": 28.351,
+"end": 29.191
+},
+{
+"text": "pense,",
+"start": 29.491,
+"end": 29.731
+},
+{
+"text": "o",
+"start": 29.891,
+"end": 30.011
+},
+{
+"text": "que",
+"start": 30.011,
+"end": 30.131
+},
+{
+"text": "eu",
+"start": 30.131,
+"end": 30.251
+},
+{
+"text": "quero",
+"start": 30.251,
+"end": 30.371
+},
+{
+"text": "mudar?",
+"start": 30.371,
+"end": 30.731
+},
+{
+"text": "Salário,",
+"start": 31.211,
+"end": 31.811
+},
+{
+"text": "horário,",
+"start": 32.071,
+"end": 32.531
+},
+{
+"text": "ambiente,",
+"start": 32.831,
+"end": 33.131
+},
+{
+"text": "gestão,",
+"start": 33.411,
+"end": 33.751
+},
+{
+"text": "possibilidade",
+"start": 33.971,
+"end": 34.311
+},
+{
+"text": "de",
+"start": 34.311,
+"end": 34.431
+},
+{
+"text": "crescimento?",
+"start": 34.431,
+"end": 34.931
+},
+{
+"text": "Você",
+"start": 35.225,
+"end": 35.745
+},
+{
+"text": "não",
+"start": 35.745,
+"end": 36.085
+},
+{
+"text": "precisa",
+"start": 36.085,
+"end": 36.325
+},
+{
+"text": "encontrar",
+"start": 36.325,
+"end": 36.785
+},
+{
+"text": "o",
+"start": 36.785,
+"end": 36.965
+},
+{
+"text": "emprego",
+"start": 36.965,
+"end": 37.205
+},
+{
+"text": "perfeito,",
+"start": 37.205,
+"end": 37.785
+},
+{
+"text": "mas",
+"start": 37.945,
+"end": 38.225
+},
+{
+"text": "precisa",
+"start": 38.225,
+"end": 38.465
+},
+{
+"text": "saber",
+"start": 38.465,
+"end": 38.885
+},
+{
+"text": "o",
+"start": 38.885,
+"end": 39.105
+},
+{
+"text": "que",
+"start": 39.105,
+"end": 39.245
+},
+{
+"text": "não",
+"start": 39.245,
+"end": 39.445
+},
+{
+"text": "quer",
+"start": 39.445,
+"end": 39.625
+},
+{
+"text": "Antes",
+"start": 40.689,
+"end": 40.849
+},
+{
+"text": "de",
+"start": 40.849,
+"end": 41.029
+},
+{
+"text": "aceitar",
+"start": 41.029,
+"end": 41.349
+},
+{
+"text": "a",
+"start": 41.349,
+"end": 41.489
+},
+{
+"text": "sua",
+"start": 41.489,
+"end": 41.589
+},
+{
+"text": "próxima",
+"start": 41.589,
+"end": 41.849
+},
+{
+"text": "oportunidade,",
+"start": 41.849,
+"end": 42.609
+},
+{
+"text": "escolha",
+"start": 42.829,
+"end": 43.109
+},
+{
+"text": "três",
+"start": 43.109,
+"end": 43.509
+},
+{
+"text": "coisas",
+"start": 43.509,
+"end": 43.849
+},
+{
+"text": "que",
+"start": 43.849,
+"end": 44.089
+},
+{
+"text": "precisam",
+"start": 44.089,
+"end": 44.409
+},
+{
+"text": "ser",
+"start": 44.409,
+"end": 44.669
+},
+{
+"text": "diferentes",
+"start": 44.669,
+"end": 45.089
+},
+{
+"text": "do",
+"start": 45.089,
+"end": 45.309
+},
+{
+"text": "seu",
+"start": 45.309,
+"end": 45.409
+},
+{
+"text": "emprego",
+"start": 45.409,
+"end": 45.709
+},
+{
+"text": "atual.",
+"start": 45.709,
+"end": 46.009
+},
+{
+"text": "Isso",
+"start": 46.289,
+"end": 46.489
+},
+{
+"text": "já",
+"start": 46.489,
+"end": 46.709
+},
+{
+"text": "pode",
+"start": 46.709,
+"end": 46.869
+},
+{
+"text": "mudar",
+"start": 46.869,
+"end": 47.229
+},
+{
+"text": "completamente",
+"start": 47.229,
+"end": 47.969
+},
+{
+"text": "sua",
+"start": 47.969,
+"end": 48.149
+},
+{
+"text": "decisão.",
+"start": 48.149,
+"end": 48.689
+}
+],
+"duration": 48.822
+}
