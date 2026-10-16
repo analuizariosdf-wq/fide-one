@@ -1,0 +1,908 @@
+{
+"words": [
+{
+"text": "Uma",
+"take": "take01",
+"src": 1.12,
+"start": 0.0,
+"end": 0.34
+},
+{
+"text": "vaga",
+"take": "take01",
+"src": 1.46,
+"start": 0.34,
+"end": 0.7
+},
+{
+"text": "vazia",
+"take": "take01",
+"src": 1.82,
+"start": 0.7,
+"end": 1.04
+},
+{
+"text": "pode",
+"take": "take01",
+"src": 2.16,
+"start": 1.04,
+"end": 1.22
+},
+{
+"text": "estar",
+"take": "take01",
+"src": 2.34,
+"start": 1.22,
+"end": 1.48
+},
+{
+"text": "custando",
+"take": "take01",
+"src": 2.6,
+"start": 1.48,
+"end": 2.0
+},
+{
+"text": "muito",
+"take": "take01",
+"src": 3.12,
+"start": 2.0,
+"end": 2.42
+},
+{
+"text": "mais",
+"take": "take01",
+"src": 3.54,
+"start": 2.42,
+"end": 2.64
+},
+{
+"text": "do",
+"take": "take01",
+"src": 3.76,
+"start": 2.64,
+"end": 2.76
+},
+{
+"text": "que",
+"take": "take01",
+"src": 3.88,
+"start": 2.76,
+"end": 2.86
+},
+{
+"text": "o",
+"take": "take01",
+"src": 3.98,
+"start": 2.86,
+"end": 3.02
+},
+{
+"text": "salário",
+"take": "take01",
+"src": 4.14,
+"start": 3.02,
+"end": 3.3
+},
+{
+"text": "de",
+"take": "take01",
+"src": 4.42,
+"start": 3.3,
+"end": 3.42
+},
+{
+"text": "quem",
+"take": "take01",
+"src": 4.54,
+"start": 3.42,
+"end": 3.54
+},
+{
+"text": "deveria",
+"take": "take01",
+"src": 4.66,
+"start": 3.54,
+"end": 3.94
+},
+{
+"text": "estar",
+"take": "take01",
+"src": 5.06,
+"start": 3.94,
+"end": 4.12
+},
+{
+"text": "nela.",
+"take": "take01",
+"src": 5.24,
+"start": 4.12,
+"end": 4.44
+},
+{
+"text": "Quando",
+"take": "take02",
+"src": 2.36,
+"start": 4.573,
+"end": 4.933
+},
+{
+"text": "uma",
+"take": "take02",
+"src": 2.72,
+"start": 4.933,
+"end": 5.113
+},
+{
+"text": "posição",
+"take": "take02",
+"src": 2.9,
+"start": 5.113,
+"end": 5.513
+},
+{
+"text": "fica",
+"take": "take02",
+"src": 3.3,
+"start": 5.513,
+"end": 5.793
+},
+{
+"text": "aberta",
+"take": "take02",
+"src": 3.58,
+"start": 5.793,
+"end": 6.093
+},
+{
+"text": "por",
+"take": "take02",
+"src": 3.88,
+"start": 6.093,
+"end": 6.353
+},
+{
+"text": "muito",
+"take": "take02",
+"src": 4.14,
+"start": 6.353,
+"end": 6.693
+},
+{
+"text": "tempo,",
+"take": "take02",
+"src": 4.48,
+"start": 6.693,
+"end": 6.973
+},
+{
+"text": "a",
+"take": "take02",
+"src": 4.96,
+"start": 7.173,
+"end": 7.193
+},
+{
+"text": "empresa",
+"take": "take02",
+"src": 4.98,
+"start": 7.193,
+"end": 7.453
+},
+{
+"text": "normalmente",
+"take": "take02",
+"src": 5.24,
+"start": 7.453,
+"end": 8.113
+},
+{
+"text": "olha",
+"take": "take02",
+"src": 5.9,
+"start": 8.113,
+"end": 8.333
+},
+{
+"text": "só",
+"take": "take02",
+"src": 6.12,
+"start": 8.333,
+"end": 8.533
+},
+{
+"text": "para",
+"take": "take02",
+"src": 6.32,
+"start": 8.533,
+"end": 8.713
+},
+{
+"text": "uma",
+"take": "take02",
+"src": 6.5,
+"start": 8.713,
+"end": 8.873
+},
+{
+"text": "coisa.",
+"take": "take02",
+"src": 6.66,
+"start": 8.873,
+"end": 9.153
+},
+{
+"text": "Estamos",
+"take": "take02",
+"src": 7.36,
+"start": 9.326,
+"end": 9.646
+},
+{
+"text": "economizando",
+"take": "take02",
+"src": 7.68,
+"start": 9.646,
+"end": 10.206
+},
+{
+"text": "esse",
+"take": "take02",
+"src": 8.24,
+"start": 10.206,
+"end": 10.486
+},
+{
+"text": "salário,",
+"take": "take02",
+"src": 8.52,
+"start": 10.486,
+"end": 10.846
+},
+{
+"text": "mas",
+"take": "take02",
+"src": 9.2,
+"start": 11.166,
+"end": 11.306
+},
+{
+"text": "enquanto",
+"take": "take02",
+"src": 9.34,
+"start": 11.306,
+"end": 11.606
+},
+{
+"text": "isso,",
+"take": "take02",
+"src": 9.64,
+"start": 11.606,
+"end": 12.246
+},
+{
+"text": "alguém",
+"take": "take02",
+"src": 10.48,
+"start": 12.446,
+"end": 12.586
+},
+{
+"text": "da",
+"take": "take02",
+"src": 10.62,
+"start": 12.586,
+"end": 12.746
+},
+{
+"text": "equipe",
+"take": "take02",
+"src": 10.78,
+"start": 12.746,
+"end": 13.046
+},
+{
+"text": "está",
+"take": "take02",
+"src": 11.08,
+"start": 13.046,
+"end": 13.226
+},
+{
+"text": "acumulando",
+"take": "take02",
+"src": 11.26,
+"start": 13.226,
+"end": 13.646
+},
+{
+"text": "função,",
+"take": "take02",
+"src": 11.68,
+"start": 13.646,
+"end": 14.066
+},
+{
+"text": "o",
+"take": "take02",
+"src": 12.44,
+"start": 14.406,
+"end": 14.466
+},
+{
+"text": "gestor",
+"take": "take02",
+"src": 12.5,
+"start": 14.466,
+"end": 14.746
+},
+{
+"text": "está",
+"take": "take02",
+"src": 12.78,
+"start": 14.746,
+"end": 14.926
+},
+{
+"text": "gastando",
+"take": "take02",
+"src": 12.96,
+"start": 14.926,
+"end": 15.266
+},
+{
+"text": "tempo",
+"take": "take02",
+"src": 13.3,
+"start": 15.266,
+"end": 15.666
+},
+{
+"text": "operacional,",
+"take": "take02",
+"src": 13.7,
+"start": 15.666,
+"end": 16.326
+},
+{
+"text": "prazas",
+"take": "take02",
+"src": 14.74,
+"start": 16.706,
+"end": 16.966
+},
+{
+"text": "começam",
+"take": "take02",
+"src": 15.0,
+"start": 16.966,
+"end": 17.386
+},
+{
+"text": "a",
+"take": "take02",
+"src": 15.42,
+"start": 17.386,
+"end": 17.486
+},
+{
+"text": "estourar,",
+"take": "take02",
+"src": 15.52,
+"start": 17.486,
+"end": 17.846
+},
+{
+"text": "o",
+"take": "take02",
+"src": 16.02,
+"start": 17.986,
+"end": 18.126
+},
+{
+"text": "atendimento",
+"take": "take02",
+"src": 16.16,
+"start": 18.126,
+"end": 18.506
+},
+{
+"text": "pode",
+"take": "take02",
+"src": 16.54,
+"start": 18.506,
+"end": 18.726
+},
+{
+"text": "piorar",
+"take": "take02",
+"src": 16.76,
+"start": 18.726,
+"end": 19.246
+},
+{
+"text": "e",
+"take": "take02",
+"src": 17.28,
+"start": 19.246,
+"end": 19.546
+},
+{
+"text": "quem",
+"take": "take02",
+"src": 17.58,
+"start": 19.546,
+"end": 19.846
+},
+{
+"text": "continua",
+"take": "take02",
+"src": 17.88,
+"start": 19.846,
+"end": 20.126
+},
+{
+"text": "segurando",
+"take": "take02",
+"src": 18.16,
+"start": 20.126,
+"end": 20.626
+},
+{
+"text": "tudo",
+"take": "take02",
+"src": 18.66,
+"start": 20.626,
+"end": 20.906
+},
+{
+"text": "começa",
+"take": "take02",
+"src": 18.94,
+"start": 20.906,
+"end": 21.266
+},
+{
+"text": "a",
+"take": "take02",
+"src": 19.3,
+"start": 21.266,
+"end": 21.746
+},
+{
+"text": "se",
+"take": "take02",
+"src": 19.78,
+"start": 21.746,
+"end": 21.926
+},
+{
+"text": "desgastar.",
+"take": "take02",
+"src": 19.96,
+"start": 21.926,
+"end": 22.466
+},
+{
+"text": "Ou",
+"take": "take03",
+"src": 1.05,
+"start": 22.599,
+"end": 23.009
+},
+{
+"text": "seja,",
+"take": "take03",
+"src": 1.46,
+"start": 23.009,
+"end": 23.329
+},
+{
+"text": "o",
+"take": "take03",
+"src": 2.02,
+"start": 23.569,
+"end": 23.669
+},
+{
+"text": "custo",
+"take": "take03",
+"src": 2.12,
+"start": 23.669,
+"end": 23.989
+},
+{
+"text": "de",
+"take": "take03",
+"src": 2.44,
+"start": 23.989,
+"end": 24.089
+},
+{
+"text": "uma",
+"take": "take03",
+"src": 2.54,
+"start": 24.089,
+"end": 24.229
+},
+{
+"text": "vaga",
+"take": "take03",
+"src": 2.68,
+"start": 24.229,
+"end": 24.469
+},
+{
+"text": "aberta",
+"take": "take03",
+"src": 2.92,
+"start": 24.469,
+"end": 24.789
+},
+{
+"text": "não",
+"take": "take03",
+"src": 3.24,
+"start": 24.789,
+"end": 25.029
+},
+{
+"text": "aparece",
+"take": "take03",
+"src": 3.48,
+"start": 25.029,
+"end": 25.369
+},
+{
+"text": "apenas",
+"take": "take03",
+"src": 3.82,
+"start": 25.369,
+"end": 25.809
+},
+{
+"text": "no",
+"take": "take03",
+"src": 4.26,
+"start": 25.809,
+"end": 26.009
+},
+{
+"text": "financeiro.",
+"take": "take03",
+"src": 4.46,
+"start": 26.009,
+"end": 26.569
+},
+{
+"text": "Ele",
+"take": "take03",
+"src": 5.36,
+"start": 26.909,
+"end": 27.169
+},
+{
+"text": "aparece",
+"take": "take03",
+"src": 5.62,
+"start": 27.169,
+"end": 27.609
+},
+{
+"text": "na",
+"take": "take03",
+"src": 6.06,
+"start": 27.609,
+"end": 27.889
+},
+{
+"text": "produtividade,",
+"take": "take03",
+"src": 6.34,
+"start": 27.889,
+"end": 28.609
+},
+{
+"text": "no",
+"take": "take03",
+"src": 7.42,
+"start": 28.969,
+"end": 29.149
+},
+{
+"text": "clima",
+"take": "take03",
+"src": 7.6,
+"start": 29.149,
+"end": 29.349
+},
+{
+"text": "e",
+"take": "take03",
+"src": 7.8,
+"start": 29.349,
+"end": 29.569
+},
+{
+"text": "na",
+"take": "take03",
+"src": 8.02,
+"start": 29.569,
+"end": 29.709
+},
+{
+"text": "retenção",
+"take": "take03",
+"src": 8.16,
+"start": 29.709,
+"end": 30.309
+},
+{
+"text": "de",
+"take": "take03",
+"src": 8.76,
+"start": 30.309,
+"end": 30.509
+},
+{
+"text": "quem",
+"take": "take03",
+"src": 8.96,
+"start": 30.509,
+"end": 30.629
+},
+{
+"text": "já",
+"take": "take03",
+"src": 9.08,
+"start": 30.629,
+"end": 30.829
+},
+{
+"text": "está",
+"take": "take03",
+"src": 9.28,
+"start": 30.829,
+"end": 31.009
+},
+{
+"text": "dentro.",
+"take": "take03",
+"src": 9.46,
+"start": 31.009,
+"end": 31.349
+},
+{
+"text": "sua",
+"take": "take04",
+"src": 1.1,
+"start": 31.736,
+"end": 31.956
+},
+{
+"text": "empresa",
+"take": "take04",
+"src": 1.32,
+"start": 31.956,
+"end": 32.316
+},
+{
+"text": "está",
+"take": "take04",
+"src": 1.68,
+"start": 32.316,
+"end": 32.636
+},
+{
+"text": "adiando",
+"take": "take04",
+"src": 2.0,
+"start": 32.636,
+"end": 33.036
+},
+{
+"text": "uma",
+"take": "take04",
+"src": 2.4,
+"start": 33.036,
+"end": 33.316
+},
+{
+"text": "contratação",
+"take": "take04",
+"src": 2.68,
+"start": 33.316,
+"end": 33.776
+},
+{
+"text": "importante,",
+"take": "take04",
+"src": 3.14,
+"start": 33.776,
+"end": 34.336
+},
+{
+"text": "talvez",
+"take": "take04",
+"src": 4.14,
+"start": 34.776,
+"end": 34.996
+},
+{
+"text": "vale",
+"take": "take04",
+"src": 4.36,
+"start": 34.996,
+"end": 35.216
+},
+{
+"text": "a",
+"take": "take04",
+"src": 4.58,
+"start": 35.216,
+"end": 35.336
+},
+{
+"text": "pena",
+"take": "take04",
+"src": 4.7,
+"start": 35.336,
+"end": 35.576
+},
+{
+"text": "calcular",
+"take": "take04",
+"src": 4.94,
+"start": 35.576,
+"end": 36.056
+},
+{
+"text": "o",
+"take": "take04",
+"src": 5.42,
+"start": 36.056,
+"end": 36.216
+},
+{
+"text": "custo",
+"take": "take04",
+"src": 5.58,
+"start": 36.216,
+"end": 36.556
+},
+{
+"text": "de",
+"take": "take04",
+"src": 5.92,
+"start": 36.556,
+"end": 36.736
+},
+{
+"text": "não",
+"take": "take04",
+"src": 6.1,
+"start": 36.736,
+"end": 36.956
+},
+{
+"text": "contratar.",
+"take": "take04",
+"src": 6.32,
+"start": 36.956,
+"end": 37.516
+},
+{
+"text": "E",
+"take": "take04",
+"src": 7.06,
+"start": 37.696,
+"end": 37.856
+},
+{
+"text": "se",
+"take": "take04",
+"src": 7.22,
+"start": 37.856,
+"end": 38.056
+},
+{
+"text": "precisar",
+"take": "take04",
+"src": 7.42,
+"start": 38.056,
+"end": 38.396
+},
+{
+"text": "acelerar",
+"take": "take04",
+"src": 7.76,
+"start": 38.396,
+"end": 38.816
+},
+{
+"text": "esse",
+"take": "take04",
+"src": 8.18,
+"start": 38.816,
+"end": 38.976
+},
+{
+"text": "processo",
+"take": "take04",
+"src": 8.34,
+"start": 38.976,
+"end": 39.356
+},
+{
+"text": "com",
+"take": "take04",
+"src": 8.72,
+"start": 39.356,
+"end": 39.576
+},
+{
+"text": "mais",
+"take": "take04",
+"src": 8.94,
+"start": 39.576,
+"end": 39.836
+},
+{
+"text": "estratégia,",
+"take": "take04",
+"src": 9.2,
+"start": 39.836,
+"end": 40.496
+},
+{
+"text": "a",
+"take": "take04",
+"src": 9.92,
+"start": 40.556,
+"end": 40.696
+},
+{
+"text": "Inovar",
+"take": "take04",
+"src": 10.06,
+"start": 40.696,
+"end": 41.176
+},
+{
+"text": "está",
+"take": "take04",
+"src": 10.54,
+"start": 41.176,
+"end": 41.436
+},
+{
+"text": "pronta",
+"take": "take04",
+"src": 10.8,
+"start": 41.436,
+"end": 41.736
+},
+{
+"text": "para",
+"take": "take04",
+"src": 11.1,
+"start": 41.736,
+"end": 41.916
+},
+{
+"text": "te",
+"take": "take04",
+"src": 11.28,
+"start": 41.916,
+"end": 42.076
+},
+{
+"text": "auxiliar.",
+"take": "take04",
+"src": 11.44,
+"start": 42.076,
+"end": 42.536
+}
+],
+"duration": 43.086
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Capa do Reel</title>
+<meta name="viewport" content="width=1080, height=1920">
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Montserrat';font-weight:400;font-style:normal;src:url('assets/fonts/montserrat-latin-400-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:700;font-style:normal;src:url('assets/fonts/montserrat-latin-700-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:800;font-style:normal;src:url('assets/fonts/montserrat-latin-800-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:900;font-style:normal;src:url('assets/fonts/montserrat-latin-900-normal.woff2') format('woff2')}
+
+:root{--ink:#212829;--teal-deep:#00494F;--teal:#00696E;--mist:#D7E3E2;--paper:#F1F1F1;--yellow:#FFCE23}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:'Montserrat',sans-serif}
+#root{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+.ybox{display:inline-block;background:var(--yellow);color:var(--teal-deep);padding:0 .18em;border-radius:.14em}
+
+#photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#grad{position:absolute;inset:0;background:linear-gradient(0deg,#00494F 0%,rgba(0,73,79,.92) 22%,rgba(0,73,79,.55) 38%,rgba(0,73,79,0) 50%)}
+#title{position:absolute;left:0;right:0;top:1056px;height:384px;display:flex;align-items:center;justify-content:center}
+#tbox{width:900px;text-align:center;color:#fff;font-weight:400;font-size:96px;line-height:1.14;letter-spacing:-1px;text-shadow:0 4px 22px rgba(0,0,0,.35)}
+#tbox .ybox{font-weight:800;text-shadow:none;padding:0 .16em}
+</style></head><body>
+<div id="root" data-composition-id="cover" data-start="0" data-duration="1" data-width="1080" data-height="1920">
+<img id="photo" class="clip" src="cover-photo.png" alt="" data-start="0" data-duration="1" data-track-index="0">
+<div id="grad" class="clip" data-start="0" data-duration="1" data-track-index="1"></div>
+<div id="title" class="clip" data-start="0" data-duration="1" data-track-index="2"><div id="tbox">Quanto custa uma <span class="ybox">VAGA VAZIA</span> na sua empresa?</div></div>
+</div>
+<script>
+const tl = gsap.timeline({paused:true});
+tl.set({},{},1);
+window.__timelines["cover"] = tl;
+</script>
+</body></html>

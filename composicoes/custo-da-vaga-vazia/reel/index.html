@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>O custo de uma vaga vazia</title>
+<meta name="viewport" content="width=1080, height=1920">
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Montserrat';font-weight:400;font-style:normal;src:url('assets/fonts/montserrat-latin-400-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:700;font-style:normal;src:url('assets/fonts/montserrat-latin-700-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:800;font-style:normal;src:url('assets/fonts/montserrat-latin-800-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:900;font-style:normal;src:url('assets/fonts/montserrat-latin-900-normal.woff2') format('woff2')}
+
+:root{--ink:#212829;--teal-deep:#00494F;--teal:#00696E;--mist:#D7E3E2;--paper:#F1F1F1;--yellow:#FFCE23}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:'Montserrat',sans-serif}
+#root{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+.ybox{display:inline-block;background:var(--yellow);color:var(--teal-deep);padding:0 .18em;border-radius:.14em}
+
+
+#ice{position:absolute;inset:0;overflow:hidden;z-index:1}
+#cam{position:absolute;inset:0;transform-origin:0 0;z-index:2}
+#shake{position:absolute;inset:0}
+#speaker{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#winframe{position:absolute;left:600px;top:270px;width:384px;height:536px;border:6px solid #fff;border-radius:48px;box-shadow:0 18px 50px rgba(0,0,0,.45);z-index:3}
+#dim{position:absolute;inset:0;background:#000;z-index:4}
+/* gancho */
+#hook{position:absolute;left:0;right:0;top:252px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:6}
+#hooktag{color:#fff;font-weight:700;font-size:28px;letter-spacing:.32em;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+#counter{display:flex;align-items:center;gap:14px;background:var(--teal-deep);border-radius:26px;padding:10px 30px;box-shadow:0 14px 40px rgba(0,0,0,.4);border:3px solid var(--teal)}
+#counter .rs{color:#fff;font-weight:800;font-size:58px}
+#reels{display:flex;align-items:center;height:76px;overflow:hidden}
+.reel{width:44px;height:76px;overflow:hidden;position:relative}
+.strip{position:absolute;left:0;top:0;display:flex;flex-direction:column}
+.strip span{height:76px;line-height:76px;text-align:center;color:#fff;font-weight:800;font-size:64px}
+.dot{color:#fff;font-weight:800;font-size:64px;line-height:76px;width:16px;text-align:center}
+#qqq{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#qqq .ybox{font-weight:900;font-size:62px;line-height:1.05;letter-spacing:.06em}
+#numbox{position:relative}
+/* recibo */
+#receipt{position:absolute;z-index:6;left:90px;top:300px;width:330px;background:#fff;border-radius:10px 10px 0 0;padding:26px 24px 34px;box-shadow:0 18px 44px rgba(0,0,0,.4);color:var(--ink);transform-origin:50% 0}
+#receipt:after{content:"";position:absolute;left:0;right:0;bottom:-14px;height:14px;background:linear-gradient(135deg,#fff 50%,transparent 50%) 0 0/20px 14px repeat-x,linear-gradient(-135deg,#fff 50%,transparent 50%) 0 0/20px 14px repeat-x}
+#receipt .rh{font-weight:900;font-size:30px;letter-spacing:.12em;text-align:center;color:var(--teal-deep)}
+#receipt .rs2{font-weight:400;font-size:20px;text-align:center;color:#55605f;margin-top:4px}
+#receipt .rl{border-top:3px dashed #c7d2d1;margin:16px 0}
+#receipt .row{display:flex;justify-content:space-between;font-weight:700;font-size:22px;margin:8px 0;color:#3a4544}
+#receipt .tot{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:26px;color:var(--teal-deep)}
+#receipt .ok{display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--teal);align-items:center;justify-content:center}
+#receipt .ok svg{width:22px;height:22px}
+#stamp{position:absolute;left:34px;top:128px;border:5px solid var(--teal);color:var(--teal);font-weight:900;font-size:27px;letter-spacing:.06em;padding:5px 12px;border-radius:12px;transform:rotate(-14deg);background:rgba(255,255,255,.75)}
+/* notificações */
+#notifs{position:absolute;left:110px;right:110px;top:850px;height:260px;z-index:6}
+.nt{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:22px;background:#fff;border-radius:30px;padding:20px 26px;box-shadow:0 16px 40px rgba(0,0,0,.35);transform-origin:50% 0}
+.nt .ic{width:88px;height:88px;flex:0 0 88px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center}
+.nt .ic svg{width:52px;height:52px}
+.nt .tx{display:flex;flex-direction:column;gap:4px}
+.nt .ap{font-weight:700;font-size:22px;color:#7b8786;letter-spacing:.02em}
+.nt .tt{font-weight:800;font-size:42px;color:var(--teal-deep);letter-spacing:-.3px}
+.stars{display:flex;gap:6px;margin-top:2px}
+.stars svg{width:30px;height:30px}
+.st-fill{fill:var(--yellow);stroke:var(--yellow)}
+.nt .ic.bat svg{width:60px;height:40px}
+/* iceberg */
+#world{position:absolute;left:0;top:0;width:1080px;height:3400px}
+#world svg{position:absolute;inset:0;width:1080px;height:3400px}
+.lab{position:absolute;left:110px;font-weight:900;letter-spacing:.14em;font-size:44px;color:#fff;padding:10px 22px;border-radius:14px;background:rgba(0,73,79,.85);border:3px solid var(--teal)}
+#lab-fin{top:560px;left:120px;background:rgba(0,73,79,.9)}
+#lab-pro{top:2360px}
+#lab-cli{top:2500px}
+#lab-ret{top:2640px;background:var(--yellow);color:var(--teal-deep);border-color:var(--yellow)}
+/* calculadora */
+#calc{position:absolute;left:270px;top:840px;width:540px;height:420px;perspective:1400px;z-index:6}
+#calcin{position:absolute;inset:0;transform-style:preserve-3d}
+.face{position:absolute;inset:0;border-radius:36px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 18px 46px rgba(0,0,0,.45)}
+#front{background:var(--teal-deep);border:4px solid var(--teal);padding:26px}
+#display{height:156px;background:var(--mist);border-radius:20px;padding:16px 22px;color:var(--teal-deep);font-weight:800;font-size:34px;line-height:1.2;letter-spacing:.02em}
+#cursor{display:inline-block;width:4px;height:36px;background:var(--teal-deep);vertical-align:-6px;margin-left:4px}
+#keys{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}
+.key{height:52px;border-radius:14px;background:var(--teal);color:#fff;font-weight:800;font-size:28px;display:flex;align-items:center;justify-content:center}
+#back{background:var(--teal-deep);border:4px solid var(--teal);transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-weight:800;font-size:58px;line-height:1.15;padding:30px}
+/* legendas */
+.cap{position:absolute;left:120px;right:120px;top:1300px;height:220px;display:flex;align-items:center;justify-content:center;z-index:10}
+.capline{position:relative;text-align:center;color:#fff;font-weight:700;font-size:62px;line-height:1.3;letter-spacing:-.3px;text-shadow:0 3px 14px rgba(0,0,0,.6),0 2px 4px rgba(0,0,0,.65)}
+.mover{position:absolute;left:0;top:0;width:0;height:0;background:var(--teal);border-radius:12px;z-index:0;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.w{position:relative;z-index:1;display:inline-block;padding:0 .08em}
+.kwbox{position:relative;z-index:2;display:inline-block;background:var(--yellow);border-radius:.16em;padding:0 .12em;text-shadow:none}
+.kwbox .w{color:var(--teal-deep)}
+/* CTA */
+#cta{position:absolute;inset:0;background:var(--teal-deep);z-index:20;overflow:hidden}
+#cta svg.curves{position:absolute;inset:0;width:100%;height:100%}
+#ctac{position:absolute;left:110px;right:110px;top:600px;display:flex;flex-direction:column;align-items:center;gap:44px;text-align:center}
+#ctat{color:#fff;font-weight:800;font-size:88px;line-height:1.12;letter-spacing:-1px}
+#ctab{display:flex;align-items:center;gap:16px;border:3px solid #fff;border-radius:999px;padding:16px 34px;color:#fff;font-weight:700;font-size:44px}
+#ctab svg{width:44px;height:44px}
+#fadeout{position:absolute;inset:0;background:#031416;z-index:25}
+
+</style></head><body>
+<div id="root" data-composition-id="reel" data-start="0" data-duration="50.0" data-width="1080" data-height="1920">
+
+<div id="ice-c" class="clip" data-start="22.55" data-duration="9.0" data-track-index="2"><div id="ice"><div id="world"><svg viewBox="0 0 1080 3400" preserveAspectRatio="none">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00696E"/><stop offset="1" stop-color="#00494F"/></linearGradient>
+<linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b3b40"/><stop offset=".35" stop-color="#16302f"/><stop offset="1" stop-color="#212829"/></linearGradient>
+<linearGradient id="berg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a8a8f"/><stop offset=".55" stop-color="#00696E"/><stop offset="1" stop-color="#00494F"/></linearGradient>
+<linearGradient id="tip" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F1F1F1"/><stop offset="1" stop-color="#D7E3E2"/></linearGradient>
+</defs>
+<rect x="0" y="0" width="1080" height="900" fill="url(#sky)"/>
+<rect x="0" y="900" width="1080" height="2500" fill="url(#sea)"/>
+<path d="M150 900 L290 700 L330 735 L380 640 L440 720 L500 690 L590 900 Z" fill="url(#tip)"/>
+<path d="M330 735 L380 640 L400 900 L340 900 Z" fill="#c4d4d3" opacity=".7"/>
+<path d="M150 900 L590 900 L760 1150 L900 1620 L860 2150 L700 2700 L430 2950 L210 2780 L90 2300 L60 1700 L110 1200 Z" fill="url(#berg)" opacity=".92"/>
+<path d="M590 900 L760 1150 L900 1620 L860 2150 L700 2700 L600 2300 L640 1700 Z" fill="#00494F" opacity=".55"/>
+<rect x="0" y="892" width="1080" height="16" fill="#7fb6b8" opacity=".55"/>
+<g fill="#ffffff" opacity=".18"><circle cx="820" cy="1300" r="10"/><circle cx="860" cy="1180" r="6"/><circle cx="790" cy="1500" r="8"/><circle cx="960" cy="1900" r="12"/><circle cx="930" cy="2050" r="7"/><circle cx="180" cy="1400" r="9"/></g>
+</svg>
+<div class="lab" id="lab-fin">FINANCEIRO</div><div class="lab" id="lab-pro">PRODUTIVIDADE</div><div class="lab" id="lab-cli">CLIMA</div><div class="lab" id="lab-ret">RETENÇÃO</div>
+</div></div></div>
+
+<div id="cam"><div id="shake">
+<video id="speaker" class="clip" src="assets/speaker.mp4" muted playsinline data-start="0" data-duration="43.09" data-track-index="0"></video>
+</div></div>
+<div id="winframe-c" class="clip" data-start="22.55" data-duration="9.0" data-track-index="3"><div id="winframe"></div></div>
+<div id="dim-c" class="clip" data-start="11.95" data-duration="0.75" data-track-index="4"><div id="dim"></div></div>
+<audio id="mix" src="assets/mix.wav" data-start="0" data-duration="50.0" data-track-index="1"></audio>
+
+<div id="hook-c" class="clip" data-start="0" data-duration="4.45" data-track-index="5"><div id="hook">
+<div id="hooktag">O CUSTO DE UMA VAGA VAZIA</div>
+<div id="counter"><span class="rs">R$</span><div id="numbox"><div id="reels"><div class="reel"><div class="strip" id="strip0"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div><span class="dot">.</span><div class="reel"><div class="strip" id="strip1"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div><div class="reel"><div class="strip" id="strip2"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div><div class="reel"><div class="strip" id="strip3"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div></div><div id="qqq"><span class="ybox" id="qbox">???</span></div></div></div>
+</div></div>
+
+<div id="receipt-c" class="clip" data-start="9.25" data-duration="3.05" data-track-index="6"><div id="receipt">
+<div class="rh">RECIBO</div><div class="rs2">vaga em aberto</div><div class="rl"></div>
+<div class="row"><span>Contratação</span><span>adiada</span></div>
+<div class="row"><span>Vaga</span><span>em aberto</span></div>
+<div class="rl"></div>
+<div class="tot"><span>ECONOMIA: SALÁRIO</span><span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div>
+<div id="stamp">ECONOMIZADO</div>
+</div></div>
+
+<div id="notifs-c" class="clip" data-start="12.22" data-duration="10.38" data-track-index="7"><div id="notifs"><div class="nt" id="nt0"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5V18a1.5 1.5 0 0 0 1.5 1.5h13"/><path d="M6 5.5h4l1.5 2H19a1.5 1.5 0 0 1 1.5 1.5v6.5A1.5 1.5 0 0 1 19 17H7.5A1.5 1.5 0 0 1 6 15.5V5.5Z"/></svg></span><div class="tx"><span class="ap">Sua empresa · agora</span><span class="tt">Equipe acumulando função</span></div></div><div class="nt" id="nt1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><g id="hand-m"><path d="M12 12V6.5"/></g><g id="hand-h"><path d="M12 12h3.6"/></g></svg></span><div class="tx"><span class="ap">Sua empresa · agora</span><span class="tt">Gestor no operacional</span></div></div><div class="nt" id="nt2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="m9.5 13 5 4.5M14.5 13l-5 4.5"/></svg></span><div class="tx"><span class="ap">Sua empresa · agora</span><span class="tt">Prazos estourando</span></div></div><div class="nt" id="nt3"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z"/></svg></span><div class="tx"><span class="ap">Sua empresa · agora</span><span class="tt">Atendimento piorando</span><div class="stars"><svg viewBox="0 0 24 24"><path class="st-fill" id="st0" d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z" stroke-width="1.6"/></svg><svg viewBox="0 0 24 24"><path class="st-fill" id="st1" d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z" stroke-width="1.6"/></svg><svg viewBox="0 0 24 24"><path class="st-fill" id="st2" d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z" stroke-width="1.6"/></svg><svg viewBox="0 0 24 24"><path class="st-fill" id="st3" d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z" stroke-width="1.6"/></svg><svg viewBox="0 0 24 24"><path class="st-fill" id="st4" d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z" stroke-width="1.6"/></svg></div></div></div><div class="nt" id="nt4"><span class="ic bat"><svg viewBox="0 0 30 16" fill="none"><rect x="1" y="1" width="25" height="14" rx="3" stroke="#FFCE23" stroke-width="2"/><rect x="27" y="5" width="2.5" height="6" rx="1" fill="#FFCE23"/><rect id="batfill" x="3.2" y="3.2" width="20.6" height="9.6" rx="1.5" fill="#fff"/></svg></span><div class="tx"><span class="ap">Sua empresa · agora</span><span class="tt">Equipe se desgastando</span></div></div></div></div>
+
+<div id="calc-c" class="clip" data-start="35.40" data-duration="7.70" data-track-index="8"><div id="calc"><div id="calcin">
+<div class="face" id="front"><div id="display"><span id="dtext"></span><span id="cursor"></span></div><div id="keys"><div class="key" id="k0">7</div><div class="key" id="k1">8</div><div class="key" id="k2">9</div><div class="key" id="k3">÷</div><div class="key" id="k4">C</div><div class="key" id="k5">4</div><div class="key" id="k6">5</div><div class="key" id="k7">6</div><div class="key" id="k8">×</div><div class="key" id="k9">%</div><div class="key" id="k10">1</div><div class="key" id="k11">2</div><div class="key" id="k12">3</div><div class="key" id="k13">−</div><div class="key" id="k14">=</div></div></div>
+<div class="face" id="back"><div>Fale com a <span class="ybox">Inovar</span></div></div>
+</div></div></div>
+
+<div id="cap0" class="clip cap" data-start="0.040" data-duration="0.960" data-track-index="20"><div class="capline" id="capl0"><span class="mover" id="mv0"></span><span class="w" id="c0w0">Uma</span> <span class="w" id="c0w1">vaga</span> <span class="w" id="c0w2">vazia</span></div></div>
+<div id="cap1" class="clip cap" data-start="1.000" data-duration="0.960" data-track-index="20"><div class="capline" id="capl1"><span class="mover" id="mv1"></span><span class="w" id="c1w0">pode</span> <span class="w" id="c1w1">estar</span> <span class="w" id="c1w2">custando</span></div></div>
+<div id="cap2" class="clip cap" data-start="1.960" data-duration="0.860" data-track-index="20"><div class="capline" id="capl2"><span class="mover" id="mv2"></span><span class="w" id="c2w0">muito</span> <span class="w" id="c2w1">mais</span> <span class="w" id="c2w2">do</span> <span class="w" id="c2w3">que</span></div></div>
+<div id="cap3" class="clip cap" data-start="2.820" data-duration="0.440" data-track-index="20"><div class="capline" id="capl3"><span class="mover" id="mv3"></span><span class="w" id="c3w0">o</span> <span class="kwbox"><span class="w kw" id="c3w1">salário</span></span></div></div>
+<div id="cap4" class="clip cap" data-start="3.260" data-duration="0.640" data-track-index="20"><div class="capline" id="capl4"><span class="mover" id="mv4"></span><span class="w" id="c4w0">de</span> <span class="w" id="c4w1">quem</span> <span class="w" id="c4w2">deveria</span></div></div>
+<div id="cap5" class="clip cap" data-start="3.900" data-duration="0.630" data-track-index="20"><div class="capline" id="capl5"><span class="mover" id="mv5"></span><span class="w" id="c5w0">estar</span> <span class="w" id="c5w1">nela.</span></div></div>
+<div id="cap6" class="clip cap" data-start="4.530" data-duration="0.940" data-track-index="20"><div class="capline" id="capl6"><span class="mover" id="mv6"></span><span class="w" id="c6w0">Quando</span> <span class="w" id="c6w1">uma</span> <span class="w" id="c6w2">posição</span></div></div>
+<div id="cap7" class="clip cap" data-start="5.470" data-duration="0.840" data-track-index="20"><div class="capline" id="capl7"><span class="mover" id="mv7"></span><span class="w" id="c7w0">fica</span> <span class="w" id="c7w1">aberta</span> <span class="w" id="c7w2">por</span></div></div>
+<div id="cap8" class="clip cap" data-start="6.310" data-duration="0.770" data-track-index="20"><div class="capline" id="capl8"><span class="mover" id="mv8"></span><span class="w" id="c8w0">muito</span> <span class="w" id="c8w1">tempo,</span></div></div>
+<div id="cap9" class="clip cap" data-start="7.080" data-duration="0.990" data-track-index="20"><div class="capline" id="capl9"><span class="mover" id="mv9"></span><span class="w" id="c9w0">a</span> <span class="w" id="c9w1">empresa</span> <span class="w" id="c9w2">normalmente</span></div></div>
+<div id="cap10" class="clip cap" data-start="8.070" data-duration="0.600" data-track-index="20"><div class="capline" id="capl10"><span class="mover" id="mv10"></span><span class="w" id="c10w0">olha</span> <span class="w" id="c10w1">só</span> <span class="w" id="c10w2">para</span></div></div>
+<div id="cap11" class="clip cap" data-start="8.670" data-duration="0.620" data-track-index="20"><div class="capline" id="capl11"><span class="mover" id="mv11"></span><span class="w" id="c11w0">uma</span> <span class="w" id="c11w1">coisa:</span></div></div>
+<div id="cap12" class="clip cap" data-start="9.290" data-duration="0.880" data-track-index="20"><div class="capline" id="capl12"><span class="mover" id="mv12"></span><span class="w" id="c12w0">Estamos</span> <span class="w" id="c12w1">economizando</span></div></div>
+<div id="cap13" class="clip cap" data-start="10.170" data-duration="0.960" data-track-index="20"><div class="capline" id="capl13"><span class="mover" id="mv13"></span><span class="w" id="c13w0">esse</span> <span class="kwbox"><span class="w kw" id="c13w1">salário.</span></span></div></div>
+<div id="cap14" class="clip cap" data-start="11.130" data-duration="1.130" data-track-index="20"><div class="capline" id="capl14"><span class="mover" id="mv14"></span><span class="w" id="c14w0">Mas</span> <span class="w" id="c14w1">enquanto</span> <span class="w" id="c14w2">isso…</span></div></div>
+<div id="cap15" class="clip cap" data-start="12.260" data-duration="0.750" data-track-index="20"><div class="capline" id="capl15"><span class="mover" id="mv15"></span><span class="w" id="c15w0">alguém</span> <span class="w" id="c15w1">da</span> <span class="w" id="c15w2">equipe</span></div></div>
+<div id="cap16" class="clip cap" data-start="13.010" data-duration="1.240" data-track-index="20"><div class="capline" id="capl16"><span class="mover" id="mv16"></span><span class="w" id="c16w0">está</span> <span class="kwbox"><span class="w kw" id="c16w1">acumulando</span> <span class="w kw" id="c16w2">função.</span></span></div></div>
+<div id="cap17" class="clip cap" data-start="14.250" data-duration="0.640" data-track-index="20"><div class="capline" id="capl17"><span class="mover" id="mv17"></span><span class="w" id="c17w0">O</span> <span class="w" id="c17w1">gestor</span> <span class="w" id="c17w2">está</span></div></div>
+<div id="cap18" class="clip cap" data-start="14.890" data-duration="1.670" data-track-index="20"><div class="capline" id="capl18"><span class="mover" id="mv18"></span><span class="w" id="c18w0">gastando</span> <span class="w" id="c18w1">tempo</span> <span class="w" id="c18w2">operacional.</span></div></div>
+<div id="cap19" class="clip cap" data-start="16.560" data-duration="1.480" data-track-index="20"><div class="capline" id="capl19"><span class="mover" id="mv19"></span><span class="w" id="c19w0">Prazos</span> <span class="w" id="c19w1">começam</span> <span class="w" id="c19w2">a</span> <span class="kwbox"><span class="w kw" id="c19w3">estourar.</span></span></div></div>
+<div id="cap20" class="clip cap" data-start="18.040" data-duration="1.020" data-track-index="20"><div class="capline" id="capl20"><span class="mover" id="mv20"></span><span class="w" id="c20w0">O</span> <span class="w" id="c20w1">atendimento</span> <span class="w" id="c20w2">pode</span> <span class="w" id="c20w3">piorar.</span></div></div>
+<div id="cap21" class="clip cap" data-start="19.060" data-duration="1.030" data-track-index="20"><div class="capline" id="capl21"><span class="mover" id="mv21"></span><span class="w" id="c21w0">E</span> <span class="w" id="c21w1">quem</span> <span class="w" id="c21w2">continua</span></div></div>
+<div id="cap22" class="clip cap" data-start="20.090" data-duration="0.780" data-track-index="20"><div class="capline" id="capl22"><span class="mover" id="mv22"></span><span class="w" id="c22w0">segurando</span> <span class="w" id="c22w1">tudo</span></div></div>
+<div id="cap23" class="clip cap" data-start="20.870" data-duration="1.790" data-track-index="20"><div class="capline" id="capl23"><span class="mover" id="mv23"></span><span class="w" id="c23w0">começa</span> <span class="w" id="c23w1">a</span> <span class="w" id="c23w2">se</span> <span class="kwbox"><span class="w kw" id="c23w3">desgastar.</span></span></div></div>
+<div id="cap24" class="clip cap" data-start="22.660" data-duration="0.870" data-track-index="20"><div class="capline" id="capl24"><span class="mover" id="mv24"></span><span class="w" id="c24w0">Ou</span> <span class="w" id="c24w1">seja:</span></div></div>
+<div id="cap25" class="clip cap" data-start="23.530" data-duration="0.660" data-track-index="20"><div class="capline" id="capl25"><span class="mover" id="mv25"></span><span class="w" id="c25w0">o</span> <span class="w" id="c25w1">custo</span> <span class="w" id="c25w2">de</span> <span class="w" id="c25w3">uma</span></div></div>
+<div id="cap26" class="clip cap" data-start="24.190" data-duration="0.560" data-track-index="20"><div class="capline" id="capl26"><span class="mover" id="mv26"></span><span class="w" id="c26w0">vaga</span> <span class="w" id="c26w1">aberta</span></div></div>
+<div id="cap27" class="clip cap" data-start="24.750" data-duration="1.020" data-track-index="20"><div class="capline" id="capl27"><span class="mover" id="mv27"></span><span class="w" id="c27w0">não</span> <span class="w" id="c27w1">aparece</span> <span class="w" id="c27w2">apenas</span></div></div>
+<div id="cap28" class="clip cap" data-start="25.770" data-duration="1.100" data-track-index="20"><div class="capline" id="capl28"><span class="mover" id="mv28"></span><span class="w" id="c28w0">no</span> <span class="kwbox"><span class="w kw" id="c28w1">financeiro.</span></span></div></div>
+<div id="cap29" class="clip cap" data-start="26.870" data-duration="0.980" data-track-index="20"><div class="capline" id="capl29"><span class="mover" id="mv29"></span><span class="w" id="c29w0">Ele</span> <span class="w" id="c29w1">aparece</span> <span class="w" id="c29w2">na</span></div></div>
+<div id="cap30" class="clip cap" data-start="27.850" data-duration="1.080" data-track-index="20"><div class="capline" id="capl30"><span class="mover" id="mv30"></span><span class="w" id="c30w0">produtividade,</span></div></div>
+<div id="cap31" class="clip cap" data-start="28.930" data-duration="0.380" data-track-index="20"><div class="capline" id="capl31"><span class="mover" id="mv31"></span><span class="w" id="c31w0">no</span> <span class="w" id="c31w1">clima</span></div></div>
+<div id="cap32" class="clip cap" data-start="29.310" data-duration="0.960" data-track-index="20"><div class="capline" id="capl32"><span class="mover" id="mv32"></span><span class="w" id="c32w0">e</span> <span class="w" id="c32w1">na</span> <span class="kwbox"><span class="w kw" id="c32w2">retenção</span></span></div></div>
+<div id="cap33" class="clip cap" data-start="30.270" data-duration="0.520" data-track-index="20"><div class="capline" id="capl33"><span class="mover" id="mv33"></span><span class="w" id="c33w0">de</span> <span class="w" id="c33w1">quem</span> <span class="w" id="c33w2">já</span></div></div>
+<div id="cap34" class="clip cap" data-start="30.790" data-duration="0.760" data-track-index="20"><div class="capline" id="capl34"><span class="mover" id="mv34"></span><span class="w" id="c34w0">está</span> <span class="w" id="c34w1">dentro.</span></div></div>
+<div id="cap35" class="clip cap" data-start="31.550" data-duration="0.730" data-track-index="20"><div class="capline" id="capl35"><span class="mover" id="mv35"></span><span class="w" id="c35w0">Se</span> <span class="w" id="c35w1">sua</span> <span class="w" id="c35w2">empresa</span></div></div>
+<div id="cap36" class="clip cap" data-start="32.280" data-duration="0.720" data-track-index="20"><div class="capline" id="capl36"><span class="mover" id="mv36"></span><span class="w" id="c36w0">está</span> <span class="w" id="c36w1">adiando</span></div></div>
+<div id="cap37" class="clip cap" data-start="33.000" data-duration="1.740" data-track-index="20"><div class="capline" id="capl37"><span class="mover" id="mv37"></span><span class="w" id="c37w0">uma</span> <span class="w" id="c37w1">contratação</span> <span class="w" id="c37w2">importante,</span></div></div>
+<div id="cap38" class="clip cap" data-start="34.740" data-duration="0.800" data-track-index="20"><div class="capline" id="capl38"><span class="mover" id="mv38"></span><span class="w" id="c38w0">talvez</span> <span class="w" id="c38w1">valha</span> <span class="w" id="c38w2">a</span> <span class="w" id="c38w3">pena</span></div></div>
+<div id="cap39" class="clip cap" data-start="35.540" data-duration="0.640" data-track-index="20"><div class="capline" id="capl39"><span class="mover" id="mv39"></span><span class="w" id="c39w0">calcular</span> <span class="w" id="c39w1">o</span></div></div>
+<div id="cap40" class="clip cap" data-start="36.180" data-duration="1.480" data-track-index="20"><div class="capline" id="capl40"><span class="mover" id="mv40"></span><span class="kwbox"><span class="w kw" id="c40w0">custo</span> <span class="w kw" id="c40w1">de</span> <span class="w kw" id="c40w2">não</span> <span class="w kw" id="c40w3">contratar.</span></span></div></div>
+<div id="cap41" class="clip cap" data-start="37.660" data-duration="0.700" data-track-index="20"><div class="capline" id="capl41"><span class="mover" id="mv41"></span><span class="w" id="c41w0">E</span> <span class="w" id="c41w1">se</span> <span class="w" id="c41w2">precisar</span></div></div>
+<div id="cap42" class="clip cap" data-start="38.360" data-duration="0.960" data-track-index="20"><div class="capline" id="capl42"><span class="mover" id="mv42"></span><span class="w" id="c42w0">acelerar</span> <span class="w" id="c42w1">esse</span> <span class="w" id="c42w2">processo</span></div></div>
+<div id="cap43" class="clip cap" data-start="39.320" data-duration="1.200" data-track-index="20"><div class="capline" id="capl43"><span class="mover" id="mv43"></span><span class="w" id="c43w0">com</span> <span class="w" id="c43w1">mais</span> <span class="w" id="c43w2">estratégia,</span></div></div>
+<div id="cap44" class="clip cap" data-start="40.520" data-duration="0.880" data-track-index="20"><div class="capline" id="capl44"><span class="mover" id="mv44"></span><span class="w" id="c44w0">a</span> <span class="kwbox"><span class="w kw" id="c44w1">Inovar</span></span> <span class="w" id="c44w2">está</span></div></div>
+<div id="cap45" class="clip cap" data-start="41.400" data-duration="1.480" data-track-index="20"><div class="capline" id="capl45"><span class="mover" id="mv45"></span><span class="w" id="c45w0">pronta</span> <span class="w" id="c45w1">para</span> <span class="w" id="c45w2">te</span> <span class="w" id="c45w3">auxiliar.</span></div></div>
+
+<div id="cta-c" class="clip" data-start="42.88" data-duration="2.12" data-track-index="30"><div id="cta">
+<svg class="curves" viewBox="0 0 1080 1920" preserveAspectRatio="none">
+<path id="cv1" d="M-40 1500 C 280 1380 560 1680 1120 1430 L1120 1960 L-40 1960 Z" fill="#00696E"/>
+<path id="cv2" d="M1120 -40 C 880 200 1040 330 760 440 C 590 510 640 120 1120 -40 Z" fill="#00696E" opacity=".7"/>
+</svg>
+<div id="ctac"><div id="ctat">Fale com a <span class="ybox">Inovar</span></div><div id="ctab"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5.5 11.5 6.5-6.5 6.5 6.5"/></svg> Link na bio</div></div>
+</div></div>
+<div id="fade-c" class="clip" data-start="44.55" data-duration="0.45" data-track-index="31"><div id="fadeout"></div></div>
+<video id="outro" class="clip" src="assets/encerramento.mp4" muted playsinline data-start="45.0" data-duration="5" data-track-index="40"></video>
+</div>
+<script>
+const K = {"T": {"counter_lock": 2.0, "chaching": 10.4, "whoosh": 12.03, "impact": 17.5, "dive": 22.7, "calc": 35.63, "spark": 40.61}, "PLIMS": [12.3, 14.29, 16.6, 18.08, 19.1], "CAP": [{"g": 0, "start": 0.04, "words": [0.08, 0.34, 0.7], "kw": [false, false, false]}, {"g": 1, "start": 1.0, "words": [1.04, 1.22, 1.48], "kw": [false, false, false]}, {"g": 2, "start": 1.96, "words": [2.0, 2.42, 2.64, 2.76], "kw": [false, false, false, false]}, {"g": 3, "start": 2.82, "words": [2.86, 3.02], "kw": [false, true]}, {"g": 4, "start": 3.26, "words": [3.3, 3.42, 3.54], "kw": [false, false, false]}, {"g": 5, "start": 3.9, "words": [3.94, 4.12], "kw": [false, false]}, {"g": 6, "start": 4.53, "words": [4.57, 4.93, 5.11], "kw": [false, false, false]}, {"g": 7, "start": 5.47, "words": [5.51, 5.79, 6.09], "kw": [false, false, false]}, {"g": 8, "start": 6.31, "words": [6.35, 6.69], "kw": [false, false]}, {"g": 9, "start": 7.08, "words": [7.12, 7.19, 7.45], "kw": [false, false, false]}, {"g": 10, "start": 8.07, "words": [8.11, 8.33, 8.53], "kw": [false, false, false]}, {"g": 11, "start": 8.67, "words": [8.71, 8.87], "kw": [false, false]}, {"g": 12, "start": 9.29, "words": [9.33, 9.65], "kw": [false, false]}, {"g": 13, "start": 10.17, "words": [10.21, 10.4], "kw": [false, true]}, {"g": 14, "start": 11.13, "words": [11.17, 11.31, 11.61], "kw": [false, false, false]}, {"g": 15, "start": 12.26, "words": [12.3, 12.59, 12.75], "kw": [false, false, false]}, {"g": 16, "start": 13.01, "words": [13.05, 13.23, 13.65], "kw": [false, true, true]}, {"g": 17, "start": 14.25, "words": [14.29, 14.47, 14.75], "kw": [false, false, false]}, {"g": 18, "start": 14.89, "words": [14.93, 15.27, 15.67], "kw": [false, false, false]}, {"g": 19, "start": 16.56, "words": [16.6, 16.97, 17.39, 17.49], "kw": [false, false, false, true]}, {"g": 20, "start": 18.04, "words": [18.08, 18.16, 18.51, 18.73], "kw": [false, false, false, false]}, {"g": 21, "start": 19.06, "words": [19.1, 19.55, 19.85], "kw": [false, false, false]}, {"g": 22, "start": 20.09, "words": [20.13, 20.63], "kw": [false, false]}, {"g": 23, "start": 20.87, "words": [20.91, 21.27, 21.75, 21.93], "kw": [false, false, false, true]}, {"g": 24, "start": 22.66, "words": [22.7, 23.01], "kw": [false, false]}, {"g": 25, "start": 23.53, "words": [23.57, 23.67, 23.99, 24.09], "kw": [false, false, false, false]}, {"g": 26, "start": 24.19, "words": [24.23, 24.47], "kw": [false, false]}, {"g": 27, "start": 24.75, "words": [24.79, 25.03, 25.37], "kw": [false, false, false]}, {"g": 28, "start": 25.77, "words": [25.81, 26.01], "kw": [false, true]}, {"g": 29, "start": 26.87, "words": [26.91, 27.17, 27.61], "kw": [false, false, false]}, {"g": 30, "start": 27.85, "words": [27.89], "kw": [false]}, {"g": 31, "start": 28.93, "words": [28.97, 29.15], "kw": [false, false]}, {"g": 32, "start": 29.31, "words": [29.35, 29.57, 29.71], "kw": [false, false, true]}, {"g": 33, "start": 30.27, "words": [30.31, 30.51, 30.63], "kw": [false, false, false]}, {"g": 34, "start": 30.79, "words": [30.83, 31.01], "kw": [false, false]}, {"g": 35, "start": 31.55, "words": [31.59, 31.74, 31.96], "kw": [false, false, false]}, {"g": 36, "start": 32.28, "words": [32.32, 32.64], "kw": [false, false]}, {"g": 37, "start": 33.0, "words": [33.04, 33.32, 33.78], "kw": [false, false, false]}, {"g": 38, "start": 34.74, "words": [34.78, 35.0, 35.22, 35.34], "kw": [false, false, false, false]}, {"g": 39, "start": 35.54, "words": [35.58, 36.06], "kw": [false, false]}, {"g": 40, "start": 36.18, "words": [36.22, 36.56, 36.74, 36.96], "kw": [true, true, true, true]}, {"g": 41, "start": 37.66, "words": [37.7, 37.86, 38.06], "kw": [false, false, false]}, {"g": 42, "start": 38.36, "words": [38.4, 38.82, 38.98], "kw": [false, false, false]}, {"g": 43, "start": 39.32, "words": [39.36, 39.58, 39.84], "kw": [false, false, false]}, {"g": 44, "start": 40.52, "words": [40.56, 40.7, 41.18], "kw": [false, true, false]}, {"g": 45, "start": 41.4, "words": [41.44, 41.74, 41.92, 42.08], "kw": [false, false, false, false]}]};
+const T = K.T, PLIMS = K.PLIMS;
+function build(){
+const tl = gsap.timeline({paused:true});
+tl.set({}, {}, 50.0);
+
+// ---------------- GANCHO: odômetro acelera e trava em R$ ??? ----------------
+tl.fromTo("#hooktag",{opacity:.0,y:-10},{opacity:1,y:0,duration:.25,ease:"power2.out"},0);
+tl.fromTo("#counter",{scale:.86,opacity:.55},{scale:1,opacity:1,duration:.25,ease:"back.out(2)"},0);
+tl.set("#qqq",{opacity:0},0);
+const H = 76;
+for (let r=0;r<4;r++){
+  const n = document.querySelectorAll("#strip"+r+" span").length - 1;
+  tl.fromTo("#strip"+r,{y:0},{y:-H*n,duration:T.counter_lock-0.05,ease:"power3.in"},0.05);
+}
+tl.set("#reels",{opacity:0},T.counter_lock);
+tl.fromTo("#qqq",{opacity:0,scale:1.6},{opacity:1,scale:1,duration:.18,ease:"back.out(3)"},T.counter_lock);
+[[10,-4],[-9,3],[7,4],[-5,-3],[3,2],[0,0]].forEach((d,i)=>tl.to("#counter",{x:d[0],y:d[1],duration:.04,ease:"none"},T.counter_lock+0.02+i*0.04));
+tl.to("#hook",{y:-40,opacity:0,duration:.25,ease:"power2.in"},4.2);
+
+// ---------------- CENA 2: recibo + carimbo ----------------
+tl.fromTo("#receipt",{clipPath:"inset(0% 0% 100% 0%)",rotation:-4,y:-30},{clipPath:"inset(0% 0% 0% 0%)",y:0,duration:.6,ease:"power2.out"},9.30);
+tl.fromTo("#stamp",{scale:2.2,opacity:0},{scale:1,opacity:1,duration:.16,ease:"power3.in"},T.chaching-0.12);
+tl.to("#receipt",{y:6,duration:.05,yoyo:true,repeat:1,ease:"power1.out"},T.chaching+0.04);
+// "Mas enquanto isso…": chicote, recibo arrancado, fundo escurece meio segundo
+tl.to("#receipt",{x:-760,rotation:-28,filter:"blur(6px)",duration:.22,ease:"power3.in"},T.whoosh-0.2);
+tl.to("#cam",{x:-302,y:-288,scale:1.3,filter:"blur(16px)",duration:.13,ease:"power2.in"},T.whoosh-0.13);
+tl.set("#cam",{x:-22},T.whoosh);
+tl.to("#cam",{x:0,y:0,scale:1,filter:"blur(0px)",duration:.18,ease:"power2.out"},T.whoosh);
+tl.fromTo("#dim",{opacity:0},{opacity:.42,duration:.08},T.whoosh);
+tl.to("#dim",{opacity:0,duration:.2},T.whoosh+0.5);
+
+// ---------------- CENA 2: notificações empilhando ----------------
+const NT = ["#nt0","#nt1","#nt2","#nt3","#nt4"];
+NT.forEach((s,i)=>{
+  const t = PLIMS[i];
+  tl.fromTo(s,{y:-170,opacity:0,scale:1},{y:0,opacity:1,duration:.3,ease:"back.out(1.6)"},t-0.08);
+  for (let j=0;j<i;j++){
+    const depth = i-j;
+    tl.to(NT[j],{y:-26*depth,scale:1-0.06*depth,opacity:Math.max(0,1-0.28*depth),duration:.25,ease:"power2.out"},t-0.08);
+  }
+});
+tl.fromTo("#hand-m",{rotation:0,transformOrigin:"12px 12px"},{rotation:1440,duration:2.2,ease:"none",svgOrigin:"12 12"},PLIMS[1]);
+tl.fromTo("#hand-h",{rotation:0},{rotation:120,duration:2.2,ease:"none",svgOrigin:"12 12"},PLIMS[1]);
+// prazos estourando: tremida de câmera no impacto
+[[14,-8],[-12,7],[9,9],[-7,-6],[5,4],[-3,-2],[0,0]].forEach((d,i)=>tl.to("#shake",{x:d[0],y:d[1],duration:.04,ease:"none"},T.impact+0.01+i*0.04));
+tl.to("#nt2",{rotation:-2,duration:.05,yoyo:true,repeat:3},T.impact);
+// atendimento: 5 estrelas caem para 2 em "piorar"
+["#st4","#st3","#st2"].forEach((s,i)=>{
+  tl.to(s,{y:26,opacity:.0,duration:.22,ease:"power2.in"},18.70+i*0.09);
+});
+// desgaste: bateria descarrega até quase vazia
+tl.fromTo("#batfill",{attr:{width:20.6}},{attr:{width:2.2},duration:2.7,ease:"power1.in"},PLIMS[4]+0.2);
+tl.to("#batfill",{attr:{fill:"#FFCE23"},duration:.2},21.6);
+// a pilha treme e cai
+[[8,0],[-8,0],[6,0],[-6,0],[0,0]].forEach((d,i)=>tl.to("#notifs",{x:d[0],duration:.045,ease:"none"},21.93+i*0.045));
+tl.to("#notifs",{y:1100,rotation:9,duration:.4,ease:"power3.in"},22.16);
+
+// ---------------- CENA 3: iceberg ----------------
+const WIN = "inset(330px 300px 920px 300px round 48px)", FULL = "inset(0px 0px 0px 0px round 0px)";
+tl.fromTo("#ice",{opacity:0},{opacity:1,duration:.3,ease:"power1.out"},22.58);
+tl.fromTo("#cam",{x:0,y:0,scale:1,clipPath:FULL},{x:360,y:6,scale:.8,clipPath:WIN,duration:.5,ease:"power3.inOut"},22.58);
+tl.fromTo("#winframe",{opacity:0,scale:.92},{opacity:1,scale:1,duration:.25,ease:"power2.out"},23.0);
+tl.fromTo("#world",{y:-120},{y:0,duration:1.0,ease:"power2.out"},22.58);
+tl.fromTo("#lab-fin",{opacity:0,y:20},{opacity:1,y:0,duration:.25,ease:"back.out(2)"},25.98);
+tl.to("#world",{y:-1500,duration:1.0,ease:"power2.inOut"},26.86);
+tl.fromTo("#lab-pro",{opacity:0,x:-60},{opacity:1,x:0,duration:.28,ease:"back.out(2)"},27.85);
+tl.fromTo("#lab-cli",{opacity:0,x:-60},{opacity:1,x:0,duration:.28,ease:"back.out(2)"},29.11);
+tl.fromTo("#lab-ret",{opacity:0,x:-60,scale:.9},{opacity:1,x:0,scale:1,duration:.3,ease:"back.out(2.4)"},29.67);
+tl.to("#winframe",{opacity:0,duration:.15},31.05);
+tl.to("#ice",{y:400,opacity:0,duration:.45,ease:"power2.in"},31.05);
+tl.to("#cam",{x:-43,y:-58,scale:1.08,clipPath:FULL,duration:.45,ease:"power3.inOut"},31.05);
+tl.to("#cam",{x:0,y:0,scale:1,duration:.7,ease:"power2.out"},31.50);
+
+// ---------------- CENA 4: calculadora ----------------
+tl.fromTo("#calc",{y:700,opacity:0},{y:0,opacity:1,duration:.35,ease:"back.out(1.4)"},35.40);
+const msg = "CUSTO DE NÃO CONTRATAR = ";
+const typeStart = T.calc, typeEnd = 37.05;
+for (let i=1;i<=msg.length;i++){
+  tl.set("#dtext",{textContent:msg.slice(0,i)}, typeStart + (typeEnd-typeStart)*(i-1)/msg.length);
+}
+tl.set("#dtext",{textContent:msg+"?"},typeEnd+0.05);
+[0,.16,.27,.43,.55,.76,.88,1.12].forEach((o,i)=>{
+  const k = "#k"+[2,7,11,4,9,1,13,6][i];
+  tl.to(k,{backgroundColor:"#FFFFFF",color:"#00494F",duration:.04},T.calc+o);
+  tl.to(k,{backgroundColor:"#00696E",color:"#FFFFFF",duration:.12},T.calc+o+0.08);
+});
+for (let b=0;b<14;b++){ tl.set("#cursor",{opacity:b%2?1:0},typeStart+0.25*b); }
+tl.fromTo("#calcin",{rotationY:0},{rotationY:180,duration:.55,ease:"power2.inOut"},T.spark-0.12);
+tl.fromTo("#calc",{scale:1},{scale:1.06,duration:.28,yoyo:true,repeat:1,ease:"power1.inOut"},T.spark-0.12);
+
+// ---------------- CTA: a calculadora vira a cartela ----------------
+tl.fromTo("#cta",{clipPath:"inset(840px 270px 660px 270px round 36px)"},{clipPath:"inset(0px 0px 0px 0px round 0px)",duration:.22,ease:"power2.in"},42.88);
+tl.fromTo("#ctat",{y:30,opacity:0},{y:0,opacity:1,duration:.3,ease:"back.out(1.8)"},42.88+0.2);
+tl.fromTo("#ctab",{y:24,opacity:0},{y:0,opacity:1,duration:.28,ease:"power2.out"},42.88+0.42);
+tl.fromTo("#ctab svg",{y:4},{y:-6,duration:.3,yoyo:true,repeat:3,ease:"sine.inOut"},42.88+0.7);
+tl.fromTo("#cv1",{y:140},{y:0,duration:.7,ease:"power2.out"},42.88+0.1);
+tl.fromTo("#cv2",{x:220,opacity:0},{x:0,opacity:.7,duration:.6,ease:"power2.out"},42.88+0.1);
+tl.fromTo("#fadeout",{opacity:0},{opacity:1,duration:.4,ease:"power1.in"},44.57);
+
+// ---------------- LEGENDAS: caixa teal desliza de palavra em palavra ----------------
+K.CAP.forEach(c=>{
+  const line = document.getElementById("capl"+c.g), mv = document.getElementById("mv"+c.g);
+  const lr = line.getBoundingClientRect();
+  const box = (i)=>{ const r = document.getElementById("c"+c.g+"w"+i).getBoundingClientRect();
+    return {x:r.left-lr.left-6, y:r.top-lr.top-14, width:r.width+12, height:r.height-6}; };
+  tl.fromTo(line,{opacity:0,y:16},{opacity:1,y:0,duration:.14,ease:"power2.out"},c.start);
+  const b0 = box(0);
+  tl.set(mv,{x:b0.x,y:b0.y,width:b0.width,height:b0.height,opacity:c.kw[0]?0:1},c.start);
+  c.words.forEach((t,i)=>{ if(i===0) return; const b = box(i);
+    tl.to(mv,{x:b.x,y:b.y,width:b.width,height:b.height,opacity:c.kw[i]?0:1,duration:.12,ease:"power2.out"},t-0.06); });
+});
+return tl;
+}
+Promise.all([400,700,800,900].map(w=>document.fonts.load(w+" 62px Montserrat"))).then(()=>document.fonts.ready).then(()=>{
+  window.__timelines["reel"] = build();
+});
+</script>
+</body></html>

@@ -1,0 +1,60 @@
+{
+ "segments": [
+  {
+   "scene": "Cena 1",
+   "take": "take01",
+   "start": 1.12,
+   "end": 5.693,
+   "text": "Uma vaga vazia pode estar custando muito mais do que o salário de quem deveria estar nela.",
+   "first_in_scene": true,
+   "fixed_start": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 2.36,
+   "end": 7.073,
+   "text": "Quando uma posição fica aberta por muito tempo, a empresa normalmente olha só para uma coisa.",
+   "first_in_scene": true,
+   "fixed_start": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 7.32,
+   "end": 20.633,
+   "text": "Estamos economizando esse salário, mas enquanto isso, alguém da equipe está acumulando função, o gestor está gastando tempo operacional, prazas começam a estourar, o atendimento pode piorar e quem continua segurando tudo começa a se desgastar.",
+   "first_in_scene": false,
+   "zoom": 1.07
+  },
+  {
+   "scene": "Cena 3",
+   "take": "take03",
+   "start": 1.05,
+   "end": 9.937,
+   "text": "Ou seja, o custo de uma vaga aberta não aparece apenas no financeiro. Ele aparece na produtividade, no clima e na retenção de quem já está dentro.",
+   "first_in_scene": true,
+   "fixed_start": true,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 4",
+   "take": "take04",
+   "start": 0.85,
+   "end": 12.45,
+   "text": "Se sua empresa está adiando uma contratação importante, talvez vale a pena calcular o custo de não contratar. E se precisar acelerar esse processo com mais estratégia, a Inovar está pronta para te auxiliar.",
+   "first_in_scene": true,
+   "fixed_start": true,
+   "zoom": 1.0
+  }
+ ],
+ "duration": 43.09,
+ "takes": [
+  "take01",
+  "take02",
+  "take03",
+  "take04"
+ ]
+}

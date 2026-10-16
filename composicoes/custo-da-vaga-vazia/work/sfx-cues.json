@@ -1,0 +1,104 @@
+{
+ "cues": [
+  {
+   "sfx": "contador",
+   "label": "Gancho: contador gira (catraca a partir de 0,92 s) e trava com \"ching\" em 2,00 s, em \"muito mais\"",
+   "t": 0.92,
+   "file": "assets/sfx/contador-caixa.wav",
+   "lead": 0.0,
+   "gain": -17
+  },
+  {
+   "sfx": "cha-ching",
+   "label": "\"Estamos economizando esse salário\" (no \"salário\")",
+   "t": 10.4,
+   "file": "assets/sfx/cha-ching.wav",
+   "lead": 0.09,
+   "gain": -15
+  },
+  {
+   "sfx": "whoosh",
+   "label": "\"Mas enquanto isso…\" (whoosh fecha no fim do \"isso\"; música some de 12,03 a 12,53 s)",
+   "t": 12.03,
+   "file": ".claude/skills/media-use/audio/assets/sfx/whoosh.mp3",
+   "lead": 0.16,
+   "gain": -12
+  },
+  {
+   "sfx": "plim",
+   "label": "Consequência 1: \"alguém da equipe está acumulando função\"",
+   "t": 12.3,
+   "file": "assets/sfx/plim.wav",
+   "lead": 0.08,
+   "gain": -18
+  },
+  {
+   "sfx": "plim",
+   "label": "Consequência 2: \"um gestor está gastando tempo operacional\"",
+   "t": 14.29,
+   "file": "assets/sfx/plim.wav",
+   "lead": 0.08,
+   "gain": -18
+  },
+  {
+   "sfx": "plim",
+   "label": "Consequência 3: \"prazos começam a estourar\"",
+   "t": 16.6,
+   "file": "assets/sfx/plim.wav",
+   "lead": 0.08,
+   "gain": -18
+  },
+  {
+   "sfx": "impacto",
+   "label": "\"estourar\"",
+   "t": 17.5,
+   "file": ".claude/skills/media-use/audio/assets/sfx/impact-bass-1.mp3",
+   "lead": 0.06,
+   "gain": -11
+  },
+  {
+   "sfx": "plim",
+   "label": "Consequência 4: \"o atendimento pode piorar\"",
+   "t": 18.08,
+   "file": "assets/sfx/plim.wav",
+   "lead": 0.08,
+   "gain": -18
+  },
+  {
+   "sfx": "plim",
+   "label": "Consequência 5: \"e quem continua segurando tudo… se desgastar\"",
+   "t": 19.1,
+   "file": "assets/sfx/plim.wav",
+   "lead": 0.08,
+   "gain": -18
+  },
+  {
+   "sfx": "mergulho",
+   "label": "\"Ou seja\" (mergulho na água)",
+   "t": 22.7,
+   "file": "assets/sfx/mergulho.wav",
+   "lead": 0.12,
+   "gain": -14
+  },
+  {
+   "sfx": "calculadora",
+   "label": "\"calcular o custo de não contratar\"",
+   "t": 35.63,
+   "file": "assets/sfx/calculadora.wav",
+   "lead": 0.0,
+   "gain": -16
+  },
+  {
+   "sfx": "brilho",
+   "label": "\"a Inovar está pronta\"",
+   "t": 40.61,
+   "file": ".claude/skills/media-use/audio/assets/sfx/sparkle.mp3",
+   "lead": 0.02,
+   "gain": -17
+  }
+ ],
+ "music_cut": [
+  12.03,
+  12.53
+ ]
+}
