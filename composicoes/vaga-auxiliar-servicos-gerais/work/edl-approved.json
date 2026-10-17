@@ -1,0 +1,95 @@
+{
+ "segments": [
+  {
+   "scene": "Cena 1",
+   "take": "take01",
+   "start": 0.583,
+   "end": 4.187,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 1",
+   "take": "take01",
+   "start": 4.213,
+   "end": 5.487,
+   "zoom": 1.1
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 0.893,
+   "end": 6.157,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 6.173,
+   "end": 9.237,
+   "zoom": 1.1
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 9.333,
+   "end": 12.087,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 12.403,
+   "end": 15.63,
+   "zoom": 1.1
+  },
+  {
+   "scene": "Cena 2",
+   "take": "take02",
+   "start": 15.86,
+   "end": 18.937,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 3",
+   "take": "take03",
+   "start": 0.773,
+   "end": 3.837,
+   "zoom": 1.1
+  },
+  {
+   "scene": "Cena 3",
+   "take": "take03",
+   "start": 3.893,
+   "end": 8.847,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 3",
+   "take": "take03",
+   "start": 9.173,
+   "end": 10.677,
+   "zoom": 1.1
+  },
+  {
+   "scene": "Cena 4",
+   "take": "take04",
+   "start": 1.313,
+   "end": 6.537,
+   "zoom": 1.0
+  },
+  {
+   "scene": "Cena 4",
+   "take": "take04",
+   "start": 6.633,
+   "end": 8.577,
+   "zoom": 1.1
+  }
+ ],
+ "duration": 38.95,
+ "takes": [
+  "take01",
+  "take02",
+  "take03",
+  "take04"
+ ]
+}

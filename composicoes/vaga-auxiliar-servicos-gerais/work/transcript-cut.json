@@ -1,0 +1,810 @@
+{
+"words": [
+{
+"text": "Se",
+"take": "take01",
+"src": 0.75,
+"start": 0.167,
+"end": 1.027
+},
+{
+"text": "você",
+"take": "take01",
+"src": 1.61,
+"start": 1.027,
+"end": 1.367
+},
+{
+"text": "está",
+"take": "take01",
+"src": 1.95,
+"start": 1.367,
+"end": 1.567
+},
+{
+"text": "procurando",
+"take": "take01",
+"src": 2.15,
+"start": 1.567,
+"end": 2.047
+},
+{
+"text": "uma",
+"take": "take01",
+"src": 2.63,
+"start": 2.047,
+"end": 2.227
+},
+{
+"text": "oportunidade",
+"take": "take01",
+"src": 2.81,
+"start": 2.227,
+"end": 2.887
+},
+{
+"text": "de",
+"take": "take01",
+"src": 3.47,
+"start": 2.887,
+"end": 3.207
+},
+{
+"text": "emprego,",
+"take": "take01",
+"src": 3.79,
+"start": 3.207,
+"end": 3.604
+},
+{
+"text": "preste",
+"take": "take01",
+"src": 4.53,
+"start": 3.921,
+"end": 3.981
+},
+{
+"text": "atenção",
+"take": "take01",
+"src": 4.59,
+"start": 3.981,
+"end": 4.361
+},
+{
+"text": "nessa",
+"take": "take01",
+"src": 4.97,
+"start": 4.361,
+"end": 4.661
+},
+{
+"text": "vaca.",
+"take": "take01",
+"src": 5.27,
+"start": 4.661,
+"end": 4.878
+},
+{
+"text": "A",
+"take": "take02",
+"src": 0.893,
+"start": 4.878,
+"end": 5.355
+},
+{
+"text": "Inovar",
+"take": "take02",
+"src": 1.37,
+"start": 5.355,
+"end": 5.715
+},
+{
+"text": "Recursos",
+"take": "take02",
+"src": 1.73,
+"start": 5.715,
+"end": 6.115
+},
+{
+"text": "Humanos",
+"take": "take02",
+"src": 2.13,
+"start": 6.115,
+"end": 6.555
+},
+{
+"text": "está",
+"take": "take02",
+"src": 2.57,
+"start": 6.555,
+"end": 6.735
+},
+{
+"text": "com",
+"take": "take02",
+"src": 2.75,
+"start": 6.735,
+"end": 6.895
+},
+{
+"text": "uma",
+"take": "take02",
+"src": 2.91,
+"start": 6.895,
+"end": 7.015
+},
+{
+"text": "oportunidade",
+"take": "take02",
+"src": 3.03,
+"start": 7.015,
+"end": 7.655
+},
+{
+"text": "aberta",
+"take": "take02",
+"src": 3.67,
+"start": 7.655,
+"end": 8.175
+},
+{
+"text": "para",
+"take": "take02",
+"src": 4.19,
+"start": 8.175,
+"end": 8.415
+},
+{
+"text": "a",
+"take": "take02",
+"src": 4.43,
+"start": 8.415,
+"end": 8.555
+},
+{
+"text": "vaga",
+"take": "take02",
+"src": 4.57,
+"start": 8.555,
+"end": 8.695
+},
+{
+"text": "de",
+"take": "take02",
+"src": 4.71,
+"start": 8.695,
+"end": 8.835
+},
+{
+"text": "auxiliar",
+"take": "take02",
+"src": 4.85,
+"start": 8.835,
+"end": 9.155
+},
+{
+"text": "de",
+"take": "take02",
+"src": 5.17,
+"start": 9.155,
+"end": 9.335
+},
+{
+"text": "serviços",
+"take": "take02",
+"src": 5.35,
+"start": 9.335,
+"end": 9.715
+},
+{
+"text": "gerais.",
+"take": "take02",
+"src": 5.73,
+"start": 9.715,
+"end": 10.142
+},
+{
+"text": "A",
+"take": "take02",
+"src": 6.49,
+"start": 10.459,
+"end": 10.619
+},
+{
+"text": "jornada",
+"take": "take02",
+"src": 6.65,
+"start": 10.619,
+"end": 11.079
+},
+{
+"text": "é",
+"take": "take02",
+"src": 7.11,
+"start": 11.079,
+"end": 11.239
+},
+{
+"text": "de",
+"take": "take02",
+"src": 7.27,
+"start": 11.239,
+"end": 11.519
+},
+{
+"text": "36",
+"take": "take02",
+"src": 7.55,
+"start": 11.519,
+"end": 12.059
+},
+{
+"text": "horas",
+"take": "take02",
+"src": 8.09,
+"start": 12.059,
+"end": 12.499
+},
+{
+"text": "semanais,",
+"take": "take02",
+"src": 8.53,
+"start": 12.499,
+"end": 13.206
+},
+{
+"text": "de",
+"take": "take02",
+"src": 9.51,
+"start": 13.383,
+"end": 13.523
+},
+{
+"text": "segunda",
+"take": "take02",
+"src": 9.65,
+"start": 13.523,
+"end": 13.823
+},
+{
+"text": "a",
+"take": "take02",
+"src": 9.95,
+"start": 13.823,
+"end": 13.983
+},
+{
+"text": "sexta",
+"take": "take02",
+"src": 10.11,
+"start": 13.983,
+"end": 14.383
+},
+{
+"text": "-feira,",
+"take": "take02",
+"src": 10.51,
+"start": 14.383,
+"end": 14.623
+},
+{
+"text": "em",
+"take": "take02",
+"src": 10.93,
+"start": 14.803,
+"end": 14.923
+},
+{
+"text": "horário",
+"take": "take02",
+"src": 11.05,
+"start": 14.923,
+"end": 15.263
+},
+{
+"text": "comercial.",
+"take": "take02",
+"src": 11.39,
+"start": 15.263,
+"end": 15.883
+},
+{
+"text": "Para",
+"take": "take02",
+"src": 12.49,
+"start": 16.047,
+"end": 16.227
+},
+{
+"text": "participar,",
+"take": "take02",
+"src": 12.67,
+"start": 16.227,
+"end": 16.867
+},
+{
+"text": "é",
+"take": "take02",
+"src": 13.71,
+"start": 17.267,
+"end": 17.307
+},
+{
+"text": "necessário",
+"take": "take02",
+"src": 13.75,
+"start": 17.307,
+"end": 17.727
+},
+{
+"text": "ter",
+"take": "take02",
+"src": 14.17,
+"start": 17.727,
+"end": 17.967
+},
+{
+"text": "experiência",
+"take": "take02",
+"src": 14.41,
+"start": 17.967,
+"end": 18.527
+},
+{
+"text": "na",
+"take": "take02",
+"src": 14.97,
+"start": 18.527,
+"end": 18.727
+},
+{
+"text": "função",
+"take": "take02",
+"src": 15.17,
+"start": 18.727,
+"end": 19.147
+},
+{
+"text": "e",
+"take": "take02",
+"src": 15.86,
+"start": 19.187,
+"end": 19.457
+},
+{
+"text": "disponibilidade",
+"take": "take02",
+"src": 16.13,
+"start": 19.457,
+"end": 20.277
+},
+{
+"text": "para",
+"take": "take02",
+"src": 16.95,
+"start": 20.277,
+"end": 20.477
+},
+{
+"text": "atuar",
+"take": "take02",
+"src": 17.15,
+"start": 20.477,
+"end": 20.737
+},
+{
+"text": "em",
+"take": "take02",
+"src": 17.41,
+"start": 20.737,
+"end": 20.937
+},
+{
+"text": "condomínios",
+"take": "take02",
+"src": 17.61,
+"start": 20.937,
+"end": 21.517
+},
+{
+"text": "e",
+"take": "take02",
+"src": 18.19,
+"start": 21.517,
+"end": 21.697
+},
+{
+"text": "empresas.",
+"take": "take02",
+"src": 18.37,
+"start": 21.697,
+"end": 22.037
+},
+{
+"text": "salário",
+"take": "take03",
+"src": 1.06,
+"start": 22.551,
+"end": 23.031
+},
+{
+"text": "será",
+"take": "take03",
+"src": 1.54,
+"start": 23.031,
+"end": 23.291
+},
+{
+"text": "combinado",
+"take": "take03",
+"src": 1.8,
+"start": 23.291,
+"end": 23.851
+},
+{
+"text": "durante",
+"take": "take03",
+"src": 2.36,
+"start": 23.851,
+"end": 24.231
+},
+{
+"text": "o",
+"take": "take03",
+"src": 2.74,
+"start": 24.231,
+"end": 24.431
+},
+{
+"text": "processo",
+"take": "take03",
+"src": 2.94,
+"start": 24.431,
+"end": 24.731
+},
+{
+"text": "seletivo.",
+"take": "take03",
+"src": 3.24,
+"start": 24.731,
+"end": 25.328
+},
+{
+"text": "Se",
+"take": "take03",
+"src": 4.06,
+"start": 25.495,
+"end": 25.655
+},
+{
+"text": "você",
+"take": "take03",
+"src": 4.22,
+"start": 25.655,
+"end": 26.155
+},
+{
+"text": "tem",
+"take": "take03",
+"src": 4.72,
+"start": 26.155,
+"end": 26.355
+},
+{
+"text": "esse",
+"take": "take03",
+"src": 4.92,
+"start": 26.355,
+"end": 26.635
+},
+{
+"text": "perfil",
+"take": "take03",
+"src": 5.2,
+"start": 26.635,
+"end": 27.235
+},
+{
+"text": "ou",
+"take": "take03",
+"src": 5.8,
+"start": 27.235,
+"end": 27.535
+},
+{
+"text": "conhece",
+"take": "take03",
+"src": 6.1,
+"start": 27.535,
+"end": 27.915
+},
+{
+"text": "alguém",
+"take": "take03",
+"src": 6.48,
+"start": 27.915,
+"end": 28.195
+},
+{
+"text": "que",
+"take": "take03",
+"src": 6.76,
+"start": 28.195,
+"end": 28.375
+},
+{
+"text": "já",
+"take": "take03",
+"src": 6.94,
+"start": 28.375,
+"end": 28.635
+},
+{
+"text": "está",
+"take": "take03",
+"src": 7.2,
+"start": 28.635,
+"end": 28.895
+},
+{
+"text": "procurando",
+"take": "take03",
+"src": 7.46,
+"start": 28.895,
+"end": 29.255
+},
+{
+"text": "uma",
+"take": "take03",
+"src": 7.82,
+"start": 29.255,
+"end": 29.415
+},
+{
+"text": "oportunidade,",
+"take": "take03",
+"src": 7.98,
+"start": 29.415,
+"end": 30.282
+},
+{
+"text": "já",
+"take": "take03",
+"src": 9.38,
+"start": 30.489,
+"end": 30.729
+},
+{
+"text": "compartilhe",
+"take": "take03",
+"src": 9.62,
+"start": 30.729,
+"end": 31.229
+},
+{
+"text": "esse",
+"take": "take03",
+"src": 10.12,
+"start": 31.229,
+"end": 31.409
+},
+{
+"text": "vídeo.",
+"take": "take03",
+"src": 10.3,
+"start": 31.409,
+"end": 31.749
+},
+{
+"text": "Para",
+"take": "take04",
+"src": 1.313,
+"start": 31.786,
+"end": 32.143
+},
+{
+"text": "se",
+"take": "take04",
+"src": 1.67,
+"start": 32.143,
+"end": 32.383
+},
+{
+"text": "candidatar,",
+"take": "take04",
+"src": 1.91,
+"start": 32.383,
+"end": 33.103
+},
+{
+"text": "envia",
+"take": "take04",
+"src": 3.03,
+"start": 33.503,
+"end": 33.843
+},
+{
+"text": "agora",
+"take": "take04",
+"src": 3.37,
+"start": 33.843,
+"end": 34.503
+},
+{
+"text": "o",
+"take": "take04",
+"src": 4.03,
+"start": 34.503,
+"end": 34.763
+},
+{
+"text": "seu",
+"take": "take04",
+"src": 4.29,
+"start": 34.763,
+"end": 34.983
+},
+{
+"text": "currículo",
+"take": "take04",
+"src": 4.51,
+"start": 34.983,
+"end": 35.503
+},
+{
+"text": "pelo",
+"take": "take04",
+"src": 5.03,
+"start": 35.503,
+"end": 35.743
+},
+{
+"text": "WhatsApp",
+"take": "take04",
+"src": 5.27,
+"start": 35.743,
+"end": 36.203
+},
+{
+"text": "da",
+"take": "take04",
+"src": 5.73,
+"start": 36.203,
+"end": 36.443
+},
+{
+"text": "Inovar.",
+"take": "take04",
+"src": 5.97,
+"start": 36.443,
+"end": 37.01
+},
+{
+"text": "Não",
+"take": "take04",
+"src": 7.05,
+"start": 37.427,
+"end": 37.707
+},
+{
+"text": "deixe",
+"take": "take04",
+"src": 7.33,
+"start": 37.707,
+"end": 38.147
+},
+{
+"text": "para",
+"take": "take04",
+"src": 7.77,
+"start": 38.147,
+"end": 38.307
+},
+{
+"text": "depois.",
+"take": "take04",
+"src": 7.93,
+"start": 38.307,
+"end": 38.787
+}
+],
+"duration": 38.954,
+"segments": [
+{
+"scene": "Cena 1",
+"take": "take01",
+"start": 0.583,
+"end": 4.187,
+"zoom": 1.0,
+"out": 0
+},
+{
+"scene": "Cena 1",
+"take": "take01",
+"start": 4.213,
+"end": 5.487,
+"zoom": 1.1,
+"out": 3.604
+},
+{
+"scene": "Cena 2",
+"take": "take02",
+"start": 0.893,
+"end": 6.157,
+"zoom": 1.0,
+"out": 4.878
+},
+{
+"scene": "Cena 2",
+"take": "take02",
+"start": 6.173,
+"end": 9.237,
+"zoom": 1.1,
+"out": 10.142
+},
+{
+"scene": "Cena 2",
+"take": "take02",
+"start": 9.333,
+"end": 12.087,
+"zoom": 1.0,
+"out": 13.206
+},
+{
+"scene": "Cena 2",
+"take": "take02",
+"start": 12.403,
+"end": 15.63,
+"zoom": 1.1,
+"out": 15.96
+},
+{
+"scene": "Cena 2",
+"take": "take02",
+"start": 15.86,
+"end": 18.937,
+"zoom": 1.0,
+"out": 19.187
+},
+{
+"scene": "Cena 3",
+"take": "take03",
+"start": 0.773,
+"end": 3.837,
+"zoom": 1.1,
+"out": 22.264
+},
+{
+"scene": "Cena 3",
+"take": "take03",
+"start": 3.893,
+"end": 8.847,
+"zoom": 1.0,
+"out": 25.328
+},
+{
+"scene": "Cena 3",
+"take": "take03",
+"start": 9.173,
+"end": 10.677,
+"zoom": 1.1,
+"out": 30.282
+},
+{
+"scene": "Cena 4",
+"take": "take04",
+"start": 1.313,
+"end": 6.537,
+"zoom": 1.0,
+"out": 31.786
+},
+{
+"scene": "Cena 4",
+"take": "take04",
+"start": 6.633,
+"end": 8.577,
+"zoom": 1.1,
+"out": 37.01
+}
+]
+}

@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Vaga: Auxiliar de Serviços Gerais</title>
+<meta name="viewport" content="width=1080, height=1920">
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Montserrat';font-weight:400;font-style:normal;src:url('assets/fonts/montserrat-latin-400-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:700;font-style:normal;src:url('assets/fonts/montserrat-latin-700-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:800;font-style:normal;src:url('assets/fonts/montserrat-latin-800-normal.woff2') format('woff2')}@font-face{font-family:'Montserrat';font-weight:900;font-style:normal;src:url('assets/fonts/montserrat-latin-900-normal.woff2') format('woff2')}@font-face{font-family:'Bebas Neue';font-weight:400;font-style:normal;src:url('assets/fonts/bebas-neue-latin-400-normal.woff2') format('woff2')}
+
+:root{--ink:#212829;--teal-deep:#00494F;--teal:#00696E;--mist:#D7E3E2;--paper:#F1F1F1;--yellow:#FFCE23;--wa:#25D366}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:'Montserrat',sans-serif}
+#root{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+.ybox{display:inline-block;background:var(--yellow);color:var(--teal-deep);padding:0 .16em;border-radius:.12em}
+.bebas{font-family:'Bebas Neue',sans-serif;font-weight:400;letter-spacing:.02em}
+
+
+#cam{position:absolute;inset:0;transform-origin:50% 30%;z-index:1}
+#shake{position:absolute;inset:0}
+#speaker{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#flash{position:absolute;inset:0;background:#fff;z-index:15}
+/* ticker */
+#ticker{position:absolute;left:0;right:0;top:262px;height:58px;background:var(--teal-deep);overflow:hidden;z-index:5;border-top:3px solid var(--teal);border-bottom:3px solid var(--teal)}
+#tickin{position:absolute;left:0;top:0;white-space:nowrap;color:#fff;font-weight:800;font-size:34px;line-height:52px;letter-spacing:.12em}
+#tickin b{color:var(--yellow);font-weight:900;padding:0 .4em}
+/* carimbo */
+#stamp{position:absolute;left:0;right:0;top:1010px;display:flex;justify-content:center;z-index:6}
+#stamp span{display:block;background:var(--yellow);color:var(--teal-deep);font-weight:900;font-size:104px;letter-spacing:.04em;padding:14px 42px;border-radius:18px;border:8px solid var(--teal-deep);box-shadow:0 18px 50px rgba(0,0,0,.35);transform:rotate(-8deg)}
+/* cargo */
+#band{position:absolute;left:70px;right:70px;top:262px;height:118px;background:var(--teal-deep);border-radius:20px;z-index:6;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(0,0,0,.35);transform-origin:50% 0}
+#cargo{color:#fff;font-size:92px;line-height:1;white-space:nowrap}
+#uline{position:absolute;left:40px;right:40px;bottom:14px;height:8px;border-radius:4px;background:var(--yellow);transform-origin:0 50%}
+/* ficha */
+#ficha{position:absolute;left:100px;right:110px;top:900px;background:#fff;border-radius:34px;box-shadow:0 20px 50px rgba(0,0,0,.35);padding:20px 28px 18px;z-index:6;transform-origin:0 50%;overflow:hidden}
+#fhead{background:var(--teal-deep);border-radius:20px;padding:10px 18px 6px;text-align:center;position:relative;height:82px;box-sizing:border-box}
+#fhead .t{color:#fff;font-size:62px;line-height:1}
+#fhead .u{position:absolute;left:24px;right:24px;bottom:6px;height:5px;border-radius:3px;background:var(--yellow)}
+.frow{display:flex;align-items:center;gap:18px;height:68px;margin-top:4px}
+.frow .ic{width:56px;height:56px;flex:0 0 56px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center}
+.frow .ic svg{width:36px;height:36px}
+.ic-text{color:#fff;font-weight:900;font-size:24px}
+.frow .tx{color:var(--teal-deep);font-weight:800;font-size:37px;letter-spacing:-.3px;white-space:nowrap}
+.frow .tx i{font-style:normal;font-weight:700;color:var(--teal)}
+/* aviãozinho */
+#plane-layer{position:absolute;inset:0;z-index:6}
+#trail{position:absolute;inset:0;width:1080px;height:1920px}
+#plane{position:absolute;left:0;top:0;width:110px;height:110px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#plane svg{width:64px;height:64px}
+#tag{position:absolute;left:180px;top:1110px;display:flex;align-items:center;gap:12px;background:#fff;color:var(--teal-deep);font-weight:800;font-size:44px;padding:16px 30px;border-radius:999px;box-shadow:0 12px 34px rgba(0,0,0,.3)}
+#tag svg{width:44px;height:44px}
+/* currículo + telefone */
+#doc{position:absolute;left:150px;top:900px;width:170px;height:200px;background:#fff;border-radius:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(0,0,0,.35);z-index:6}
+#doc svg{width:110px;height:110px}
+#phone{position:absolute;left:100px;right:110px;top:880px;height:330px;background:#fff;border-radius:40px;box-shadow:0 22px 56px rgba(0,0,0,.4);z-index:7;display:flex;align-items:center;gap:30px;padding:0 36px;transform-origin:50% 50%}
+#wa{width:150px;height:150px;flex:0 0 150px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center}
+#wa img{width:92px;height:92px}
+#pcol{display:flex;flex-direction:column;gap:8px}
+#plabel{color:var(--teal);font-weight:700;font-size:34px}
+#pnum{position:relative;display:inline-block;font-weight:800;font-size:66px;color:var(--teal-deep);letter-spacing:-.5px;white-space:nowrap;padding:2px 12px;border-radius:12px}
+#pbox{position:absolute;inset:0;background:var(--yellow);border-radius:12px;z-index:-1}
+#pcur{display:inline-block;width:5px;height:60px;background:var(--teal-deep);vertical-align:-8px;margin-left:4px}
+#hg{position:absolute;right:-26px;top:-56px;width:110px;height:110px;border-radius:50%;background:#fff;border:6px solid var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(0,0,0,.3)}
+#hg svg{width:62px;height:62px}
+/* legendas */
+.cap{position:absolute;left:110px;right:120px;top:1300px;height:220px;display:flex;align-items:center;justify-content:center;z-index:10}
+.cap.low{top:1432px;height:100px}
+.cap.low .capline{font-size:50px}
+.cap.dim{opacity:.55}
+.capline{text-align:center;color:#fff;font-weight:800;font-size:70px;line-height:1.15;letter-spacing:-.5px;-webkit-text-stroke:7px #00393d;paint-order:stroke fill;text-shadow:0 6px 18px rgba(0,0,0,.45)}
+.w{display:inline-block}
+.kwbox{display:inline-block;background:var(--yellow);border-radius:.16em;padding:0 .14em;-webkit-text-stroke:0;text-shadow:none;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.kwbox .w{color:var(--teal-deep);-webkit-text-stroke:0}
+/* CTA */
+#cta{position:absolute;inset:0;background:var(--teal-deep);z-index:20;overflow:hidden}
+#cta svg.curves{position:absolute;inset:0;width:100%;height:100%}
+#ctac{position:absolute;left:100px;right:100px;top:520px;display:flex;flex-direction:column;align-items:center;gap:34px;text-align:center}
+#ctaseal{background:var(--teal);color:#fff;font-weight:800;font-size:34px;letter-spacing:.18em;padding:10px 26px;border-radius:999px}
+#ctat{color:#fff;font-size:150px;line-height:.92}
+#ctasub{color:#fff;font-weight:400;font-size:48px}
+#ctaph{display:flex;align-items:center;gap:20px}
+#ctaph .wa2{width:96px;height:96px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center}
+#ctaph .wa2 img{width:58px;height:58px}
+#ctaph .ybox{font-weight:800;font-size:62px;padding:6px 18px;border-radius:14px}
+#ctafade{position:absolute;inset:0;background:var(--teal-deep);z-index:21}
+#outro-w{position:absolute;inset:0;z-index:30}
+#outro{position:absolute;inset:0;width:100%;height:100%}
+
+</style></head><body>
+<div id="root" data-composition-id="reel" data-start="0" data-duration="45.95" data-width="1080" data-height="1920">
+<div id="cam"><div id="shake">
+<video id="speaker" class="clip" src="assets/speaker.mp4" muted playsinline data-start="0" data-duration="38.95" data-track-index="0"></video>
+</div></div>
+<audio id="mix" src="assets/mix.wav" data-start="0" data-duration="45.95" data-track-index="1"></audio>
+
+<div id="ticker-c" class="clip" data-start="0" data-duration="5.2" data-track-index="4"><div id="ticker"><div id="tickin">VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b>VAGA ABERTA<b>•</b></div></div></div>
+<div id="stamp-c" class="clip" data-start="4.45" data-duration="1.75" data-track-index="5"><div id="stamp"><span>VAGA ABERTA</span></div></div>
+<div id="flash-c" class="clip" data-start="4.66" data-duration="0.12" data-track-index="6"><div id="flash"></div></div>
+
+<div id="band-c" class="clip" data-start="8.70" data-duration="2.05" data-track-index="7"><div id="band"><div id="cargo" class="bebas"><span class="ch" id="ch0">A</span><span class="ch" id="ch1">U</span><span class="ch" id="ch2">X</span><span class="ch" id="ch3">I</span><span class="ch" id="ch4">L</span><span class="ch" id="ch5">I</span><span class="ch" id="ch6">A</span><span class="ch" id="ch7">R</span><span class="ch" id="ch8">&nbsp;</span><span class="ch" id="ch9">D</span><span class="ch" id="ch10">E</span><span class="ch" id="ch11">&nbsp;</span><span class="ch" id="ch12">S</span><span class="ch" id="ch13">E</span><span class="ch" id="ch14">R</span><span class="ch" id="ch15">V</span><span class="ch" id="ch16">I</span><span class="ch" id="ch17">Ç</span><span class="ch" id="ch18">O</span><span class="ch" id="ch19">S</span><span class="ch" id="ch20">&nbsp;</span><span class="ch" id="ch21">G</span><span class="ch" id="ch22">E</span><span class="ch" id="ch23">R</span><span class="ch" id="ch24">A</span><span class="ch" id="ch25">I</span><span class="ch" id="ch26">S</span></div><div id="uline"></div></div></div>
+
+<div id="ficha-c" class="clip" data-start="10.35" data-duration="15.15" data-track-index="8"><div id="ficha">
+<div id="fhead"><div class="t bebas">AUXILIAR DE SERVIÇOS GERAIS</div><div class="u"></div></div>
+<div class="frow" id="row0"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="tx">36 horas semanais</span></div><div class="frow" id="row1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M8 13h2M12 13h2M16 13h0M8 16.5h2M12 16.5h2"/></svg></span><span class="tx">Segunda a sexta<i id="row1b"> · Horário comercial</i></span></div><div class="frow" id="row2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z"/></svg></span><span class="tx">Experiência na função</span></div><div class="frow" id="row3"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M11 21v-3h2v3"/></svg></span><span class="tx">Condomínios e empresas</span></div><div class="frow" id="row4"><span class="ic"><span class="ic-text">R$</span></span><span class="tx">Salário a combinar</span></div>
+</div></div>
+
+<div id="plane-c" class="clip" data-start="30.45" data-duration="2.25" data-track-index="9"><div id="plane-layer">
+<svg id="trail" viewBox="0 0 1080 1920"><path id="trailp" d="M150 1270 C 330 1180, 470 1300, 620 1150 S 860 960, 900 940" fill="none" stroke="#00696E" stroke-width="9" stroke-linecap="round" stroke-dasharray="2 22"/></svg>
+<div id="plane"><svg viewBox="0 0 24 24" fill="none" stroke="#00494F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3 10.2 14.3"/><path d="M21.5 3 14.6 21l-4.4-6.7L3.5 9.9Z"/></svg></div>
+<div id="tag">Marque quem precisa ver <svg viewBox="0 0 24 24" fill="none" stroke="#00494F" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></svg></div>
+</div></div>
+
+<div id="doc-c" class="clip" data-start="34.80" data-duration="1.25" data-track-index="10"><div id="doc"><svg viewBox="0 0 24 24" fill="none" stroke="#00494F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a1.8 1.8 0 0 0-1.8 1.8v14.4A1.8 1.8 0 0 0 7 21h10a1.8 1.8 0 0 0 1.8-1.8V7.8Z"/><path d="M14 3v4.8h4.8"/><path d="m9 14 2.2 2.2L15.5 12"/></svg></div></div>
+<div id="phone-c" class="clip" data-start="35.70" data-duration="3.55" data-track-index="11"><div id="phone">
+<div id="wa"><img src="assets/whatsapp-white.svg" alt="WhatsApp"></div>
+<div id="pcol"><div id="plabel">WhatsApp da Inovar</div><div><span id="pnum"><span id="pbox"></span><span class="pd" id="pd0">(</span><span class="pd" id="pd1">3</span><span class="pd" id="pd2">1</span><span class="pd" id="pd3">)</span><span class="pd" id="pd4">&nbsp;</span><span class="pd" id="pd5">9</span><span class="pd" id="pd6">7</span><span class="pd" id="pd7">2</span><span class="pd" id="pd8">3</span><span class="pd" id="pd9">1</span><span class="pd" id="pd10">-</span><span class="pd" id="pd11">7</span><span class="pd" id="pd12">1</span><span class="pd" id="pd13">9</span><span class="pd" id="pd14">0</span><span id="pcur"></span></span></div></div>
+<div id="hg"><svg viewBox="0 0 24 24" fill="none" stroke="#00494F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10M7 21h10M8 3c0 4.5 8 4.5 8 9s-8 4.5-8 9M16 3c0 4.5-8 4.5-8 9s8 4.5 8 9"/></svg></div>
+</div></div>
+
+<div id="cap0" class="clip cap " data-start="0.260" data-duration="1.070" data-track-index="20"><div class="capline" id="capl0"><span class="w" id="c0w0">Se</span> <span class="w" id="c0w1">você</span></div></div>
+<div id="cap1" class="clip cap " data-start="1.330" data-duration="0.680" data-track-index="20"><div class="capline" id="capl1"><span class="w" id="c1w0">está</span> <span class="w" id="c1w1">procurando</span></div></div>
+<div id="cap2" class="clip cap " data-start="2.010" data-duration="0.840" data-track-index="20"><div class="capline" id="capl2"><span class="w" id="c2w0">uma</span> <span class="w" id="c2w1">oportunidade</span></div></div>
+<div id="cap3" class="clip cap " data-start="2.850" data-duration="1.010" data-track-index="20"><div class="capline" id="capl3"><span class="w" id="c3w0">de</span> <span class="w" id="c3w1">emprego,</span></div></div>
+<div id="cap4" class="clip cap " data-start="3.860" data-duration="0.460" data-track-index="20"><div class="capline" id="capl4"><span class="w" id="c4w0">presta</span> <span class="w" id="c4w1">atenção</span></div></div>
+<div id="cap5" class="clip cap " data-start="4.320" data-duration="0.520" data-track-index="20"><div class="capline" id="capl5"><span class="w" id="c5w0">nessa</span> <span class="kwbox"><span class="w kw" id="c5w1">vaga.</span></span></div></div>
+<div id="cap6" class="clip cap " data-start="4.840" data-duration="0.830" data-track-index="20"><div class="capline" id="capl6"><span class="w" id="c6w0">A</span> <span class="w" id="c6w1">Inovar</span></div></div>
+<div id="cap7" class="clip cap " data-start="5.670" data-duration="0.840" data-track-index="20"><div class="capline" id="capl7"><span class="w" id="c7w0">Recursos</span> <span class="w" id="c7w1">Humanos</span></div></div>
+<div id="cap8" class="clip cap " data-start="6.510" data-duration="0.460" data-track-index="20"><div class="capline" id="capl8"><span class="w" id="c8w0">está</span> <span class="w" id="c8w1">com</span> <span class="w" id="c8w2">uma</span></div></div>
+<div id="cap9" class="clip cap " data-start="6.970" data-duration="1.170" data-track-index="20"><div class="capline" id="capl9"><span class="w" id="c9w0">oportunidade</span> <span class="w" id="c9w1">aberta</span></div></div>
+<div id="cap10" class="clip cap " data-start="8.140" data-duration="0.520" data-track-index="20"><div class="capline" id="capl10"><span class="w" id="c10w0">para</span> <span class="w" id="c10w1">a</span> <span class="kwbox"><span class="w kw" id="c10w2">vaga</span></span></div></div>
+<div id="cap11" class="clip cap " data-start="8.660" data-duration="0.140" data-track-index="20"><div class="capline" id="capl11"><span class="w" id="c11w0">de</span></div></div>
+<div id="cap12" class="clip cap " data-start="8.800" data-duration="1.620" data-track-index="20"><div class="capline" id="capl12"><span class="kwbox"><span class="w kw" id="c12w0">Auxiliar</span> <span class="w kw" id="c12w1">de</span> <span class="w kw" id="c12w2">Serviços</span> <span class="w kw" id="c12w3">Gerais.</span></span></div></div>
+<div id="cap13" class="clip cap low" data-start="10.420" data-duration="0.620" data-track-index="20"><div class="capline" id="capl13"><span class="w" id="c13w0">A</span> <span class="w" id="c13w1">jornada</span></div></div>
+<div id="cap14" class="clip cap low" data-start="11.040" data-duration="0.440" data-track-index="20"><div class="capline" id="capl14"><span class="w" id="c14w0">é</span> <span class="w" id="c14w1">de</span></div></div>
+<div id="cap15" class="clip cap low" data-start="11.480" data-duration="0.980" data-track-index="20"><div class="capline" id="capl15"><span class="w" id="c15w0">36</span> <span class="w" id="c15w1">horas</span></div></div>
+<div id="cap16" class="clip cap low" data-start="12.460" data-duration="0.880" data-track-index="20"><div class="capline" id="capl16"><span class="w" id="c16w0">semanais,</span></div></div>
+<div id="cap17" class="clip cap low" data-start="13.340" data-duration="0.440" data-track-index="20"><div class="capline" id="capl17"><span class="w" id="c17w0">de</span> <span class="w" id="c17w1">segunda</span></div></div>
+<div id="cap18" class="clip cap low" data-start="13.780" data-duration="0.980" data-track-index="20"><div class="capline" id="capl18"><span class="w" id="c18w0">a</span> <span class="w" id="c18w1">sexta-feira,</span></div></div>
+<div id="cap19" class="clip cap low" data-start="14.760" data-duration="0.460" data-track-index="20"><div class="capline" id="capl19"><span class="w" id="c19w0">em</span> <span class="w" id="c19w1">horário</span></div></div>
+<div id="cap20" class="clip cap low" data-start="15.220" data-duration="0.790" data-track-index="20"><div class="capline" id="capl20"><span class="w" id="c20w0">comercial.</span></div></div>
+<div id="cap21" class="clip cap low" data-start="16.010" data-duration="1.220" data-track-index="20"><div class="capline" id="capl21"><span class="w" id="c21w0">Para</span> <span class="w" id="c21w1">participar,</span></div></div>
+<div id="cap22" class="clip cap low" data-start="17.230" data-duration="0.460" data-track-index="20"><div class="capline" id="capl22"><span class="w" id="c22w0">é</span> <span class="w" id="c22w1">necessário</span></div></div>
+<div id="cap23" class="clip cap low" data-start="17.690" data-duration="0.800" data-track-index="20"><div class="capline" id="capl23"><span class="w" id="c23w0">ter</span> <span class="kwbox"><span class="w kw" id="c23w1">experiência</span></span></div></div>
+<div id="cap24" class="clip cap low" data-start="18.490" data-duration="0.660" data-track-index="20"><div class="capline" id="capl24"><span class="w" id="c24w0">na</span> <span class="w" id="c24w1">função</span></div></div>
+<div id="cap25" class="clip cap low" data-start="19.150" data-duration="1.090" data-track-index="20"><div class="capline" id="capl25"><span class="w" id="c25w0">e</span> <span class="w" id="c25w1">disponibilidade</span></div></div>
+<div id="cap26" class="clip cap low" data-start="20.240" data-duration="0.460" data-track-index="20"><div class="capline" id="capl26"><span class="w" id="c26w0">para</span> <span class="w" id="c26w1">atuar</span></div></div>
+<div id="cap27" class="clip cap low" data-start="20.700" data-duration="0.780" data-track-index="20"><div class="capline" id="capl27"><span class="w" id="c27w0">em</span> <span class="w" id="c27w1">condomínios</span></div></div>
+<div id="cap28" class="clip cap low" data-start="21.480" data-duration="0.780" data-track-index="20"><div class="capline" id="capl28"><span class="w" id="c28w0">e</span> <span class="w" id="c28w1">empresas.</span></div></div>
+<div id="cap29" class="clip cap low" data-start="22.260" data-duration="0.730" data-track-index="20"><div class="capline" id="capl29"><span class="w" id="c29w0">O</span> <span class="w" id="c29w1">salário</span></div></div>
+<div id="cap30" class="clip cap low" data-start="22.990" data-duration="0.820" data-track-index="20"><div class="capline" id="capl30"><span class="w" id="c30w0">será</span> <span class="w" id="c30w1">combinado</span></div></div>
+<div id="cap31" class="clip cap low" data-start="23.810" data-duration="0.880" data-track-index="20"><div class="capline" id="capl31"><span class="w" id="c31w0">durante</span> <span class="w" id="c31w1">o</span> <span class="w" id="c31w2">processo</span></div></div>
+<div id="cap32" class="clip cap low" data-start="24.690" data-duration="0.770" data-track-index="20"><div class="capline" id="capl32"><span class="w" id="c32w0">seletivo.</span></div></div>
+<div id="cap33" class="clip cap " data-start="25.460" data-duration="0.860" data-track-index="20"><div class="capline" id="capl33"><span class="w" id="c33w0">Se</span> <span class="w" id="c33w1">você</span> <span class="w" id="c33w2">tem</span></div></div>
+<div id="cap34" class="clip cap " data-start="26.320" data-duration="0.870" data-track-index="20"><div class="capline" id="capl34"><span class="w" id="c34w0">esse</span> <span class="w" id="c34w1">perfil</span></div></div>
+<div id="cap35" class="clip cap " data-start="27.190" data-duration="0.680" data-track-index="20"><div class="capline" id="capl35"><span class="w" id="c35w0">ou</span> <span class="w" id="c35w1">conhece</span></div></div>
+<div id="cap36" class="clip cap " data-start="27.870" data-duration="0.730" data-track-index="20"><div class="capline" id="capl36"><span class="w" id="c36w0">alguém</span> <span class="w" id="c36w1">que</span> <span class="w" id="c36w2">já</span></div></div>
+<div id="cap37" class="clip cap " data-start="28.600" data-duration="0.610" data-track-index="20"><div class="capline" id="capl37"><span class="w" id="c37w0">está</span> <span class="w" id="c37w1">procurando</span></div></div>
+<div id="cap38" class="clip cap " data-start="29.210" data-duration="1.240" data-track-index="20"><div class="capline" id="capl38"><span class="w" id="c38w0">uma</span> <span class="w" id="c38w1">oportunidade,</span></div></div>
+<div id="cap39" class="clip cap " data-start="30.450" data-duration="0.740" data-track-index="20"><div class="capline" id="capl39"><span class="w" id="c39w0">já</span> <span class="kwbox"><span class="w kw" id="c39w1">compartilha</span></span></div></div>
+<div id="cap40" class="clip cap " data-start="31.190" data-duration="0.560" data-track-index="20"><div class="capline" id="capl40"><span class="w" id="c40w0">esse</span> <span class="w" id="c40w1">vídeo.</span></div></div>
+<div id="cap41" class="clip cap " data-start="31.750" data-duration="1.710" data-track-index="20"><div class="capline" id="capl41"><span class="w" id="c41w0">Para</span> <span class="w" id="c41w1">se</span> <span class="w" id="c41w2">candidatar,</span></div></div>
+<div id="cap42" class="clip cap " data-start="33.460" data-duration="1.000" data-track-index="20"><div class="capline" id="capl42"><span class="w" id="c42w0">envia</span> <span class="kwbox"><span class="w kw" id="c42w1">agora</span></span></div></div>
+<div id="cap43" class="clip cap " data-start="34.460" data-duration="1.000" data-track-index="20"><div class="capline" id="capl43"><span class="w" id="c43w0">o</span> <span class="w" id="c43w1">seu</span> <span class="kwbox"><span class="w kw" id="c43w2">currículo</span></span></div></div>
+<div id="cap44" class="clip cap " data-start="35.460" data-duration="0.700" data-track-index="20"><div class="capline" id="capl44"><span class="w" id="c44w0">pelo</span> <span class="kwbox"><span class="w kw" id="c44w1">WhatsApp</span></span></div></div>
+<div id="cap45" class="clip cap dim" data-start="36.160" data-duration="1.230" data-track-index="20"><div class="capline" id="capl45"><span class="w" id="c45w0">da</span> <span class="w" id="c45w1">Inovar.</span></div></div>
+<div id="cap46" class="clip cap dim" data-start="37.390" data-duration="0.720" data-track-index="20"><div class="capline" id="capl46"><span class="w" id="c46w0">Não</span> <span class="w" id="c46w1">deixe</span></div></div>
+<div id="cap47" class="clip cap dim" data-start="38.110" data-duration="0.840" data-track-index="20"><div class="capline" id="capl47"><span class="w" id="c47w0">para</span> <span class="w" id="c47w1">depois.</span></div></div>
+
+<div id="cta-c" class="clip" data-start="38.78" data-duration="2.17" data-track-index="30"><div id="cta">
+<svg class="curves" viewBox="0 0 1080 1920" preserveAspectRatio="none">
+<path id="cv1" d="M-40 1520 C 280 1400 560 1700 1120 1450 L1120 1960 L-40 1960 Z" fill="#00696E"/>
+<path id="cv2" d="M1120 -40 C 880 200 1040 330 760 440 C 590 510 640 120 1120 -40 Z" fill="#00696E" opacity=".7"/>
+</svg>
+<div id="ctac">
+<div id="ctaseal">VAGA ABERTA</div>
+<div id="ctat" class="bebas"><div>AUXILIAR DE</div><div>SERVIÇOS GERAIS</div></div>
+<div id="ctasub">Envie seu currículo</div>
+<div id="ctaph"><span class="wa2"><img src="assets/whatsapp-white.svg" alt="WhatsApp"></span><span class="ybox" id="ctanum">(31) 97231-7190</span></div>
+</div>
+<div id="ctafade"></div>
+</div></div>
+<div id="outro-w"><video id="outro" class="clip" src="assets/encerramento.mp4" muted playsinline data-start="40.95" data-duration="5" data-track-index="40"></video></div>
+</div>
+<script>
+const K = {"T": {"alert": 3.9, "stamp": 4.68, "type": 8.84, "pops": [11.42, 13.44, 15.02, 18.04, 20.85, 22.53], "plane": 30.67, "keys": 35.84, "ding": 38.79}, "CAP": [{"g": 0, "start": 0.26, "end": 1.33, "words": [0.3, 1.03], "kw": [false, false]}, {"g": 1, "start": 1.33, "end": 2.01, "words": [1.37, 1.57], "kw": [false, false]}, {"g": 2, "start": 2.01, "end": 2.85, "words": [2.05, 2.23], "kw": [false, false]}, {"g": 3, "start": 2.85, "end": 3.86, "words": [2.89, 3.21], "kw": [false, false]}, {"g": 4, "start": 3.86, "end": 4.32, "words": [3.9, 4.06], "kw": [false, false]}, {"g": 5, "start": 4.32, "end": 4.84, "words": [4.36, 4.68], "kw": [false, true]}, {"g": 6, "start": 4.84, "end": 5.67, "words": [4.88, 5.36], "kw": [false, false]}, {"g": 7, "start": 5.67, "end": 6.51, "words": [5.71, 6.12], "kw": [false, false]}, {"g": 8, "start": 6.51, "end": 6.97, "words": [6.55, 6.74, 6.89], "kw": [false, false, false]}, {"g": 9, "start": 6.97, "end": 8.14, "words": [7.01, 7.66], "kw": [false, false]}, {"g": 10, "start": 8.14, "end": 8.66, "words": [8.18, 8.41, 8.55], "kw": [false, false, true]}, {"g": 11, "start": 8.66, "end": 8.8, "words": [8.7], "kw": [false]}, {"g": 12, "start": 8.8, "end": 10.42, "words": [8.84, 9.15, 9.34, 9.71], "kw": [true, true, true, true]}, {"g": 13, "start": 10.42, "end": 11.04, "words": [10.46, 10.62], "kw": [false, false]}, {"g": 14, "start": 11.04, "end": 11.48, "words": [11.08, 11.24], "kw": [false, false]}, {"g": 15, "start": 11.48, "end": 12.46, "words": [11.52, 12.06], "kw": [false, false]}, {"g": 16, "start": 12.46, "end": 13.34, "words": [12.5], "kw": [false]}, {"g": 17, "start": 13.34, "end": 13.78, "words": [13.38, 13.52], "kw": [false, false]}, {"g": 18, "start": 13.78, "end": 14.76, "words": [13.82, 13.98], "kw": [false, false]}, {"g": 19, "start": 14.76, "end": 15.22, "words": [14.8, 14.92], "kw": [false, false]}, {"g": 20, "start": 15.22, "end": 16.01, "words": [15.26], "kw": [false]}, {"g": 21, "start": 16.01, "end": 17.23, "words": [16.05, 16.23], "kw": [false, false]}, {"g": 22, "start": 17.23, "end": 17.69, "words": [17.27, 17.31], "kw": [false, false]}, {"g": 23, "start": 17.69, "end": 18.49, "words": [17.73, 17.97], "kw": [false, true]}, {"g": 24, "start": 18.49, "end": 19.15, "words": [18.53, 18.73], "kw": [false, false]}, {"g": 25, "start": 19.15, "end": 20.24, "words": [19.19, 19.46], "kw": [false, false]}, {"g": 26, "start": 20.24, "end": 20.7, "words": [20.28, 20.48], "kw": [false, false]}, {"g": 27, "start": 20.7, "end": 21.48, "words": [20.74, 20.94], "kw": [false, false]}, {"g": 28, "start": 21.48, "end": 22.26, "words": [21.52, 21.7], "kw": [false, false]}, {"g": 29, "start": 22.26, "end": 22.99, "words": [22.3, 22.55], "kw": [false, false]}, {"g": 30, "start": 22.99, "end": 23.81, "words": [23.03, 23.29], "kw": [false, false]}, {"g": 31, "start": 23.81, "end": 24.69, "words": [23.85, 24.23, 24.43], "kw": [false, false, false]}, {"g": 32, "start": 24.69, "end": 25.46, "words": [24.73], "kw": [false]}, {"g": 33, "start": 25.46, "end": 26.32, "words": [25.5, 25.66, 26.16], "kw": [false, false, false]}, {"g": 34, "start": 26.32, "end": 27.19, "words": [26.36, 26.64], "kw": [false, false]}, {"g": 35, "start": 27.19, "end": 27.87, "words": [27.23, 27.54], "kw": [false, false]}, {"g": 36, "start": 27.87, "end": 28.6, "words": [27.91, 28.2, 28.38], "kw": [false, false, false]}, {"g": 37, "start": 28.6, "end": 29.21, "words": [28.64, 28.89], "kw": [false, false]}, {"g": 38, "start": 29.21, "end": 30.45, "words": [29.25, 29.41], "kw": [false, false]}, {"g": 39, "start": 30.45, "end": 31.19, "words": [30.49, 30.73], "kw": [false, true]}, {"g": 40, "start": 31.19, "end": 31.75, "words": [31.23, 31.41], "kw": [false, false]}, {"g": 41, "start": 31.75, "end": 33.46, "words": [31.79, 32.14, 32.38], "kw": [false, false, false]}, {"g": 42, "start": 33.46, "end": 34.46, "words": [33.5, 33.84], "kw": [false, true]}, {"g": 43, "start": 34.46, "end": 35.46, "words": [34.5, 34.76, 34.98], "kw": [false, false, true]}, {"g": 44, "start": 35.46, "end": 36.16, "words": [35.5, 35.74], "kw": [false, true]}, {"g": 45, "start": 36.16, "end": 37.39, "words": [36.2, 36.44], "kw": [false, false]}, {"g": 46, "start": 37.39, "end": 38.11, "words": [37.43, 37.71], "kw": [false, false]}, {"g": 47, "start": 38.11, "end": 38.95, "words": [38.15, 38.31], "kw": [false, false]}], "PHONE": "(31) 97231-7190", "CARGO": "AUXILIAR DE SERVIÇOS GERAIS", "FICHA_IN": 10.4, "FICHA_OUT": 25.0, "PHONE_IN": 35.7, "CTA_IN": 38.95, "OUTRO_IN": 40.95}, T = K.T;
+function build(){
+const tl = gsap.timeline({paused:true});
+tl.set({}, {}, 45.95);
+// ---------------- GANCHO: ticker + carimbo ----------------
+const tw = document.getElementById("tickin").scrollWidth/2;
+tl.fromTo("#ticker",{scaleY:.6},{scaleY:1,duration:.2,ease:"back.out(2)"},0);
+tl.fromTo("#tickin",{x:0},{x:-tw,duration:9,ease:"none"},0);
+tl.to("#ticker",{y:-90,opacity:0,duration:.25,ease:"power2.in"},4.9);
+tl.fromTo("#ticker",{scaleY:1},{scaleY:1.15,duration:.08,yoyo:true,repeat:3,ease:"none"},T.alert);
+tl.fromTo("#stamp span",{y:-60,scale:2.1,rotation:-16,opacity:0},{y:0,scale:1,rotation:-8,opacity:1,duration:.2,ease:"power4.in"},T.stamp-0.2);
+tl.fromTo("#flash",{opacity:0},{opacity:.85,duration:.0001},T.stamp);
+tl.set("#flash",{opacity:0},T.stamp+0.067);
+[[16,-10],[-14,9],[11,8],[-8,-6],[5,4],[-3,-2],[0,0]].forEach((d,i)=>tl.to("#shake",{x:d[0],y:d[1],duration:.04,ease:"none"},T.stamp+0.01+i*0.04));
+tl.to("#stamp span",{scale:.6,opacity:0,duration:.25,ease:"back.in(2)"},5.9);
+
+// ---------------- CENA 2: cargo digitado + ficha ----------------
+tl.fromTo("#band",{scaleY:0,opacity:0},{scaleY:1,opacity:1,duration:.18,ease:"power2.out"},8.72);
+const chars = document.querySelectorAll("#cargo .ch");
+chars.forEach(c=>tl.set(c,{opacity:0},0));
+const tEnd = 10.10;
+chars.forEach((c,i)=>tl.set(c,{opacity:1},T.type+(tEnd-T.type)*i/chars.length));
+tl.fromTo("#uline",{scaleX:0},{scaleX:1,duration:.25,ease:"power2.out"},10.14);
+// o cargo encolhe e desce para virar o título da ficha
+tl.to("#band",{y:628,scale:.86,duration:.4,ease:"power3.inOut"},K.FICHA_IN-0.05);
+tl.to("#band",{opacity:0,duration:.12},K.FICHA_IN+0.32);
+// a ficha cresce linha a linha: altura = cabeçalho + linhas visíveis (medidas fixas do CSS)
+const HEAD_H = 20 + 82 + 18, ROW_H = 72;
+tl.fromTo("#ficha",{height:HEAD_H,opacity:0},{opacity:1,duration:.3,ease:"power2.out"},K.FICHA_IN+0.2);
+tl.fromTo("#fhead .u",{scaleX:0},{scaleX:1,duration:.3,ease:"power2.out"},K.FICHA_IN+0.45);
+document.querySelectorAll(".frow").forEach(r=>tl.set(r,{opacity:0},0));
+tl.set("#row1b",{opacity:0},0);
+const rowT = [T.pops[0],T.pops[1],T.pops[3],T.pops[4],T.pops[5]];
+rowT.forEach((t,i)=>{
+  tl.to("#ficha",{height:HEAD_H+ROW_H*(i+1),duration:.2,ease:"power2.out"},t-0.06);
+  tl.fromTo("#row"+i,{opacity:0,x:-50,scale:.9},{opacity:1,x:0,scale:1,duration:.22,ease:"back.out(2.4)"},t-0.04);
+  tl.fromTo("#row"+i+" .ic",{scale:0,rotation:-40},{scale:1,rotation:0,duration:.25,ease:"back.out(3)"},t);
+  tl.to("#cam",{scale:"+=0.018",duration:.07,yoyo:true,repeat:1,ease:"power1.out"},t);
+});
+tl.fromTo("#row1b",{opacity:0,y:10},{opacity:1,y:0,duration:.2,ease:"back.out(2)"},T.pops[2]-0.03);
+tl.to("#cam",{scale:1.07,duration:K.FICHA_OUT-K.FICHA_IN,ease:"none"},K.FICHA_IN);
+tl.to("#ficha",{x:-1150,scale:.7,rotation:-6,duration:.42,ease:"back.in(1.4)"},K.FICHA_OUT);
+tl.to("#cam",{scale:1,duration:.5,ease:"power2.inOut"},K.FICHA_OUT+0.05);
+
+// ---------------- CENA 3: aviãozinho com rastro ----------------
+const path = document.getElementById("trailp"), L = path.getTotalLength();
+const prog = {p:0};
+const STEPS = 18, t0 = T.plane-0.05, t1 = T.plane+0.6;
+for (let i=0;i<=STEPS;i++){
+  const f = i/STEPS, pt = path.getPointAtLength(L*f), pt2 = path.getPointAtLength(Math.min(L, L*f+4));
+  const ang = Math.atan2(pt2.y-pt.y, pt2.x-pt.x)*180/Math.PI + 45;
+  tl.to("#plane",{x:pt.x-55,y:pt.y-55,rotation:ang,duration:(t1-t0)/STEPS,ease:"none"}, t0+(t1-t0)*(i-1)/STEPS);
+}
+tl.set("#plane",{x:150-55,y:1270-55,opacity:0},0);
+tl.to("#plane",{opacity:1,duration:.08},t0);
+tl.fromTo("#trail",{clipPath:"inset(0% 100% 0% 0%)"},{clipPath:"inset(0% 0% 0% 0%)",duration:t1-t0,ease:"none"},t0);
+tl.fromTo("#tag",{scale:0,opacity:0,transformOrigin:"90% 0%"},{scale:1,opacity:1,duration:.28,ease:"back.out(2.4)"},t1-0.05);
+tl.fromTo("#tag svg",{y:-4},{y:6,duration:.3,yoyo:true,repeat:3,ease:"sine.inOut"},t1+0.2);
+tl.to(["#tag","#trail","#plane"],{opacity:0,duration:.25},32.4);
+
+// ---------------- CENA 4: currículo + telefone digitado ----------------
+tl.fromTo("#doc",{y:500,opacity:0,rotation:-10},{y:0,opacity:1,rotation:0,duration:.35,ease:"back.out(1.6)"},34.86);
+tl.to("#doc",{scale:.4,x:120,y:60,opacity:0,duration:.25,ease:"power2.in"},35.75);
+tl.fromTo("#phone",{y:700,opacity:0},{y:0,opacity:1,duration:.32,ease:"back.out(1.3)"},K.PHONE_IN);
+const pd = document.querySelectorAll("#pnum .pd");
+pd.forEach(d=>tl.set(d,{display:"none"},0));
+tl.set("#pbox",{opacity:0},0); tl.set("#hg",{scale:0},0);
+// um toque por dígito (0,1 s); parênteses, espaço e hífen aparecem junto do dígito seguinte
+let di = 0;
+pd.forEach((d,i)=>{ const isDigit = /[0-9]/.test(K.PHONE[i]);
+  const t = T.keys + 0.1*(isDigit ? di : di);
+  tl.set(d,{display:"inline"}, t);
+  if (isDigit) di++; });
+for (let b=0;b<12;b++) tl.set("#pcur",{opacity:b%2?0:1},T.keys+b*0.1);
+tl.set("#pcur",{opacity:0},T.keys+1.12);
+tl.set("#pbox",{opacity:1},T.keys+1.12); tl.set("#pbox",{opacity:0},T.keys+1.30); tl.set("#pbox",{opacity:1},T.keys+1.44);
+tl.fromTo("#pnum",{scale:1},{scale:1.08,duration:.12,yoyo:true,repeat:1,ease:"power1.out"},T.keys+1.12);
+tl.fromTo("#hg",{scale:0},{scale:1,duration:.22,ease:"back.out(3)"},37.36);
+tl.fromTo("#hg svg",{rotation:0},{rotation:360,duration:1.2,ease:"power2.inOut"},37.45);
+tl.fromTo("#phone",{scale:1},{scale:1.06,duration:.12,yoyo:true,repeat:1,ease:"power1.out"},T.ding);
+
+// ---------------- CTA e encerramento ----------------
+tl.fromTo("#cta",{clipPath:"inset(880px 110px 710px 100px round 40px)"},{clipPath:"inset(0px 0px 0px 0px round 0px)",duration:.15,ease:"power2.in"},K.CTA_IN-0.15);
+tl.fromTo("#ctaseal",{y:-20,opacity:0},{y:0,opacity:1,duration:.22,ease:"back.out(2)"},K.CTA_IN+0.2);
+tl.fromTo("#ctat",{scale:.8,opacity:0},{scale:1,opacity:1,duration:.3,ease:"back.out(1.8)"},K.CTA_IN+0.28);
+tl.fromTo("#ctasub",{y:20,opacity:0},{y:0,opacity:1,duration:.25,ease:"power2.out"},K.CTA_IN+0.45);
+tl.fromTo("#ctaph",{y:24,opacity:0},{y:0,opacity:1,duration:.28,ease:"back.out(2)"},K.CTA_IN+0.6);
+tl.fromTo("#cv1",{y:140},{y:0,duration:.7,ease:"power2.out"},K.CTA_IN+0.1);
+tl.fromTo("#cv2",{x:220,opacity:0},{x:0,opacity:.7,duration:.6,ease:"power2.out"},K.CTA_IN+0.1);
+tl.fromTo("#ctafade",{opacity:0},{opacity:1,duration:.25,ease:"power1.in"},K.OUTRO_IN-0.25);
+tl.fromTo("#outro-w",{opacity:0},{opacity:1,duration:.25,ease:"power1.out"},K.OUTRO_IN);
+
+// ---------------- LEGENDAS POP ----------------
+K.CAP.forEach(c=>{
+  tl.fromTo("#capl"+c.g,{scale:.8,opacity:0},{scale:1.05,opacity:1,duration:.08,ease:"power2.out"},c.start);
+  tl.to("#capl"+c.g,{scale:1,duration:.07,ease:"power1.out"},c.start+0.08);
+  c.words.forEach((t,i)=>{ if (c.kw[i]) return; const s="#c"+c.g+"w"+i;
+    tl.set(s,{color:"#FFCE23"},t-0.03);
+    const nt = i+1<c.words.length ? c.words[i+1] : c.end;
+    tl.set(s,{color:"#FFFFFF"},nt-0.03); });
+});
+return tl;
+}
+Promise.all([400,700,800,900].map(w=>document.fonts.load(w+" 60px Montserrat")).concat([document.fonts.load("92px 'Bebas Neue'")])).then(()=>document.fonts.ready).then(()=>{
+  window.__timelines["reel"] = build();
+});
+</script>
+</body></html>

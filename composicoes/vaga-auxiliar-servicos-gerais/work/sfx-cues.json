@@ -1,0 +1,104 @@
+{
+ "cues": [
+  {
+   "sfx": "alerta",
+   "label": "\"presta atenção nessa vaga\": alerta curto",
+   "t": 3.9,
+   "file": "assets/sfx/alerta.wav",
+   "lead": 0.0,
+   "gain": -17
+  },
+  {
+   "sfx": "carimbo",
+   "label": "carimbo \"VAGA ABERTA\" (em \"vaga\")",
+   "t": 4.68,
+   "file": "assets/sfx/carimbo.wav",
+   "lead": 0.0,
+   "gain": -11
+  },
+  {
+   "sfx": "maquina",
+   "label": "\"auxiliar de serviços gerais\": máquina de escrever (até 10.14 s)",
+   "t": 8.84,
+   "file": "assets/sfx/maquina.wav",
+   "lead": 0.0,
+   "gain": -17
+  },
+  {
+   "sfx": "pop",
+   "label": "Ficha: 36 horas semanais",
+   "t": 11.42,
+   "file": ".claude/skills/media-use/audio/assets/sfx/pop.mp3",
+   "lead": 0.116,
+   "gain": -15
+  },
+  {
+   "sfx": "pop",
+   "label": "Ficha: segunda a sexta",
+   "t": 13.44,
+   "file": ".claude/skills/media-use/audio/assets/sfx/pop.mp3",
+   "lead": 0.116,
+   "gain": -15
+  },
+  {
+   "sfx": "pop",
+   "label": "Ficha: horário comercial",
+   "t": 15.02,
+   "file": ".claude/skills/media-use/audio/assets/sfx/pop.mp3",
+   "lead": 0.116,
+   "gain": -15
+  },
+  {
+   "sfx": "pop",
+   "label": "Ficha: experiência na função",
+   "t": 18.04,
+   "file": ".claude/skills/media-use/audio/assets/sfx/pop.mp3",
+   "lead": 0.116,
+   "gain": -15
+  },
+  {
+   "sfx": "pop",
+   "label": "Ficha: condomínios e empresas",
+   "t": 20.85,
+   "file": ".claude/skills/media-use/audio/assets/sfx/pop.mp3",
+   "lead": 0.116,
+   "gain": -15
+  },
+  {
+   "sfx": "pop",
+   "label": "Ficha: salário a combinar",
+   "t": 22.53,
+   "file": ".claude/skills/media-use/audio/assets/sfx/pop.mp3",
+   "lead": 0.116,
+   "gain": -15
+  },
+  {
+   "sfx": "aviaozinho",
+   "label": "\"já compartilhe esse vídeo\": aviãozinho de papel",
+   "t": 30.67,
+   "file": "assets/sfx/aviaozinho.wav",
+   "lead": 0.0,
+   "gain": -14
+  },
+  {
+   "sfx": "teclas",
+   "label": "Telefone (31) 97231-7190: 11 toques, um a cada 0,1 s (último em 36.84 s)",
+   "t": 35.84,
+   "file": "assets/sfx/teclas-numero.wav",
+   "lead": 0.0,
+   "gain": -19
+  },
+  {
+   "sfx": "relogio",
+   "label": "\"Não deixe para depois\": tique-taque a partir de 37.47 s, \"ding\" no fim de \"depois\"",
+   "t": 38.79,
+   "file": "assets/sfx/tique-taque-ding.wav",
+   "lead": 1.32,
+   "gain": -14
+  }
+ ],
+ "music_cut": [
+  -5,
+  -4.9
+ ]
+}
