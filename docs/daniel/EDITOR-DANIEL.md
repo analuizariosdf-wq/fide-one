@@ -132,7 +132,7 @@ Duração alvo: **45–90 s**, até ~110 s em narrativas mais longas.
 ### CTA (objetivo: influência primeiro, Fide depois)
 
 - **Padrão (90% dos vídeos):** engajamento puro, como "manda pra quem precisa ouvir isso", "posta nos stories", "+ seguir", "comenta o que você pensa". Compartilhamento é o que mais faz crescer perfil de opinião.
-- **Ponte para a Fide (pilar Trabalho, ~1 a cada 4 vídeos de trabalho):** sem venda direta no vídeo. A autoridade vem do conteúdo: mostrar raciocínio comercial, bastidores de estratégia, cases (com autorização do cliente). No máximo um CTA suave, como "eu faço isso todo dia na @fide (ou link na bio)". Confirme com o Daniel o @ correto da Fide antes de usar.
+- **Ponte para a Fide (pilar Trabalho, ~1 a cada 4 vídeos de trabalho):** sem venda direta no vídeo. A autoridade vem do conteúdo: mostrar raciocínio comercial, bastidores de estratégia, cases (com autorização do cliente). No máximo um CTA suave, como "eu faço isso todo dia na @fidecomunicacao (ou link na bio)".
 - **Nunca** colocar CTA comercial em vídeo de fé ou de política.
 
 ## 7. Gravação e tratamento de áudio
@@ -199,10 +199,15 @@ Duração alvo: **45–90 s**, até ~110 s em narrativas mais longas.
 ## 12. Cuidados
 
 - **Música:** nada protegido por direitos autorais. Use trilha fornecida por ele ou royalty-free. Pergunte se faltar.
-- **Imagens de terceiros:** fotos de políticos, logos de jornais e prints só em contexto jornalístico ou de comentário, com a fonte visível. Ilustrações base para partículas devem ser próprias ou livres de direitos.
+- **Imagens de terceiros:** fotos de políticos, logos de jornais e prints só em contexto jornalístico ou de comentário, com a fonte visível. Ilustrações base para partículas: eu procuro imagens **livres de direitos** (domínio público ou licença que permita uso comercial, como Wikimedia Commons, Unsplash e Pexels) e guardo a origem e a licença de cada uma em `/assets/fontes-dados`.
 - **Pessoas:** em vídeos de igreja e eventos, só destaque rostos de terceiros se ele confirmar.
 - **Política e fé:** veja a seção 2 e o `LINHA_EDITORIAL_POLITICA.md`.
 
 ---
 
-*Adicione aqui o que surgir: @ da Fide para CTA, ganchos que performaram bem, novos perfis de referência, presets de cor por câmera.*
+## 13. Preferências registradas
+
+- **@ da Fide para CTA:** @fidecomunicacao
+- **Imagens para partículas:** o editor procura imagens livres de direitos e registra a origem e a licença.
+
+*Adicione aqui o que surgir: ganchos que performaram bem, novos perfis de referência, presets de cor por câmera.*
