@@ -167,6 +167,7 @@ Duração alvo: **45–90 s**, até ~110 s em narrativas mais longas.
 - **ffmpeg / ffprobe:** cortes, remoção de silêncio, tonemap, loudness, export.
 - **faster-whisper (modelo large-v3)**, com timestamps por palavra em português. Corrija nomes próprios e termos bíblicos na transcrição antes de gerar legendas.
 - **Remotion (React):** motor principal de motion. Mantenha uma **biblioteca de componentes reutilizáveis** (`Legenda`, `TituloImpacto`, `CardManchete`, `GraficoBarra`, `Contador`, `Particulas`, `Versiculo`, `CTA`) e combine-os em cada vídeo. Com 1–2 vídeos por semana, o ganho está em **reaproveitar e não recriar**.
+- Os componentes ficam em `remotion/daniel/` (`componentes.tsx`, `marca.ts`, `Fontes.tsx`). Cada vídeo tem a sua composição em `video-projects/<slug>/remotion/`, que importa esses componentes. Render: `npx remotion render video-projects/<slug>/remotion/index.ts Reel <saida.mp4> --public-dir=video-projects/<slug>/public --browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`.
 - Antes de usar uma ferramenta, verifique se está instalada. Se não estiver, instale.
 
 ## 10. Fluxo de trabalho semanal
