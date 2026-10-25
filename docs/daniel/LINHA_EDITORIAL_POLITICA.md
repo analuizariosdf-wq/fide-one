@@ -75,7 +75,7 @@ O Daniel decide se e como responde. O editor só garante que ele saiba o que vem
 
 - [ ] A fala dele não teve o sentido alterado pelos cortes
 - [ ] Todo número na tela tem fonte e ano no rodapé
-- [ ] Citações conferidas (autor, contexto, versículo e versão bíblica)
+- [ ] Citações conferidas (autor, contexto, versículo conferido na versão usada: A21 por padrão, ou ARA/ACF/NVI se ele citou)
 - [ ] Nenhuma fala de terceiro fora de contexto
 - [ ] Objeções principais foram listadas para ele
 - [ ] Se for impulsionar: legislação eleitoral conferida
