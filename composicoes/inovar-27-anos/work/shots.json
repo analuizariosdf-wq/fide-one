@@ -1,0 +1,182 @@
+{
+ "abertura": [
+  {
+   "name": "abertura-01",
+   "take": "20261027_142912",
+   "start": 0,
+   "dur": 7.174,
+   "speed": 0.38
+  }
+ ],
+ "sede": [
+  {
+   "name": "sede-01",
+   "take": "20261027_142912",
+   "start": 6.674,
+   "dur": 3.438,
+   "speed": 1
+  },
+  {
+   "name": "sede-02",
+   "take": "20261027_141002",
+   "start": 9.612,
+   "dur": 3.438,
+   "speed": 1
+  },
+  {
+   "name": "sede-03",
+   "take": "20261027_140902",
+   "start": 12.55,
+   "dur": 3.438,
+   "speed": 1
+  },
+  {
+   "name": "sede-04",
+   "take": "20261027_140825",
+   "start": 15.488,
+   "dur": 3.438,
+   "speed": 1
+  },
+  {
+   "name": "sede-05",
+   "take": "20260710_135031",
+   "start": 18.426,
+   "dur": 3.438,
+   "speed": 0.686
+  }
+ ],
+ "bastidores": [
+  {
+   "name": "bastidores-01",
+   "take": "20261027_140931",
+   "start": 21.364,
+   "dur": 3.464,
+   "speed": 1
+  },
+  {
+   "name": "bastidores-02",
+   "take": "20260710_135205",
+   "start": 24.328,
+   "dur": 3.464,
+   "speed": 0.601
+  },
+  {
+   "name": "bastidores-03",
+   "take": "20261027_140940",
+   "start": 27.292,
+   "dur": 3.464,
+   "speed": 1
+  },
+  {
+   "name": "bastidores-04",
+   "take": "20260911_132740",
+   "start": 30.256,
+   "dur": 3.464,
+   "speed": 1
+  },
+  {
+   "name": "bastidores-05",
+   "take": "20261027_140912",
+   "start": 33.22,
+   "dur": 3.464,
+   "speed": 1
+  }
+ ],
+ "contratacoes": [
+  {
+   "name": "contratacoes-01",
+   "take": "20260710_135046",
+   "start": 36.184,
+   "dur": 4.041,
+   "speed": 1
+  },
+  {
+   "name": "contratacoes-02",
+   "take": "20260710_135127",
+   "start": 39.725,
+   "dur": 4.041,
+   "speed": 0.864
+  },
+  {
+   "name": "contratacoes-03",
+   "take": "20260710_135138",
+   "start": 43.266,
+   "dur": 4.041,
+   "speed": 0.995
+  },
+  {
+   "name": "contratacoes-04",
+   "take": "20261027_140912",
+   "start": 46.807,
+   "dur": 4.041,
+   "speed": 1
+  }
+ ],
+ "equipe": [
+  {
+   "name": "equipe-01",
+   "take": "20261029_125137",
+   "start": 72.058,
+   "dur": 3.258,
+   "speed": 1
+  },
+  {
+   "name": "equipe-02",
+   "take": "20260710_132727",
+   "start": 74.816,
+   "dur": 3.258,
+   "speed": 1
+  },
+  {
+   "name": "equipe-03",
+   "take": "20260710_132749",
+   "start": 77.575,
+   "dur": 3.258,
+   "speed": 1
+  },
+  {
+   "name": "equipe-04",
+   "take": "20260710_132954",
+   "start": 80.333,
+   "dur": 3.258,
+   "speed": 0.711
+  },
+  {
+   "name": "equipe-05",
+   "take": "20261029_125204",
+   "start": 83.091,
+   "dur": 3.258,
+   "speed": 1
+  },
+  {
+   "name": "equipe-06",
+   "take": "20261027_142844",
+   "start": 85.85,
+   "dur": 3.258,
+   "speed": 1
+  }
+ ],
+ "final": [
+  {
+   "name": "final-01",
+   "take": "20260710_132707",
+   "start": 96.248,
+   "dur": 5.734,
+   "speed": 0.519
+  },
+  {
+   "name": "final-02",
+   "take": "20261027_140912",
+   "start": 101.482,
+   "dur": 5.734,
+   "speed": 0.48
+  },
+  {
+   "name": "final-03",
+   "take": "20261027_141002",
+   "start": 106.716,
+   "dur": 5.234,
+   "speed": 0.755
+  }
+ ]
+}

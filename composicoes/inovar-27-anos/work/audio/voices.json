@@ -1,0 +1,150 @@
+{
+ "n1": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n1.wav",
+  "dur": 4.574,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-01.ogg",
+  "pieces": [
+   [
+    0.14,
+    4.73
+   ]
+  ],
+  "gap": 0.32
+ },
+ "n2": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n2.wav",
+  "dur": 13.99,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-02.ogg",
+  "pieces": [
+   [
+    0.66,
+    14.65
+   ]
+  ],
+  "gap": 0.32
+ },
+ "n3": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n3.wav",
+  "dur": 14.17,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-03.ogg",
+  "pieces": [
+   [
+    0.42,
+    14.59
+   ]
+  ],
+  "gap": 0.32
+ },
+ "n4": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n4.wav",
+  "dur": 13.314,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-04.ogg",
+  "pieces": [
+   [
+    0.9,
+    14.24
+   ]
+  ],
+  "gap": 0.32
+ },
+ "n5": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n5.wav",
+  "dur": 15.65,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-05.ogg",
+  "pieces": [
+   [
+    0.71,
+    16.36
+   ]
+  ],
+  "gap": 0.32
+ },
+ "n6": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n6.wav",
+  "dur": 12.9,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-06.ogg",
+  "pieces": [
+   [
+    0,
+    12.92
+   ]
+  ],
+  "gap": 0.32
+ },
+ "kelly": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-kelly.wav",
+  "dur": 4.54,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/entrevistas/entrevista-kelly-pergunta-04.mp4",
+  "pieces": [
+   [
+    4.98,
+    9.52
+   ]
+  ],
+  "gap": 0.32
+ },
+ "kelly2": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-kelly2.wav",
+  "dur": 5.72,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/entrevistas/entrevista-kelly-pergunta-05.mp4",
+  "pieces": [
+   [
+    6.72,
+    8.98
+   ],
+   [
+    10.22,
+    13.36
+   ]
+  ],
+  "gap": 0.32
+ },
+ "geo": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-geo.wav",
+  "dur": 2.47,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/entrevistas/entrevista-geovana-pergunta-02.mp4",
+  "pieces": [
+   [
+    9.05,
+    11.52
+   ]
+  ],
+  "gap": 0.32
+ },
+ "geo2": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-geo2.wav",
+  "dur": 6.28,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/entrevistas/entrevista-geovana-pergunta-04.mp4",
+  "pieces": [
+   [
+    4.17,
+    10.45
+   ]
+  ],
+  "gap": 0.32
+ },
+ "kelly-cf": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-kelly-cf.wav",
+  "dur": 0.91,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/entrevistas/entrevista-kelly-complete-a-frase.mp4",
+  "pieces": [
+   [
+    4.78,
+    5.69
+   ]
+  ],
+  "gap": 0.32
+ },
+ "geo-cf": {
+  "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-geo-cf.wav",
+  "dur": 3.53,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/entrevistas/entrevista-geovana-complete-a-frase.mp4",
+  "pieces": [
+   [
+    3.37,
+    6.9
+   ]
+  ],
+  "gap": 0.32
+ }
+}

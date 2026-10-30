@@ -1,0 +1,542 @@
+{
+  "language_code": "pt",
+  "language_probability": 1,
+  "text": "Entre quem chegou primeiro e quem acabou de chegar, existe a mesma certeza. Hoje são mais de 300 profissionais ativos e 71 empresas que confiam na gente para encontrar quem vai fazer parte da história delas.",
+  "words": [
+    {
+      "text": "Entre",
+      "start": 0.53,
+      "end": 1.21,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.8693
+    },
+    {
+      "text": " ",
+      "start": 1.21,
+      "end": 1.21,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "quem",
+      "start": 1.21,
+      "end": 1.47,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9964
+    },
+    {
+      "text": " ",
+      "start": 1.47,
+      "end": 1.47,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "chegou",
+      "start": 1.47,
+      "end": 1.77,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9961
+    },
+    {
+      "text": " ",
+      "start": 1.77,
+      "end": 1.77,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "primeiro",
+      "start": 1.77,
+      "end": 2.31,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.8498
+    },
+    {
+      "text": " ",
+      "start": 2.31,
+      "end": 2.31,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "e",
+      "start": 2.31,
+      "end": 2.61,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9206
+    },
+    {
+      "text": " ",
+      "start": 2.61,
+      "end": 2.61,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "quem",
+      "start": 2.61,
+      "end": 2.89,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9909
+    },
+    {
+      "text": " ",
+      "start": 2.89,
+      "end": 2.89,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "acabou",
+      "start": 2.89,
+      "end": 3.27,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9915
+    },
+    {
+      "text": " ",
+      "start": 3.27,
+      "end": 3.27,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "de",
+      "start": 3.27,
+      "end": 3.61,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9889
+    },
+    {
+      "text": " ",
+      "start": 3.61,
+      "end": 3.61,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "chegar,",
+      "start": 3.61,
+      "end": 3.97,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.998
+    },
+    {
+      "text": " ",
+      "start": 3.97,
+      "end": 4.39,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "existe",
+      "start": 4.39,
+      "end": 4.47,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.992
+    },
+    {
+      "text": " ",
+      "start": 4.47,
+      "end": 4.47,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "a",
+      "start": 4.47,
+      "end": 4.67,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9965
+    },
+    {
+      "text": " ",
+      "start": 4.67,
+      "end": 4.67,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "mesma",
+      "start": 4.67,
+      "end": 4.93,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9943
+    },
+    {
+      "text": " ",
+      "start": 4.93,
+      "end": 4.93,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "certeza.",
+      "start": 4.93,
+      "end": 5.51,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.996
+    },
+    {
+      "text": " ",
+      "start": 5.51,
+      "end": 6.21,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "Hoje",
+      "start": 6.21,
+      "end": 6.43,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.991
+    },
+    {
+      "text": " ",
+      "start": 6.43,
+      "end": 6.43,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "são",
+      "start": 6.43,
+      "end": 6.67,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.6007
+    },
+    {
+      "text": " ",
+      "start": 6.67,
+      "end": 6.67,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "mais",
+      "start": 6.67,
+      "end": 6.93,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9939
+    },
+    {
+      "text": " ",
+      "start": 6.93,
+      "end": 6.93,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "de",
+      "start": 6.93,
+      "end": 7.45,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9385
+    },
+    {
+      "text": " ",
+      "start": 7.45,
+      "end": 7.45,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "300",
+      "start": 7.45,
+      "end": 7.45,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.975
+    },
+    {
+      "text": " ",
+      "start": 7.45,
+      "end": 7.45,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "profissionais",
+      "start": 7.45,
+      "end": 8.13,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9956
+    },
+    {
+      "text": " ",
+      "start": 8.13,
+      "end": 8.13,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "ativos",
+      "start": 8.13,
+      "end": 8.71,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9852
+    },
+    {
+      "text": " ",
+      "start": 8.71,
+      "end": 8.71,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "e",
+      "start": 8.71,
+      "end": 9.33,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.704
+    },
+    {
+      "text": " ",
+      "start": 9.33,
+      "end": 9.33,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "71",
+      "start": 9.33,
+      "end": 9.91,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9791
+    },
+    {
+      "text": " ",
+      "start": 9.91,
+      "end": 9.91,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "empresas",
+      "start": 9.91,
+      "end": 10.47,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9968
+    },
+    {
+      "text": " ",
+      "start": 10.47,
+      "end": 10.47,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "que",
+      "start": 10.47,
+      "end": 10.89,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9865
+    },
+    {
+      "text": " ",
+      "start": 10.89,
+      "end": 10.89,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "confiam",
+      "start": 10.89,
+      "end": 11.09,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9668
+    },
+    {
+      "text": " ",
+      "start": 11.09,
+      "end": 11.09,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "na",
+      "start": 11.09,
+      "end": 11.31,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9866
+    },
+    {
+      "text": " ",
+      "start": 11.31,
+      "end": 11.31,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "gente",
+      "start": 11.31,
+      "end": 11.57,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9908
+    },
+    {
+      "text": " ",
+      "start": 11.57,
+      "end": 11.57,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "para",
+      "start": 11.57,
+      "end": 11.89,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.973
+    },
+    {
+      "text": " ",
+      "start": 11.89,
+      "end": 11.89,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "encontrar",
+      "start": 11.89,
+      "end": 12.65,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9896
+    },
+    {
+      "text": " ",
+      "start": 12.65,
+      "end": 12.65,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "quem",
+      "start": 12.65,
+      "end": 13.05,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9909
+    },
+    {
+      "text": " ",
+      "start": 13.05,
+      "end": 13.05,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "vai",
+      "start": 13.05,
+      "end": 13.35,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9886
+    },
+    {
+      "text": " ",
+      "start": 13.35,
+      "end": 13.35,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "fazer",
+      "start": 13.35,
+      "end": 13.87,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.995
+    },
+    {
+      "text": " ",
+      "start": 13.87,
+      "end": 13.87,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "parte",
+      "start": 13.87,
+      "end": 14.23,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9987
+    },
+    {
+      "text": " ",
+      "start": 14.23,
+      "end": 14.23,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "da",
+      "start": 14.23,
+      "end": 14.43,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.987
+    },
+    {
+      "text": " ",
+      "start": 14.43,
+      "end": 14.43,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "história",
+      "start": 14.43,
+      "end": 14.83,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9793
+    },
+    {
+      "text": " ",
+      "start": 14.83,
+      "end": 14.83,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "delas.",
+      "start": 14.83,
+      "end": 15.33,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9824
+    }
+  ],
+  "audio_duration_secs": 15.65,
+  "transcriber": "faster-whisper/medium"
+}

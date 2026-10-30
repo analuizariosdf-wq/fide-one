@@ -1,0 +1,265 @@
+{
+ "end": 111.95,
+ "voices": {
+  "n1": {
+   "start": 1.4,
+   "dur": 4.574,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n1.wav"
+  },
+  "n2": {
+   "start": 6.974,
+   "dur": 13.99,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n2.wav"
+  },
+  "n3": {
+   "start": 21.614,
+   "dur": 14.17,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n3.wav"
+  },
+  "n4": {
+   "start": 36.434,
+   "dur": 13.314,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n4.wav"
+  },
+  "kelly": {
+   "start": 50.848,
+   "dur": 4.54,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-kelly.wav"
+  },
+  "kelly2": {
+   "start": 55.838,
+   "dur": 5.72,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-kelly2.wav"
+  },
+  "geo": {
+   "start": 62.358,
+   "dur": 2.47,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-geo.wav"
+  },
+  "geo2": {
+   "start": 65.278,
+   "dur": 6.28,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-geo2.wav"
+  },
+  "n5": {
+   "start": 72.558,
+   "dur": 15.65,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n5.wav"
+  },
+  "kelly-cf": {
+   "start": 90.608,
+   "dur": 0.91,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-kelly-cf.wav"
+  },
+  "geo-cf": {
+   "start": 92.018,
+   "dur": 3.53,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-geo-cf.wav"
+  },
+  "n6": {
+   "start": 96.448,
+   "dur": 12.9,
+   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n6.wav"
+  }
+ },
+ "sections": {
+  "abertura": [
+   0,
+   6.674
+  ],
+  "sede": [
+   6.674,
+   21.364
+  ],
+  "bastidores": [
+   21.364,
+   36.184
+  ],
+  "contratacoes": [
+   36.184,
+   50.348
+  ],
+  "kelly": [
+   50.348,
+   61.958
+  ],
+  "geovanna": [
+   61.958,
+   72.058
+  ],
+  "equipe": [
+   72.058,
+   88.608
+  ],
+  "pergunta": [
+   88.608,
+   90.458
+  ],
+  "respostas": [
+   90.458,
+   96.24799999999999
+  ],
+  "final": [
+   96.24799999999999,
+   111.95
+  ]
+ },
+ "shots": {
+  "abertura": [
+   [
+    "20261027_142912",
+    0.0,
+    "h",
+    0.38
+   ]
+  ],
+  "sede": [
+   [
+    "20261027_142912",
+    3.0,
+    "h",
+    1
+   ],
+   [
+    "20261027_141002",
+    0.2,
+    "h",
+    1
+   ],
+   [
+    "20261027_140902",
+    0.0,
+    "h",
+    1
+   ],
+   [
+    "20261027_140825",
+    0.0,
+    "h",
+    1
+   ],
+   [
+    "20260710_135031",
+    4.6,
+    "v4k@0.45",
+    1
+   ]
+  ],
+  "bastidores": [
+   [
+    "20261027_140931",
+    1.2,
+    "h",
+    1
+   ],
+   [
+    "20260710_135205",
+    0.0,
+    "v4k@0.40",
+    0.8
+   ],
+   [
+    "20261027_140940",
+    3.4,
+    "h",
+    1
+   ],
+   [
+    "20260911_132740",
+    0.3,
+    "blur",
+    1
+   ],
+   [
+    "20261027_140912",
+    6.0,
+    "h",
+    1
+   ]
+  ],
+  "contratacoes": [
+   [
+    "20260710_135046",
+    1.0,
+    "v4k@0.55",
+    1
+   ],
+   [
+    "20260710_135127",
+    0.3,
+    "v4k@0.62",
+    1
+   ],
+   [
+    "20260710_135138",
+    11.0,
+    "v4k@0.55",
+    1
+   ],
+   [
+    "20261027_140912",
+    10.0,
+    "h",
+    1
+   ]
+  ],
+  "equipe": [
+   [
+    "20261029_125137",
+    9.0,
+    "h",
+    1
+   ],
+   [
+    "20260710_132727",
+    0.5,
+    "v4k@0.45",
+    1
+   ],
+   [
+    "20260710_132749",
+    0.6,
+    "v4k@0.42",
+    1
+   ],
+   [
+    "20260710_132954",
+    0.0,
+    "v4k@0.35",
+    1
+   ],
+   [
+    "20261029_125204",
+    8.5,
+    "h",
+    1
+   ],
+   [
+    "20261027_142844",
+    14.0,
+    "h",
+    1
+   ]
+  ],
+  "final": [
+   [
+    "20260710_132707",
+    7.2,
+    "v4k@0.50",
+    1
+   ],
+   [
+    "20261027_140912",
+    11.3,
+    "h",
+    1
+   ],
+   [
+    "20261027_141002",
+    3.4,
+    "h",
+    1
+   ]
+  ]
+ }
+}

@@ -1,0 +1,317 @@
+{
+  "language_code": "pt",
+  "language_probability": 1,
+  "text": "E 19 .698 vezes esse sim veio. Cada contratação, cada recomeço, uma família mais segura, uma história que mudou o rumo.",
+  "words": [
+    {
+      "text": "E",
+      "start": 0.05,
+      "end": 1.25,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.5131
+    },
+    {
+      "text": " ",
+      "start": 1.25,
+      "end": 1.25,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "19",
+      "start": 1.25,
+      "end": 1.89,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.4547
+    },
+    {
+      "text": " ",
+      "start": 1.89,
+      "end": 1.89,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": ".698",
+      "start": 1.89,
+      "end": 4.05,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9124
+    },
+    {
+      "text": " ",
+      "start": 4.05,
+      "end": 4.05,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "vezes",
+      "start": 4.05,
+      "end": 5.17,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9718
+    },
+    {
+      "text": " ",
+      "start": 5.17,
+      "end": 5.17,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "esse",
+      "start": 5.17,
+      "end": 5.53,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.5904
+    },
+    {
+      "text": " ",
+      "start": 5.53,
+      "end": 5.53,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "sim",
+      "start": 5.53,
+      "end": 5.85,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.8828
+    },
+    {
+      "text": " ",
+      "start": 5.85,
+      "end": 5.85,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "veio.",
+      "start": 5.85,
+      "end": 6.23,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.827
+    },
+    {
+      "text": " ",
+      "start": 6.23,
+      "end": 6.77,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "Cada",
+      "start": 6.77,
+      "end": 6.95,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9216
+    },
+    {
+      "text": " ",
+      "start": 6.95,
+      "end": 6.95,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "contratação,",
+      "start": 6.95,
+      "end": 7.91,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9931
+    },
+    {
+      "text": " ",
+      "start": 7.91,
+      "end": 8.33,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "cada",
+      "start": 8.33,
+      "end": 8.41,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9828
+    },
+    {
+      "text": " ",
+      "start": 8.41,
+      "end": 8.41,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "recomeço,",
+      "start": 8.41,
+      "end": 9.25,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9809
+    },
+    {
+      "text": " ",
+      "start": 9.25,
+      "end": 9.57,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "uma",
+      "start": 9.57,
+      "end": 9.63,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9375
+    },
+    {
+      "text": " ",
+      "start": 9.63,
+      "end": 9.63,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "família",
+      "start": 9.63,
+      "end": 10.23,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9868
+    },
+    {
+      "text": " ",
+      "start": 10.23,
+      "end": 10.23,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "mais",
+      "start": 10.23,
+      "end": 10.71,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9948
+    },
+    {
+      "text": " ",
+      "start": 10.71,
+      "end": 10.71,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "segura,",
+      "start": 10.71,
+      "end": 11.35,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9883
+    },
+    {
+      "text": " ",
+      "start": 11.35,
+      "end": 11.61,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "uma",
+      "start": 11.61,
+      "end": 11.75,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.986
+    },
+    {
+      "text": " ",
+      "start": 11.75,
+      "end": 11.75,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "história",
+      "start": 11.75,
+      "end": 12.09,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9902
+    },
+    {
+      "text": " ",
+      "start": 12.09,
+      "end": 12.09,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "que",
+      "start": 12.09,
+      "end": 12.37,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9974
+    },
+    {
+      "text": " ",
+      "start": 12.37,
+      "end": 12.37,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "mudou",
+      "start": 12.37,
+      "end": 12.79,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9982
+    },
+    {
+      "text": " ",
+      "start": 12.79,
+      "end": 12.79,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "o",
+      "start": 12.79,
+      "end": 12.91,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.6073
+    },
+    {
+      "text": " ",
+      "start": 12.91,
+      "end": 12.91,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "rumo.",
+      "start": 12.91,
+      "end": 13.03,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9653
+    }
+  ],
+  "audio_duration_secs": 13.313,
+  "transcriber": "faster-whisper/medium"
+}

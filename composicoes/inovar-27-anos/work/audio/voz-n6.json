@@ -1,0 +1,392 @@
+{
+  "language_code": "pt",
+  "language_probability": 1,
+  "text": "27 anos depois, a gente continua acreditando no que nos trouxe até aqui, no poder das pessoas. Inovar, 27 anos conectando talentos ao sucesso das empresas.",
+  "words": [
+    {
+      "text": "27",
+      "start": 0.27,
+      "end": 1.15,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.762
+    },
+    {
+      "text": " ",
+      "start": 1.15,
+      "end": 1.15,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "anos",
+      "start": 1.15,
+      "end": 1.57,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9924
+    },
+    {
+      "text": " ",
+      "start": 1.57,
+      "end": 1.57,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "depois,",
+      "start": 1.57,
+      "end": 2.19,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9956
+    },
+    {
+      "text": " ",
+      "start": 2.19,
+      "end": 2.51,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "a",
+      "start": 2.51,
+      "end": 2.51,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9224
+    },
+    {
+      "text": " ",
+      "start": 2.51,
+      "end": 2.51,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "gente",
+      "start": 2.51,
+      "end": 2.81,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.999
+    },
+    {
+      "text": " ",
+      "start": 2.81,
+      "end": 2.81,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "continua",
+      "start": 2.81,
+      "end": 3.29,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.984
+    },
+    {
+      "text": " ",
+      "start": 3.29,
+      "end": 3.29,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "acreditando",
+      "start": 3.29,
+      "end": 4.03,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.995
+    },
+    {
+      "text": " ",
+      "start": 4.03,
+      "end": 4.03,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "no",
+      "start": 4.03,
+      "end": 4.17,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9819
+    },
+    {
+      "text": " ",
+      "start": 4.17,
+      "end": 4.17,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "que",
+      "start": 4.17,
+      "end": 4.27,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9958
+    },
+    {
+      "text": " ",
+      "start": 4.27,
+      "end": 4.27,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "nos",
+      "start": 4.27,
+      "end": 4.57,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9962
+    },
+    {
+      "text": " ",
+      "start": 4.57,
+      "end": 4.57,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "trouxe",
+      "start": 4.57,
+      "end": 4.89,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9962
+    },
+    {
+      "text": " ",
+      "start": 4.89,
+      "end": 4.89,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "até",
+      "start": 4.89,
+      "end": 5.13,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9896
+    },
+    {
+      "text": " ",
+      "start": 5.13,
+      "end": 5.13,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "aqui,",
+      "start": 5.13,
+      "end": 5.69,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9957
+    },
+    {
+      "text": " ",
+      "start": 5.69,
+      "end": 6.15,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "no",
+      "start": 6.15,
+      "end": 6.21,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9838
+    },
+    {
+      "text": " ",
+      "start": 6.21,
+      "end": 6.21,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "poder",
+      "start": 6.21,
+      "end": 6.53,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9906
+    },
+    {
+      "text": " ",
+      "start": 6.53,
+      "end": 6.53,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "das",
+      "start": 6.53,
+      "end": 6.81,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9962
+    },
+    {
+      "text": " ",
+      "start": 6.81,
+      "end": 6.81,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "pessoas.",
+      "start": 6.81,
+      "end": 7.49,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9988
+    },
+    {
+      "text": " ",
+      "start": 7.49,
+      "end": 8.17,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "Inovar,",
+      "start": 8.17,
+      "end": 8.87,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9152
+    },
+    {
+      "text": " ",
+      "start": 8.87,
+      "end": 9.27,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "27",
+      "start": 9.27,
+      "end": 9.59,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9896
+    },
+    {
+      "text": " ",
+      "start": 9.59,
+      "end": 9.59,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "anos",
+      "start": 9.59,
+      "end": 9.93,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9984
+    },
+    {
+      "text": " ",
+      "start": 9.93,
+      "end": 9.93,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "conectando",
+      "start": 9.93,
+      "end": 10.53,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9756
+    },
+    {
+      "text": " ",
+      "start": 10.53,
+      "end": 10.53,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "talentos",
+      "start": 10.53,
+      "end": 11.27,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9742
+    },
+    {
+      "text": " ",
+      "start": 11.27,
+      "end": 11.27,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "ao",
+      "start": 11.27,
+      "end": 11.47,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9539
+    },
+    {
+      "text": " ",
+      "start": 11.47,
+      "end": 11.47,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "sucesso",
+      "start": 11.47,
+      "end": 11.83,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9981
+    },
+    {
+      "text": " ",
+      "start": 11.83,
+      "end": 11.83,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "das",
+      "start": 11.83,
+      "end": 12.09,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.9941
+    },
+    {
+      "text": " ",
+      "start": 12.09,
+      "end": 12.09,
+      "type": "spacing",
+      "speaker_id": "speaker_0"
+    },
+    {
+      "text": "empresas.",
+      "start": 12.09,
+      "end": 12.53,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "logprob": 0.992
+    }
+  ],
+  "audio_duration_secs": 12.9,
+  "transcriber": "faster-whisper/medium"
+}

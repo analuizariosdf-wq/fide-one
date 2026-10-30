@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Inovar 27 anos</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:Poppins;font-weight:500;src:url(assets/fonts/poppins-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Poppins;font-weight:600;src:url(assets/fonts/poppins-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:Poppins;font-weight:700;src:url(assets/fonts/poppins-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:Poppins;font-weight:800;src:url(assets/fonts/poppins-latin-800-normal.woff2) format("woff2")}
+:root{--pet:#036B6E;--pet2:#024D52;--white:#FFFFFF}
+html,body{margin:0;background:#000;width:1920px;height:1080px;overflow:hidden}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:#000;font-family:Poppins,sans-serif;color:#fff}
+.shot{position:absolute;inset:0;overflow:hidden;visibility:hidden}
+.kb{position:absolute;inset:0;transform-origin:50% 50%}
+.kb video{width:100%;height:100%;object-fit:cover;display:block}
+/* sombra para leitura dos números (lado esquerdo) */
+#shade{position:absolute;inset:0;z-index:200;opacity:0;
+  background:linear-gradient(90deg,rgba(2,30,32,.82) 0%,rgba(2,40,43,.55) 38%,rgba(0,0,0,0) 66%)}
+#shadeB{position:absolute;inset:0;z-index:200;opacity:0;
+  background:linear-gradient(0deg,rgba(2,30,32,.78) 0%,rgba(2,40,43,.35) 34%,rgba(0,0,0,0) 55%)}
+.stat{position:absolute;left:150px;z-index:220;display:none}
+.stat .bar{position:absolute;left:-44px;top:18px;bottom:22px;width:14px;background:var(--pet);border-radius:7px;transform-origin:50% 100%;
+  box-shadow:0 0 0 2px rgba(255,255,255,.12)}
+.stat .mask{overflow:hidden;padding-bottom:4px}
+.stat .num{font-weight:800;line-height:1.02;letter-spacing:-2px;text-shadow:0 4px 30px rgba(0,0,0,.45);font-variant-numeric:tabular-nums}
+.stat .lbl{font-weight:600;line-height:1.15;text-shadow:0 3px 18px rgba(0,0,0,.5)}
+.stat .uline{height:10px;width:260px;background:var(--pet);border-radius:5px;margin-top:18px;transform-origin:0 50%}
+.stat.big{bottom:150px}
+.stat.big .num{font-size:220px}
+.stat.big .lbl{font-size:76px}
+.stat.mid .num{font-size:150px}
+.stat.mid .lbl{font-size:64px}
+#s300{bottom:430px}
+#s71{bottom:110px}
+/* nome e cargo */
+.lt{position:absolute;left:110px;bottom:96px;z-index:230;display:none}
+.lt .box{background:var(--pet);padding:22px 44px 24px 40px;border-radius:14px;border-left:14px solid var(--white);transform-origin:0 50%;
+  box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.lt .mask{overflow:hidden}
+.lt .name{font-weight:700;font-size:76px;line-height:1.1}
+.lt .role{font-weight:600;font-size:60px;line-height:1.15;color:#E6F3F3}
+/* pergunta "27 anos de Inovar é..." */
+#ask{position:absolute;inset:0;z-index:300;background:radial-gradient(120% 120% at 30% 30%,#047c80 0%,var(--pet) 38%,var(--pet2) 100%);display:none;overflow:hidden}
+#ask .t{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center}
+#ask .mask{overflow:hidden;display:inline-block}
+#ask .line{font-weight:700;font-size:128px;line-height:1.15}
+.curves{position:absolute;inset:0;width:100%;height:100%}
+/* 27 ANOS */
+#big27{position:absolute;left:0;right:0;top:50%;transform:translateY(-52%);z-index:320;text-align:center;display:none}
+#big27 .mask{overflow:hidden}
+#big27 .num{font-weight:800;font-size:360px;line-height:1;letter-spacing:-6px;text-shadow:0 8px 60px rgba(0,0,0,.5)}
+#big27 .anos{font-weight:700;font-size:120px;letter-spacing:28px;line-height:1.05;margin-left:28px;text-shadow:0 6px 40px rgba(0,0,0,.5)}
+#shadeC{position:absolute;inset:0;z-index:310;opacity:0;background:radial-gradient(70% 70% at 50% 50%,rgba(2,50,53,.62) 0%,rgba(2,40,43,.45) 60%,rgba(2,30,32,.6) 100%)}
+/* encerramento */
+#card{position:absolute;inset:0;z-index:400;background:#fff;display:none;overflow:hidden}
+#logo{position:absolute;left:50%;top:80px;width:500px;margin-left:-250px}
+#tag{position:absolute;left:0;right:0;top:600px;text-align:center}
+#tag .mask{overflow:hidden}
+#tag .l1{font-weight:600;font-size:60px;line-height:1.2;color:var(--pet2)}
+#tag .l2{font-weight:700;font-size:60px;letter-spacing:10px;line-height:1.3;color:var(--pet);margin-top:24px}
+#fade{position:absolute;inset:0;z-index:900;background:#000;opacity:1}
+</style></head>
+<body>
+<div id="root" data-composition-id="inovar27" data-start="0" data-duration="111.950" data-width="1920" data-height="1080">
+<div class="shot" id="w-abertura-01" style="z-index:10"><div class="kb" id="k-abertura-01"><video id="abertura-01" class="clip" src="assets/shots/abertura-01.mp4" muted playsinline data-start="0.000" data-duration="7.174" data-track-index="0"></video></div></div>
+<div class="shot" id="w-sede-01" style="z-index:11"><div class="kb" id="k-sede-01"><video id="sede-01" class="clip" src="assets/shots/sede-01.mp4" muted playsinline data-start="6.674" data-duration="3.438" data-track-index="1"></video></div></div>
+<div class="shot" id="w-sede-02" style="z-index:12"><div class="kb" id="k-sede-02"><video id="sede-02" class="clip" src="assets/shots/sede-02.mp4" muted playsinline data-start="9.612" data-duration="3.438" data-track-index="0"></video></div></div>
+<div class="shot" id="w-sede-03" style="z-index:13"><div class="kb" id="k-sede-03"><video id="sede-03" class="clip" src="assets/shots/sede-03.mp4" muted playsinline data-start="12.550" data-duration="3.438" data-track-index="1"></video></div></div>
+<div class="shot" id="w-sede-04" style="z-index:14"><div class="kb" id="k-sede-04"><video id="sede-04" class="clip" src="assets/shots/sede-04.mp4" muted playsinline data-start="15.488" data-duration="3.438" data-track-index="0"></video></div></div>
+<div class="shot" id="w-sede-05" style="z-index:15"><div class="kb" id="k-sede-05"><video id="sede-05" class="clip" src="assets/shots/sede-05.mp4" muted playsinline data-start="18.426" data-duration="3.438" data-track-index="1"></video></div></div>
+<div class="shot" id="w-bastidores-01" style="z-index:16"><div class="kb" id="k-bastidores-01"><video id="bastidores-01" class="clip" src="assets/shots/bastidores-01.mp4" muted playsinline data-start="21.364" data-duration="3.464" data-track-index="0"></video></div></div>
+<div class="shot" id="w-bastidores-02" style="z-index:17"><div class="kb" id="k-bastidores-02"><video id="bastidores-02" class="clip" src="assets/shots/bastidores-02.mp4" muted playsinline data-start="24.328" data-duration="3.464" data-track-index="1"></video></div></div>
+<div class="shot" id="w-bastidores-03" style="z-index:18"><div class="kb" id="k-bastidores-03"><video id="bastidores-03" class="clip" src="assets/shots/bastidores-03.mp4" muted playsinline data-start="27.292" data-duration="3.464" data-track-index="0"></video></div></div>
+<div class="shot" id="w-bastidores-04" style="z-index:19"><div class="kb" id="k-bastidores-04"><video id="bastidores-04" class="clip" src="assets/shots/bastidores-04.mp4" muted playsinline data-start="30.256" data-duration="3.464" data-track-index="1"></video></div></div>
+<div class="shot" id="w-bastidores-05" style="z-index:20"><div class="kb" id="k-bastidores-05"><video id="bastidores-05" class="clip" src="assets/shots/bastidores-05.mp4" muted playsinline data-start="33.220" data-duration="3.464" data-track-index="0"></video></div></div>
+<div class="shot" id="w-contratacoes-01" style="z-index:21"><div class="kb" id="k-contratacoes-01"><video id="contratacoes-01" class="clip" src="assets/shots/contratacoes-01.mp4" muted playsinline data-start="36.184" data-duration="4.041" data-track-index="1"></video></div></div>
+<div class="shot" id="w-contratacoes-02" style="z-index:22"><div class="kb" id="k-contratacoes-02"><video id="contratacoes-02" class="clip" src="assets/shots/contratacoes-02.mp4" muted playsinline data-start="39.725" data-duration="4.041" data-track-index="0"></video></div></div>
+<div class="shot" id="w-contratacoes-03" style="z-index:23"><div class="kb" id="k-contratacoes-03"><video id="contratacoes-03" class="clip" src="assets/shots/contratacoes-03.mp4" muted playsinline data-start="43.266" data-duration="4.041" data-track-index="1"></video></div></div>
+<div class="shot" id="w-contratacoes-04" style="z-index:24"><div class="kb" id="k-contratacoes-04"><video id="contratacoes-04" class="clip" src="assets/shots/contratacoes-04.mp4" muted playsinline data-start="46.807" data-duration="4.041" data-track-index="0"></video></div></div>
+<div class="shot" id="w-kelly" style="z-index:25"><div class="kb" id="k-kelly"><video id="kelly" class="clip" src="assets/shots/kelly.mp4" muted playsinline data-start="50.348" data-duration="12.110" data-track-index="1"></video></div></div>
+<div class="shot" id="w-geovanna" style="z-index:26"><div class="kb" id="k-geovanna"><video id="geovanna" class="clip" src="assets/shots/geovanna.mp4" muted playsinline data-start="61.958" data-duration="10.600" data-track-index="0"></video></div></div>
+<div class="shot" id="w-equipe-01" style="z-index:27"><div class="kb" id="k-equipe-01"><video id="equipe-01" class="clip" src="assets/shots/equipe-01.mp4" muted playsinline data-start="72.058" data-duration="3.258" data-track-index="1"></video></div></div>
+<div class="shot" id="w-equipe-02" style="z-index:28"><div class="kb" id="k-equipe-02"><video id="equipe-02" class="clip" src="assets/shots/equipe-02.mp4" muted playsinline data-start="74.816" data-duration="3.258" data-track-index="0"></video></div></div>
+<div class="shot" id="w-equipe-03" style="z-index:29"><div class="kb" id="k-equipe-03"><video id="equipe-03" class="clip" src="assets/shots/equipe-03.mp4" muted playsinline data-start="77.575" data-duration="3.258" data-track-index="1"></video></div></div>
+<div class="shot" id="w-equipe-04" style="z-index:30"><div class="kb" id="k-equipe-04"><video id="equipe-04" class="clip" src="assets/shots/equipe-04.mp4" muted playsinline data-start="80.333" data-duration="3.258" data-track-index="0"></video></div></div>
+<div class="shot" id="w-equipe-05" style="z-index:31"><div class="kb" id="k-equipe-05"><video id="equipe-05" class="clip" src="assets/shots/equipe-05.mp4" muted playsinline data-start="83.091" data-duration="3.258" data-track-index="1"></video></div></div>
+<div class="shot" id="w-equipe-06" style="z-index:32"><div class="kb" id="k-equipe-06"><video id="equipe-06" class="clip" src="assets/shots/equipe-06.mp4" muted playsinline data-start="85.850" data-duration="3.258" data-track-index="0"></video></div></div>
+<div class="shot" id="w-respostas" style="z-index:33"><div class="kb" id="k-respostas"><video id="respostas" class="clip" src="assets/shots/respostas.mp4" muted playsinline data-start="90.458" data-duration="5.790" data-track-index="1"></video></div></div>
+<div class="shot" id="w-final-01" style="z-index:34"><div class="kb" id="k-final-01"><video id="final-01" class="clip" src="assets/shots/final-01.mp4" muted playsinline data-start="96.248" data-duration="5.734" data-track-index="0"></video></div></div>
+<div class="shot" id="w-final-02" style="z-index:35"><div class="kb" id="k-final-02"><video id="final-02" class="clip" src="assets/shots/final-02.mp4" muted playsinline data-start="101.482" data-duration="5.734" data-track-index="1"></video></div></div>
+<div class="shot" id="w-final-03" style="z-index:36"><div class="kb" id="k-final-03"><video id="final-03" class="clip" src="assets/shots/final-03.mp4" muted playsinline data-start="106.716" data-duration="5.234" data-track-index="0"></video></div></div>
+<audio id="mix" src="assets/mix.wav" data-start="0" data-duration="111.950" data-track-index="2"></audio>
+<div id="shade"></div><div id="shadeB"></div>
+<div id="s1999" class="stat big"><div class="bar"></div><div class="mask"><div class="num" id="s1999-n">0</div></div><div class="mask"><div class="lbl">o começo</div></div><div class="uline"></div></div><div id="s350" class="stat big"><div class="bar"></div><div class="mask"><div class="num" id="s350-n">0</div></div><div class="mask"><div class="lbl">entrevistas</div></div><div class="uline"></div></div><div id="s19698" class="stat big"><div class="bar"></div><div class="mask"><div class="num" id="s19698-n">0</div></div><div class="mask"><div class="lbl">contratações</div></div><div class="uline"></div></div>
+<div id="s300" class="stat mid"><div class="bar"></div><div class="mask"><div class="num" id="s300-n">0</div></div><div class="mask"><div class="lbl">profissionais ativos</div></div><div class="uline"></div></div><div id="s71" class="stat mid"><div class="bar"></div><div class="mask"><div class="num" id="s71-n">0</div></div><div class="mask"><div class="lbl">empresas clientes</div></div><div class="uline"></div></div>
+<div class="lt" id="lt-kelly"><div class="box"><div class="mask"><div class="name">Kelly</div></div><div class="mask"><div class="role">Gestora de Recursos Humanos</div></div></div></div>
+<div class="lt" id="lt-geo"><div class="box"><div class="mask"><div class="name">Geovanna</div></div><div class="mask"><div class="role">Recrutadora</div></div></div></div>
+<div id="ask">
+  <svg class="curves" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+    <path id="ac1" d="M-50 900 C 500 640, 1200 620, 1990 300" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="120" stroke-linecap="round"/>
+    <path id="ac2" d="M-50 1040 C 600 780, 1300 760, 1990 480" fill="none" stroke="rgba(2,77,82,.55)" stroke-width="90" stroke-linecap="round"/>
+    <path id="ac3" d="M-50 160 C 600 40, 1300 120, 1990 -40" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="70" stroke-linecap="round"/>
+  </svg>
+  <div class="t"><div class="mask"><div class="line" id="ask1">27 anos de Inovar é…</div></div></div>
+</div>
+<div id="shadeC"></div>
+<div id="big27"><div class="mask"><div class="num" id="n27">0</div></div><div class="mask"><div class="anos" id="anos27">ANOS</div></div></div>
+<div id="card">
+  <svg class="curves" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+    <path id="cc1" d="M-80 1040 C 560 930, 1300 960, 2000 880" fill="none" stroke="#036B6E" stroke-width="56" stroke-linecap="round"/>
+    <path id="cc2" d="M-80 1120 C 600 1010, 1340 1040, 2000 960" fill="none" stroke="#024D52" stroke-width="80" stroke-linecap="round"/>
+    <path id="cc3" d="M-80 80 C 420 -10, 1000 40, 2000 -60" fill="none" stroke="rgba(3,107,110,.18)" stroke-width="44" stroke-linecap="round"/>
+  </svg>
+  <img id="logo" src="assets/logo-inovar.png" alt="Inovar Recursos Humanos">
+  <div id="tag"><div class="mask"><div class="l1" id="tag1">27 anos conectando talentos ao sucesso das empresas</div></div>
+    <div class="mask"><div class="l2" id="tag2">DESDE 1999</div></div></div>
+</div>
+<div id="fade"></div>
+</div>
+<script>
+const CLIPS = [["abertura-01", 0, 7.174, "broll"], ["sede-01", 6.674, 3.438, "broll"], ["sede-02", 9.612, 3.438, "broll"], ["sede-03", 12.55, 3.438, "broll"], ["sede-04", 15.488, 3.438, "broll"], ["sede-05", 18.426, 3.438, "broll"], ["bastidores-01", 21.364, 3.464, "broll"], ["bastidores-02", 24.328, 3.464, "broll"], ["bastidores-03", 27.292, 3.464, "broll"], ["bastidores-04", 30.256, 3.464, "broll"], ["bastidores-05", 33.22, 3.464, "broll"], ["contratacoes-01", 36.184, 4.041, "broll"], ["contratacoes-02", 39.725, 4.041, "broll"], ["contratacoes-03", 43.266, 4.041, "broll"], ["contratacoes-04", 46.807, 4.041, "broll"], ["kelly", 50.348, 12.11, "talk"], ["geovanna", 61.958, 10.6, "talk"], ["equipe-01", 72.058, 3.258, "broll"], ["equipe-02", 74.816, 3.258, "broll"], ["equipe-03", 77.575, 3.258, "broll"], ["equipe-04", 80.333, 3.258, "broll"], ["equipe-05", 83.091, 3.258, "broll"], ["equipe-06", 85.85, 3.258, "broll"], ["respostas", 90.458, 5.79, "talk"], ["final-01", 96.248, 5.734, "broll"], ["final-02", 101.482, 5.734, "broll"], ["final-03", 106.716, 5.234, "broll"]];
+const STATS = [["s1999", 1999, "", "", 7.574, 12.174, false, "L"], ["s350", 350, "+", " mil", 24.264, 30.614, false, "L"], ["s19698", 19698, "", "", 37.434, 44.834, true, "L"], ["s300", 300, "+", "", 79.708, 88.008, false, "L"], ["s71", 71, "", "", 81.638, 88.008, false, "L"]];
+const LOWER = [["lt-kelly", 51.248, 57.438], ["lt-geo", 62.758, 67.878]];
+const ASK_IN = 88.608, ASK_OUT = 90.708, A27 = 96.498, CARD_IN = 104.268, END = 111.950;
+const fmt = (v, dot) => { v = Math.round(v); return dot ? v.toLocaleString("pt-BR") : String(v); };
+function build(){
+  const tl = gsap.timeline({paused:true});
+  tl.set({}, {}, END);
+  // ---- imagens: visibilidade, movimento lento e transições (empurrão com desfoque / zoom)
+  CLIPS.forEach((c, i) => {
+    const [id, start, dur, kind] = c;
+    const w = "#w-" + id, k = "#k-" + id;
+    tl.set(w, {visibility:"visible"}, start);
+    tl.set(w, {visibility:"hidden"}, start + dur);
+    if (kind === "broll") tl.fromTo(k, {scale:1.0}, {scale:1.07, ease:"none", duration:dur}, start);
+    if (i === 0) return;
+    const prev = CLIPS[i-1];
+    const pw = "#w-" + prev[0];
+    const tin = start, d = 0.55;
+    const push = (i % 3 === 1) && kind === "broll" && prev[3] === "broll";
+    if (push) {
+      tl.fromTo(w, {xPercent:100, filter:"blur(14px)"}, {xPercent:0, filter:"blur(0px)", duration:d, ease:"power3.inOut"}, tin);
+      tl.fromTo(pw, {xPercent:0, filter:"blur(0px)"}, {xPercent:-35, filter:"blur(14px)", duration:d, ease:"power3.inOut", immediateRender:false}, tin);
+    } else {
+      tl.fromTo(w, {opacity:0, scale:1.10}, {opacity:1, scale:1, duration:d + 0.15, ease:"power2.out"}, tin);
+    }
+  });
+  // ---- abertura e final
+  tl.fromTo("#fade", {opacity:1}, {opacity:0, duration:1.6, ease:"power1.inOut"}, 0);
+  tl.to("#fade", {opacity:1, duration:0.9, ease:"power1.in"}, END - 0.9);
+  // ---- números
+  STATS.forEach(s => {
+    const [id, val, pre, suf, tin, tout, dot, side] = s;
+    const el = "#" + id;
+    tl.set(el, {display:"block"}, tin);
+    tl.set(el, {display:"none"}, tout + 0.6);
+    if (side === "L") tl.fromTo("#shade", {opacity:0}, {opacity:1, duration:0.6, ease:"power1.out", immediateRender:false}, tin - 0.2);
+    tl.fromTo(el + " .bar", {scaleY:0}, {scaleY:1, duration:0.7, ease:"power3.out"}, tin);
+    tl.fromTo(el + " .num", {yPercent:105}, {yPercent:0, duration:0.75, ease:"power3.out"}, tin + 0.05);
+    const o = {v:0};
+    tl.to(o, {v:val, duration:1.7, ease:"power2.out", onUpdate:()=>{ document.querySelector(el + "-n").textContent = pre + fmt(o.v, dot) + suf; }}, tin + 0.1);
+    tl.set(o, {v:0}, tin);
+    tl.fromTo(el + " .lbl", {yPercent:110}, {yPercent:0, duration:0.7, ease:"power3.out"}, tin + 0.45);
+    tl.fromTo(el + " .uline", {scaleX:0}, {scaleX:1, duration:0.9, ease:"power3.out"}, tin + 0.55);
+    tl.to([el + " .num", el + " .lbl"], {yPercent:-110, duration:0.5, ease:"power2.in"}, tout);
+    tl.to([el + " .bar"], {scaleY:0, duration:0.45, ease:"power2.in"}, tout + 0.05);
+    tl.to([el + " .uline"], {scaleX:0, duration:0.45, ease:"power2.in"}, tout);
+    if (side === "L" && id !== "s300") tl.to("#shade", {opacity:0, duration:0.6}, tout + 0.15);
+  });
+  // ---- nome e cargo
+  LOWER.forEach(l => {
+    const [id, tin, tout] = l, el = "#" + id;
+    tl.set(el, {display:"block"}, tin);
+    tl.set(el, {display:"none"}, tout + 0.7);
+    tl.fromTo(el + " .box", {scaleX:0}, {scaleX:1, duration:0.6, ease:"power3.out"}, tin);
+    tl.fromTo(el + " .name", {yPercent:110}, {yPercent:0, duration:0.6, ease:"power3.out"}, tin + 0.3);
+    tl.fromTo(el + " .role", {yPercent:110}, {yPercent:0, duration:0.6, ease:"power3.out"}, tin + 0.45);
+    tl.to([el + " .name", el + " .role"], {yPercent:-110, duration:0.4, ease:"power2.in"}, tout);
+    tl.to(el + " .box", {scaleX:0, duration:0.45, ease:"power2.in"}, tout + 0.25);
+  });
+  // ---- "27 anos de Inovar é…"
+  tl.set("#ask", {display:"block"}, ASK_IN);
+  tl.fromTo("#ask", {clipPath:"circle(0% at 50% 50%)"}, {clipPath:"circle(80% at 50% 50%)", duration:0.7, ease:"power3.inOut"}, ASK_IN);
+  ["#ac1","#ac2","#ac3"].forEach((p, j) => tl.fromTo(p, {xPercent:-30, opacity:0}, {xPercent:0, opacity:1, duration:1.4, ease:"power2.out"}, ASK_IN + 0.1*j));
+  tl.fromTo("#ask1", {yPercent:110}, {yPercent:0, duration:0.7, ease:"power3.out"}, ASK_IN + 0.35);
+  tl.to("#ask", {opacity:0, scale:1.06, duration:0.45, ease:"power2.in"}, ASK_OUT - 0.45);
+  tl.set("#ask", {display:"none"}, ASK_OUT);
+  // ---- 27 ANOS
+  tl.set("#big27", {display:"block"}, A27);
+  tl.fromTo("#shadeC", {opacity:0}, {opacity:1, duration:0.6}, A27 - 0.1);
+  tl.fromTo("#n27", {yPercent:105}, {yPercent:0, duration:0.8, ease:"power3.out"}, A27);
+  const o27 = {v:0};
+  tl.to(o27, {v:27, duration:1.5, ease:"power2.out", onUpdate:()=>{ document.querySelector("#n27").textContent = fmt(o27.v); }}, A27 + 0.05);
+  tl.fromTo("#anos27", {yPercent:110}, {yPercent:0, duration:0.7, ease:"power3.out"}, A27 + 0.6);
+  tl.fromTo("#big27", {scale:1}, {scale:1.06, duration:CARD_IN - A27, ease:"none"}, A27);
+  // ---- encerramento com a logo
+  tl.set("#card", {display:"block"}, CARD_IN);
+  tl.fromTo("#card", {clipPath:"circle(0% at 50% 50%)"}, {clipPath:"circle(80% at 50% 50%)", duration:0.8, ease:"power3.inOut"}, CARD_IN);
+  tl.set(["#big27","#shadeC"], {display:"none"}, CARD_IN + 0.8);
+  ["#cc1","#cc2","#cc3"].forEach((p, j) => tl.fromTo(p, {xPercent:-40, opacity:0}, {xPercent:0, opacity:1, duration:1.6, ease:"power2.out"}, CARD_IN + 0.2 + 0.12*j));
+  tl.fromTo("#logo", {opacity:0, scale:0.82, clipPath:"inset(100% 0 0 0)"}, {opacity:1, scale:1, clipPath:"inset(0% 0 0 0)", duration:1.1, ease:"power3.out"}, CARD_IN + 0.45);
+  tl.fromTo("#tag1", {yPercent:110}, {yPercent:0, duration:0.8, ease:"power3.out"}, CARD_IN + 1.2);
+  tl.fromTo("#tag2", {yPercent:110}, {yPercent:0, duration:0.8, ease:"power3.out"}, CARD_IN + 1.6);
+  tl.fromTo("#logo", {y:0}, {y:-8, duration:END - CARD_IN - 1.5, ease:"sine.inOut"}, CARD_IN + 1.5);
+  return tl;
+}
+window.__timelines = window.__timelines || {};
+Promise.all([500,600,700,800].map(w => document.fonts.load(w + " 60px Poppins"))).then(() => document.fonts.ready).then(() => {
+  window.__timelines["inovar27"] = build();
+});
+</script>
+</body></html>
