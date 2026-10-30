@@ -24,59 +24,76 @@ def word(n, text, k=0):
 
 # ---------- sequência de imagens ----------
 clips = []   # (id, src, start, dur, kind)
-order = ["abertura", "sede", "bastidores", "contratacoes", "kelly", "geovanna", "equipe", "respostas", "final"]
+order = ["abertura", "sede", "bastidores", "contratacoes", "kelly", "geovanna", "equipe", "respostas", "final", "encerramento"]
+CARDS = {}   # id → (tipo, conteúdo, início, fim visível)
 for sec in order:
     if sec in S:
-        for s in S[sec]:
-            clips.append((s["name"], f"assets/shots/{s['name']}.mp4", s["start"], s["dur"], "broll"))
+        for j, s in enumerate(S[sec]):
+            if "card" in s:
+                nxt = S[sec][j + 1]["start"] if j + 1 < len(S[sec]) else s["start"] + s["dur"] - 0.5
+                CARDS[s["name"]] = (s["card"], s["content"], s["start"], nxt)
+                clips.append((s["name"], None, s["start"], s["dur"], "card"))
+            else:
+                kind = "raw" if sec in ("abertura", "encerramento") else "broll"
+                clips.append((s["name"], f"assets/shots/{s['name']}.mp4", s["start"], s["dur"], kind))
     else:
         a, b = SEC[sec]
         clips.append((sec, f"assets/shots/{sec}.mp4", a, b - a + (0.0 if sec == "respostas" else 0.5), "talk"))
 os.makedirs(f"{HERE}/assets/shots", exist_ok=True)
 for c in clips:
+    if c[1] is None:
+        continue
     dst = f"{HERE}/{c[1]}"
     if os.path.exists(dst):
         os.remove(dst)
     shutil.copyfile(f"{W}/shots/{os.path.basename(c[1])}", dst)
 
 # ---------- momentos dos gráficos ----------
-N = dict(
-    y1999=word("n2", "1999") - 0.15,
-    i350=word("n3", "350") - 0.35,
-    c19698=word("n4", "19") - 0.25,
-    p300=word("n5", "300") - 0.3,
-    e71=word("n5", "71") - 0.25,
-    a27=VO["n6"]["start"] + 0.05,
-    inovar=word("n6", "Inovar") - 0.35,
-)
-STATS = [  # id, número final, prefixo, sufixo, rótulo, entra, sai, separador de milhar
-    ("s1999", 1999, "", "", "o começo", N["y1999"], VO["n2"]["start"] + 5.2, False),
-    ("s350", 350, "+", " mil", "entrevistas", N["i350"], VO["n3"]["start"] + 9.0, False),
-    ("s19698", 19698, "", "", "contratações", N["c19698"], VO["n4"]["start"] + 8.4, True),
-    ("s300", 300, "+", "", "profissionais ativos", N["p300"], SEC["equipe"][1] - 0.6, False),
-    ("s71", 71, "", "", "empresas clientes", N["e71"], SEC["equipe"][1] - 0.6, False),
-]
+CLOSE_IN = SEC["encerramento"][0]
+N = dict(a27=VO["n6"]["start"] + 0.05)
+LBL = {"s1999": ("o começo", 1999, "", "", False), "s350": ("entrevistas", 350, "+", " mil", False),
+       "s19698": ("contratações", 19698, "", "", True), "s300": ("profissionais ativos", 300, "+", "", False),
+       "s71": ("empresas clientes", 71, "", "", False)}
+STATS = []  # id, número final, prefixo, sufixo, rótulo, entra, sai, separador de milhar
+for cid, (kind, content, c0, c1) in CARDS.items():
+    if kind == "stat":
+        lab, val, pre, suf, dot = LBL[content]
+        STATS.append((content, val, pre, suf, lab, c0 + 0.2, c1 - 0.3, dot))
 LOWER = [("lt-kelly", "Kelly", "Gestora de Recursos Humanos", SEC["kelly"][0] + 0.9, VO["kelly2"]["start"] + 1.6),
          ("lt-geo", "Geovanna", "Recrutadora", SEC["geovanna"][0] + 0.8, VO["geo2"]["start"] + 2.6)]
 ASK_IN, ASK_OUT = SEC["pergunta"][0], SEC["respostas"][0] + 0.25
-CARD_IN = N["inovar"]
+CARD_IN = CLOSE_IN
 
 
 def stat_html(sid, label):
-    big = "big" if sid in ("s1999", "s350", "s19698") else "mid"
-    return (f'<div id="{sid}" class="stat {big}"><div class="bar"></div>'
+    return (f'<div id="{sid}" class="stat oncard"><div class="bar"></div>'
             f'<div class="mask"><div class="num" id="{sid}-n">0</div></div>'
             f'<div class="mask"><div class="lbl">{label}</div></div><div class="uline"></div></div>')
 
 
-vids = "\n".join(
-    f'<div class="shot" id="w-{c[0]}" style="z-index:{10 + i}"><div class="kb" id="k-{c[0]}">'
-    f'<video id="{c[0]}" class="clip" src="{c[1]}" muted playsinline data-start="{c[2]:.3f}" '
-    f'data-duration="{c[3]:.3f}" data-track-index="{i % 2}"></video></div></div>'
-    for i, c in enumerate(clips))
+CURVES = ('<svg class="curves" viewBox="0 0 1920 1080" preserveAspectRatio="none">'
+          '<path class="cv1" d="M-80 960 C 520 760, 1240 760, 2000 420" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="120" stroke-linecap="round"/>'
+          '<path class="cv2" d="M-80 1100 C 600 880, 1320 860, 2000 600" fill="none" stroke="rgba(2,77,82,.6)" stroke-width="96" stroke-linecap="round"/>'
+          '<path class="cv3" d="M-80 150 C 600 30, 1300 110, 2000 -50" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="70" stroke-linecap="round"/></svg>')
 
-stats_left = "".join(stat_html(s[0], s[4]) for s in STATS[:3])
-stats_team = stat_html("s300", "profissionais ativos") + stat_html("s71", "empresas clientes")
+
+def clip_html(i, c):
+    if c[4] == "card":
+        kind, content = CARDS[c[0]][:2]
+        lines = "".join(f'<div class="mask"><div class="cline">{x}</div></div>' for x in content.split("|"))
+        inner = (f'<div class="ctext">{lines}</div>' if kind == "text" else "")
+        return (f'<div class="shot card" id="w-{c[0]}" style="z-index:{10 + i}"><div class="kb" id="k-{c[0]}">'
+                f'{CURVES}{inner}</div></div>')
+    return (f'<div class="shot" id="w-{c[0]}" style="z-index:{10 + i}"><div class="kb" id="k-{c[0]}">'
+            f'<video id="{c[0]}" class="clip" src="{c[1]}" muted playsinline data-start="{c[2]:.3f}" '
+            f'data-duration="{c[3]:.3f}" data-track-index="{i % 2}"></video></div></div>')
+
+
+vids = "\n".join(clip_html(i, c) for i, c in enumerate(clips))
+TEXTS = [[cid, round(v[2], 3), round(v[3], 3)] for cid, v in CARDS.items() if v[0] == "text"]
+
+stats_left = "".join(stat_html(s[0], s[4]) for s in STATS)
+stats_team = ""
 
 HTML = """<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
@@ -111,8 +128,16 @@ html,body{margin:0;background:#000;width:1920px;height:1080px;overflow:hidden}
 .stat.big .lbl{font-size:76px}
 .stat.mid .num{font-size:150px}
 .stat.mid .lbl{font-size:64px}
-#s300{bottom:430px}
-#s71{bottom:110px}
+.stat.oncard{left:0;right:0;top:50%;transform:translateY(-54%);text-align:center}
+.stat.oncard .bar{display:none}
+.stat.oncard .num{font-size:250px}
+.stat.oncard .lbl{font-size:84px}
+.stat.oncard .uline{margin:26px auto 0;width:300px;transform-origin:50% 50%}
+.card .curves{width:112%;left:0}
+.card .kb{background:radial-gradient(120% 120% at 30% 30%,#047c80 0%,var(--pet) 40%,var(--pet2) 100%)}
+.card .ctext{position:absolute;left:150px;right:150px;top:50%;transform:translateY(-50%);text-align:center}
+.card .mask{overflow:hidden;padding-bottom:6px}
+.card .cline{font-weight:700;font-size:110px;line-height:1.18}
 /* nome e cargo */
 .lt{position:absolute;left:110px;bottom:96px;z-index:230;display:none}
 .lt .box{background:var(--pet);padding:22px 44px 24px 40px;border-radius:14px;border-left:14px solid var(--white);transform-origin:0 50%;
@@ -139,7 +164,7 @@ html,body{margin:0;background:#000;width:1920px;height:1080px;overflow:hidden}
 #tag .mask{overflow:hidden}
 #tag .l1{font-weight:600;font-size:60px;line-height:1.2;color:var(--pet2)}
 #tag .l2{font-weight:700;font-size:60px;letter-spacing:10px;line-height:1.3;color:var(--pet);margin-top:24px}
-#fade{position:absolute;inset:0;z-index:900;background:#000;opacity:1}
+#fade{position:absolute;inset:0;z-index:900;background:#000;opacity:0}
 </style></head>
 <body>
 <div id="root" data-composition-id="inovar27" data-start="0" data-duration="%%END%%" data-width="1920" data-height="1080">
@@ -160,22 +185,13 @@ html,body{margin:0;background:#000;width:1920px;height:1080px;overflow:hidden}
 </div>
 <div id="shadeC"></div>
 <div id="big27"><div class="mask"><div class="num" id="n27">0</div></div><div class="mask"><div class="anos" id="anos27">ANOS</div></div></div>
-<div id="card">
-  <svg class="curves" viewBox="0 0 1920 1080" preserveAspectRatio="none">
-    <path id="cc1" d="M-80 1040 C 560 930, 1300 960, 2000 880" fill="none" stroke="#036B6E" stroke-width="56" stroke-linecap="round"/>
-    <path id="cc2" d="M-80 1120 C 600 1010, 1340 1040, 2000 960" fill="none" stroke="#024D52" stroke-width="80" stroke-linecap="round"/>
-    <path id="cc3" d="M-80 80 C 420 -10, 1000 40, 2000 -60" fill="none" stroke="rgba(3,107,110,.18)" stroke-width="44" stroke-linecap="round"/>
-  </svg>
-  <img id="logo" src="assets/logo-inovar.png" alt="Inovar Recursos Humanos">
-  <div id="tag"><div class="mask"><div class="l1" id="tag1">27 anos conectando talentos ao sucesso das empresas</div></div>
-    <div class="mask"><div class="l2" id="tag2">DESDE 1999</div></div></div>
-</div>
 <div id="fade"></div>
 </div>
 <script>
 const CLIPS = %%CLIPS%%;
 const STATS = %%STATS%%;
 const LOWER = %%LOWER%%;
+const TEXTS = %%TEXTS%%;
 const ASK_IN = %%ASK_IN%%, ASK_OUT = %%ASK_OUT%%, A27 = %%A27%%, CARD_IN = %%CARD_IN%%, END = %%END%%;
 const fmt = (v, dot) => { v = Math.round(v); return dot ? v.toLocaleString("pt-BR") : String(v); };
 function build(){
@@ -187,12 +203,14 @@ function build(){
     const w = "#w-" + id, k = "#k-" + id;
     tl.set(w, {visibility:"visible"}, start);
     tl.set(w, {visibility:"hidden"}, start + dur);
+    if (kind === "card") tl.fromTo(k + " .curves", {xPercent:-6}, {xPercent:0, ease:"none", duration:dur}, start);
     if (kind === "broll") tl.fromTo(k, {scale:1.0}, {scale:1.07, ease:"none", duration:dur}, start);
     if (i === 0) return;
     const prev = CLIPS[i-1];
     const pw = "#w-" + prev[0];
     const tin = start, d = 0.55;
-    const push = (i % 3 === 1) && kind === "broll" && prev[3] === "broll";
+    if (kind === "raw") { tl.fromTo(w, {opacity:0}, {opacity:1, duration:0.5, ease:"power1.inOut"}, tin); return; }
+    const push = (i % 3 === 1) && kind !== "talk" && prev[3] !== "talk" && prev[3] !== "raw";
     if (push) {
       tl.fromTo(w, {xPercent:100, filter:"blur(14px)"}, {xPercent:0, filter:"blur(0px)", duration:d, ease:"power3.inOut"}, tin);
       tl.fromTo(pw, {xPercent:0, filter:"blur(0px)"}, {xPercent:-35, filter:"blur(14px)", duration:d, ease:"power3.inOut", immediateRender:false}, tin);
@@ -201,26 +219,29 @@ function build(){
     }
   });
   // ---- abertura e final
-  tl.fromTo("#fade", {opacity:1}, {opacity:0, duration:1.6, ease:"power1.inOut"}, 0);
-  tl.to("#fade", {opacity:1, duration:0.9, ease:"power1.in"}, END - 0.9);
+  TEXTS.forEach(t => {
+    const [id, tin, tout] = t, el = "#w-" + id + " .cline";
+    tl.fromTo(el, {yPercent:110}, {yPercent:0, duration:0.8, ease:"power3.out", stagger:0.14}, tin + 0.35);
+    tl.to(el, {yPercent:-110, duration:0.5, ease:"power2.in"}, tout - 0.55);
+  });
   // ---- números
   STATS.forEach(s => {
     const [id, val, pre, suf, tin, tout, dot, side] = s;
     const el = "#" + id;
     tl.set(el, {display:"block"}, tin);
     tl.set(el, {display:"none"}, tout + 0.6);
-    if (side === "L") tl.fromTo("#shade", {opacity:0}, {opacity:1, duration:0.6, ease:"power1.out", immediateRender:false}, tin - 0.2);
+    if (side === "X") tl.fromTo("#shade", {opacity:0}, {opacity:1, duration:0.6, ease:"power1.out", immediateRender:false}, tin - 0.2);
     tl.fromTo(el + " .bar", {scaleY:0}, {scaleY:1, duration:0.7, ease:"power3.out"}, tin);
     tl.fromTo(el + " .num", {yPercent:105}, {yPercent:0, duration:0.75, ease:"power3.out"}, tin + 0.05);
     const o = {v:0};
-    tl.to(o, {v:val, duration:1.7, ease:"power2.out", onUpdate:()=>{ document.querySelector(el + "-n").textContent = pre + fmt(o.v, dot) + suf; }}, tin + 0.1);
+    tl.to(o, {v:val, duration:1.3, ease:"power2.out", onUpdate:()=>{ document.querySelector(el + "-n").textContent = pre + fmt(o.v, dot) + suf; }}, tin + 0.1);
     tl.set(o, {v:0}, tin);
     tl.fromTo(el + " .lbl", {yPercent:110}, {yPercent:0, duration:0.7, ease:"power3.out"}, tin + 0.45);
     tl.fromTo(el + " .uline", {scaleX:0}, {scaleX:1, duration:0.9, ease:"power3.out"}, tin + 0.55);
     tl.to([el + " .num", el + " .lbl"], {yPercent:-110, duration:0.5, ease:"power2.in"}, tout);
     tl.to([el + " .bar"], {scaleY:0, duration:0.45, ease:"power2.in"}, tout + 0.05);
     tl.to([el + " .uline"], {scaleX:0, duration:0.45, ease:"power2.in"}, tout);
-    if (side === "L" && id !== "s300") tl.to("#shade", {opacity:0, duration:0.6}, tout + 0.15);
+    if (side === "X") tl.to("#shade", {opacity:0, duration:0.6}, tout + 0.15);
   });
   // ---- nome e cargo
   LOWER.forEach(l => {
@@ -248,15 +269,8 @@ function build(){
   tl.to(o27, {v:27, duration:1.5, ease:"power2.out", onUpdate:()=>{ document.querySelector("#n27").textContent = fmt(o27.v); }}, A27 + 0.05);
   tl.fromTo("#anos27", {yPercent:110}, {yPercent:0, duration:0.7, ease:"power3.out"}, A27 + 0.6);
   tl.fromTo("#big27", {scale:1}, {scale:1.06, duration:CARD_IN - A27, ease:"none"}, A27);
-  // ---- encerramento com a logo
-  tl.set("#card", {display:"block"}, CARD_IN);
-  tl.fromTo("#card", {clipPath:"circle(0% at 50% 50%)"}, {clipPath:"circle(80% at 50% 50%)", duration:0.8, ease:"power3.inOut"}, CARD_IN);
-  tl.set(["#big27","#shadeC"], {display:"none"}, CARD_IN + 0.8);
-  ["#cc1","#cc2","#cc3"].forEach((p, j) => tl.fromTo(p, {xPercent:-40, opacity:0}, {xPercent:0, opacity:1, duration:1.6, ease:"power2.out"}, CARD_IN + 0.2 + 0.12*j));
-  tl.fromTo("#logo", {opacity:0, scale:0.82, clipPath:"inset(100% 0 0 0)"}, {opacity:1, scale:1, clipPath:"inset(0% 0 0 0)", duration:1.1, ease:"power3.out"}, CARD_IN + 0.45);
-  tl.fromTo("#tag1", {yPercent:110}, {yPercent:0, duration:0.8, ease:"power3.out"}, CARD_IN + 1.2);
-  tl.fromTo("#tag2", {yPercent:110}, {yPercent:0, duration:0.8, ease:"power3.out"}, CARD_IN + 1.6);
-  tl.fromTo("#logo", {y:0}, {y:-8, duration:END - CARD_IN - 1.5, ease:"sine.inOut"}, CARD_IN + 1.5);
+  tl.to(["#big27","#shadeC"], {opacity:0, duration:0.45}, CARD_IN - 0.1);
+  tl.set(["#big27","#shadeC"], {display:"none"}, CARD_IN + 0.4);
   return tl;
 }
 window.__timelines = window.__timelines || {};
@@ -272,7 +286,7 @@ stat_js = [[s[0], s[1], s[2], s[3], round(s[5], 3), round(s[6], 3), s[7], "L"] f
 lower_js = [[l[0], round(l[3], 3), round(l[4], 3)] for l in LOWER]
 out = (HTML.replace("%%VIDS%%", vids).replace("%%STATS_LEFT%%", stats_left).replace("%%STATS_TEAM%%", stats_team)
        .replace("%%CLIPS%%", json.dumps(clip_js)).replace("%%STATS%%", json.dumps(stat_js))
-       .replace("%%LOWER%%", json.dumps(lower_js)).replace("%%ASK_IN%%", f"{ASK_IN:.3f}").replace("%%ASK_OUT%%", f"{ASK_OUT:.3f}")
+       .replace("%%LOWER%%", json.dumps(lower_js)).replace("%%TEXTS%%", json.dumps(TEXTS)).replace("%%ASK_IN%%", f"{ASK_IN:.3f}").replace("%%ASK_OUT%%", f"{ASK_OUT:.3f}")
        .replace("%%A27%%", f"{N['a27']:.3f}").replace("%%CARD_IN%%", f"{CARD_IN:.3f}").replace("%%END%%", f"{END:.3f}"))
 open(f"{HERE}/index.html", "w").write(out)
 print("ok", len(clips), "imagens;", {k: round(v, 2) for k, v in N.items()}, "fim", END)

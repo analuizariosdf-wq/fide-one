@@ -1,72 +1,72 @@
 {
  "n1": {
   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n1.wav",
-  "dur": 4.574,
-  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-01.ogg",
+  "dur": 4.84,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/v2/narracao2-bloco-01.ogg",
   "pieces": [
    [
-    0.14,
-    4.73
+    0.23,
+    5.07
    ]
   ],
   "gap": 0.32
  },
  "n2": {
   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n2.wav",
-  "dur": 13.99,
-  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-02.ogg",
+  "dur": 12.62,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/v2/narracao2-bloco-02.ogg",
   "pieces": [
    [
-    0.66,
-    14.65
+    0.1,
+    12.72
    ]
   ],
   "gap": 0.32
  },
  "n3": {
   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n3.wav",
-  "dur": 14.17,
-  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-03.ogg",
+  "dur": 13.68,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/v2/narracao2-bloco-03.ogg",
   "pieces": [
    [
-    0.42,
-    14.59
+    0.23,
+    13.91
    ]
   ],
   "gap": 0.32
  },
  "n4": {
   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n4.wav",
-  "dur": 13.314,
-  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-04.ogg",
+  "dur": 11.924,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/v2/narracao2-bloco-04.ogg",
   "pieces": [
    [
-    0.9,
-    14.24
+    0.11,
+    12.08
    ]
   ],
   "gap": 0.32
  },
  "n5": {
   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n5.wav",
-  "dur": 15.65,
-  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-05.ogg",
+  "dur": 15.47,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/v2/narracao2-bloco-05.ogg",
   "pieces": [
    [
-    0.71,
-    16.36
+    0.52,
+    15.99
    ]
   ],
   "gap": 0.32
  },
  "n6": {
   "file": "/home/user/fide-one/video-projects/inovar-27-anos/work/audio/voz-n6.wav",
-  "dur": 12.9,
-  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/narracao/narracao-bloco-06.ogg",
+  "dur": 12.34,
+  "src": "/home/user/fide-one/video-projects/inovar-27-anos/raw/v2/narracao2-bloco-06.ogg",
   "pieces": [
    [
-    0,
-    12.92
+    0.01,
+    12.35
    ]
   ],
   "gap": 0.32

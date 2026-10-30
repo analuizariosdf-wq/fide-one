@@ -9,7 +9,7 @@ GRADE = "eq=contrast=1.07:saturation=1.13:brightness=0.012:gamma=0.98"
 
 def dur(take):
     return float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
-                                 f"{P}/raw/takes/{take}.mp4"], capture_output=True, text=True).stdout)
+                                 f"{P}/raw/{take}.mp4"], capture_output=True, text=True).stdout)
 
 
 out = {}
@@ -20,10 +20,17 @@ for secname, shots in T["shots"].items():
     t = a
     lst = []
     for i, (take, tin, mode, speed) in enumerate(shots):
-        d = each + (OVER if i < len(shots) - 1 or secname != "final" else 0)
+        d = each + (OVER if secname not in ("abertura", "encerramento") else 0)
+        name = f"{secname}-{i + 1:02d}"
+        if take == "CARD":                          # tela animada: nada a renderizar
+            lst.append({"name": name, "card": tin, "content": mode, "start": round(t, 3), "dur": round(d, 3)})
+            print(f"{name:16s} CARD {tin}: {mode}  {t:6.2f}+{d:5.2f}")
+            t += each
+            continue
         avail = (dur(take) - tin - 0.05) * 1.0
         sp = min(speed, avail / d)                  # se o take for curto, desacelera para caber
-        name = f"{secname}-{i + 1:02d}"
+        if take.startswith("v2/"):                  # abertura/encerramento da cliente: entram como vieram
+            sp = 1.0
         if mode == "h":
             vf = "scale=1920:1080:flags=lanczos"
         elif mode.startswith("v4k@"):
@@ -32,8 +39,9 @@ for secname, shots in T["shots"].items():
         else:   # blur: laterais com o próprio take desfocado
             vf = ("split[a][b];[a]scale=1920:-2,crop=1920:1080,boxblur=60:4,eq=brightness=-0.12:saturation=0.8[bg];"
                   "[b]scale=-2:1080:flags=lanczos[fg];[bg][fg]overlay=(W-w)/2:0")
-        vf = f"setpts=(PTS-STARTPTS)/{sp:.4f},{vf},{GRADE},fps=30,format=yuv420p"
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(tin), "-i", f"{P}/raw/takes/{take}.mp4",
+        grade = "" if take.startswith("v2/") else f",{GRADE}"
+        vf = f"setpts=(PTS-STARTPTS)/{sp:.4f},{vf}{grade},fps=30,format=yuv420p"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(tin), "-i", f"{P}/raw/{take}.mp4",
                         "-t", f"{d / 1 * sp + 0.1:.3f}" if False else f"{d * sp + 0.1:.3f}", "-an",
                         "-filter_complex", vf, "-t", f"{d:.3f}", "-c:v", "libx264", "-preset", "fast", "-crf", "16",
                         f"{P}/work/shots/{name}.mp4"], check=True)

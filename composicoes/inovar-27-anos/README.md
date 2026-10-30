@@ -1,5 +1,10 @@
 # Vídeo institucional — Inovar 27 anos (TV, 16:9)
 
+**Versão 2 (atual):** sem música; narração "segunda tentativa" (`raw/v2/narracao2-bloco-0N.ogg`);
+abertura e encerramento da cliente (`raw/v2/abertura.mp4`, `raw/v2/encerramento.mp4`); só takes gravados
+deitados — onde antes havia take em pé agora entra uma tela animada verde petróleo com a informação
+(números contando ou frase da narração). Mixagem: `python3 -I work/mix.py <projeto> - comp/assets/mix.wav`.
+
 Cópia guardada da montagem. Takes, entrevistas, narração, música e renders ficam em
 `video-projects/inovar-27-anos/` (fora do git); para renderizar, copie-os para os mesmos caminhos.
 

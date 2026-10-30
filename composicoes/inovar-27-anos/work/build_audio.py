@@ -86,7 +86,7 @@ def cut(src, pieces, name, tighten=False):
 R = f"{P}/raw"
 voices = []
 for b in range(1, 7):
-    src = f"{R}/narracao/narracao-bloco-{b:02d}.ogg"
+    src = f"{R}/v2/narracao2-bloco-{b:02d}.ogg"     # segunda tentativa
     ws = [w for w in json.load(open(src.replace(".ogg", ".json")))["words"] if w["type"] == "word"]
     path, d, used = cut(src, [(ws[0]["start"], ws[-1]["end"])], f"voz-n{b}", tighten=True)
     voices.append((f"n{b}", path, d, src, used))

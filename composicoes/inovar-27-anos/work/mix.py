@@ -32,7 +32,7 @@ amb = load(f"{P}/raw/takes/20261027_142912.mp4", 0, 7.0)
 amb = amb / (np.sqrt((amb ** 2).mean()) + 1e-9) * db(-34)
 amb *= np.interp(np.arange(len(amb)) / SR, [0, 0.6, 4.5, 7.0], [0, 1, 0.8, 0])
 voice_bus = voice.copy()
-voice_bus[: len(amb)] += amb
+# v2: abertura da cliente, sem ambiente da rua
 
 mix = voice_bus
 if MUS != "-":
