@@ -4,7 +4,7 @@ Lê ../work/timeline.json (vozes e seções), ../work/shots.json (takes já no f
 e ../work/audio/voz-n*.json (palavras da narração tratada) para sincronizar os números.
 Rode: python3 -I build_comp.py
 """
-import json, os, shutil
+import json, os, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W = os.path.join(HERE, "../work")
@@ -84,7 +84,7 @@ def clip_html(i, c):
         inner = (f'<div class="ctext">{lines}</div>' if kind == "text" else "")
         return (f'<div class="shot card" id="w-{c[0]}" style="z-index:{10 + i}"><div class="kb" id="k-{c[0]}">'
                 f'{CURVES}{inner}</div></div>')
-    return (f'<div class="shot" id="w-{c[0]}" style="z-index:{10 + i}"><div class="kb" id="k-{c[0]}">'
+    return (f'<div class="shot {c[4]}" id="w-{c[0]}" style="z-index:{10 + i}"><div class="kb" id="k-{c[0]}">'
             f'<video id="{c[0]}" class="clip" src="{c[1]}" muted playsinline data-start="{c[2]:.3f}" '
             f'data-duration="{c[3]:.3f}" data-track-index="{i % 2}"></video></div></div>')
 
@@ -288,5 +288,48 @@ out = (HTML.replace("%%VIDS%%", vids).replace("%%STATS_LEFT%%", stats_left).repl
        .replace("%%CLIPS%%", json.dumps(clip_js)).replace("%%STATS%%", json.dumps(stat_js))
        .replace("%%LOWER%%", json.dumps(lower_js)).replace("%%TEXTS%%", json.dumps(TEXTS)).replace("%%ASK_IN%%", f"{ASK_IN:.3f}").replace("%%ASK_OUT%%", f"{ASK_OUT:.3f}")
        .replace("%%A27%%", f"{N['a27']:.3f}").replace("%%CARD_IN%%", f"{CARD_IN:.3f}").replace("%%END%%", f"{END:.3f}"))
-open(f"{HERE}/index.html", "w").write(out)
+if "--reels" not in sys.argv:
+    open(f"{HERE}/index.html", "w").write(out)
+else:
+    # Reels 1080x1920: entrevistas em tela cheia no rosto; takes 16:9 inteiros num quadro sobre fundo verde petróleo
+    RD = os.path.join(HERE, "../comp-reels")
+    for sub in ("assets/shots", "assets/fonts"):
+        os.makedirs(f"{RD}/{sub}", exist_ok=True)
+    for c in clips:
+        if c[1]:
+            shutil.copyfile(f"{HERE}/{c[1]}", f"{RD}/{c[1]}")
+    for f in os.listdir(f"{HERE}/assets/fonts"):
+        shutil.copyfile(f"{HERE}/assets/fonts/{f}", f"{RD}/assets/fonts/{f}")
+    for f in ("gsap.min.js", "mix.wav"):
+        shutil.copyfile(f"{HERE}/assets/{f}", f"{RD}/assets/{f}")
+    shutil.copyfile(f"{HERE}/hyperframes.json", f"{RD}/hyperframes.json")
+    REELS_CSS = """
+/* ---------- Reels 1080x1920 ---------- */
+#bgR{position:absolute;inset:0;z-index:1;background:radial-gradient(120% 80% at 30% 25%,#047c80 0%,var(--pet) 40%,var(--pet2) 100%);overflow:hidden}
+#bgR .top{position:absolute;left:0;right:0;top:300px;text-align:center;font-weight:700;font-size:54px;letter-spacing:14px}
+#bgR .top span{display:block;width:120px;height:8px;border-radius:4px;background:#fff;margin:22px auto 0;opacity:.85}
+.shot.broll,.shot.raw{left:40px;top:690px;width:1000px;height:563px;inset:auto;border-radius:28px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+.shot.broll,.shot.raw{position:absolute;left:40px;top:690px;right:auto;bottom:auto}
+.shot.talk .kb video{object-position:52% 50%}
+.stat.oncard .num{font-size:190px;letter-spacing:-3px}
+.stat.oncard .lbl{font-size:72px;padding:0 60px}
+.card .ctext{left:80px;right:80px}
+.card .cline{font-size:82px}
+.lt{left:60px;bottom:470px}
+.lt .name{font-size:66px}
+.lt .role{font-size:50px}
+#ask .t{padding:0 80px}
+#ask .line{font-size:112px}
+#big27 .num{font-size:300px}
+#big27 .anos{font-size:104px}
+"""
+    r = (out.replace('width=1920, height=1080', 'width=1080, height=1920')
+         .replace('width:1920px;height:1080px', 'width:1080px;height:1920px')
+         .replace('data-width="1920" data-height="1080"', 'data-width="1080" data-height="1920"')
+         .replace('data-composition-id="inovar27"', 'data-composition-id="inovar27reels"')
+         .replace('window.__timelines["inovar27"]', 'window.__timelines["inovar27reels"]')
+         .replace('</style>', REELS_CSS + '</style>')
+         .replace('<div class="shot', '<div id="bgR">' + CURVES + '<div class="top">INOVAR · 27 ANOS<span></span></div></div>\n<div class="shot', 1))
+    open(f"{RD}/index.html", "w").write(r)
+    print("reels ok")
 print("ok", len(clips), "imagens;", {k: round(v, 2) for k, v in N.items()}, "fim", END)

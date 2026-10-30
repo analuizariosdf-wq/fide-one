@@ -26,3 +26,9 @@ cd comp && npx hyperframes@0.8.166 render . -o renders/v1-imagem.mp4 -q looks --
 # TV: H.264 High, yuv420p, 12 Mbps (2 passadas), AAC 48 kHz, com assets/mix.wav
 ```
 Fonte: Poppins (SIL Open Font License), via @fontsource/poppins.
+
+## Reels (1080x1920)
+`python3 -I comp/build_comp.py --reels` gera `comp-reels/index.html` (mesma linha do tempo e mesmo som):
+entrevistas em tela cheia enquadradas no rosto; takes 16:9, abertura e encerramento inteiros num quadro
+sobre fundo verde petróleo; telas de números e frases na vertical. Copia as mídias de `comp/assets` para
+`comp-reels/assets`. Render: `cd comp-reels && npx hyperframes@0.8.166 render . -o renders/reels.mp4 -q looks --crf 18 -f 30`.
